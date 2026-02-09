@@ -5,29 +5,29 @@
 #include <algorithm>
 #include <array>
 
+#include "Fonts.hpp"
 #include "IDisplay.hpp"
 #include "StationRepository.hpp"
-#include "UiTypes.hpp"
+#include "Types.hpp"
 
 namespace services {
-static constexpr uint8_t WIDTH = 128U;      // pixels
-static constexpr uint8_t HEIGHT = 64U;      // pixels
-static constexpr uint8_t PAGE_HEIGHT = 8U;  // pixels
-// Only works when PAGE_HEIGHT is a power of 2 (2, 4, 8, 16, etc.).
-// used as modulo but faster
-static constexpr uint8_t PAGE_BIT_MASK = PAGE_HEIGHT - 1U;              // 0x07
-static constexpr uint8_t PAGES = HEIGHT / PAGE_HEIGHT;                  // number of pages
-static constexpr uint8_t GLYPH_WIDTH = 5U;                              // pixels
-static constexpr uint8_t GLYPH_HEIGHT = 7U;                             // pixels
-static constexpr uint8_t CHAR_WIDTH = GLYPH_WIDTH + 1U;                 // 5px glyph + 1px spacing
-static constexpr uint8_t CHAR_HEIGHT = GLYPH_HEIGHT + 1U;               // 7px glyph + 1px spacing
-static constexpr uint8_t STATUS_BAR_AREA_END = 8U;                      // pixels
-static constexpr uint8_t STATION_NAME_START_X = 6U;                     // pixels
-static constexpr uint8_t MAX_STATIONS = 6U;                             // max stations to show
-static constexpr uint8_t MAX_STATION_NAME = (WIDTH / CHAR_WIDTH) - 1U;  // -1 because of icon
-static constexpr uint8_t SPACE_BYTE = 0x00;                             // empty byte for spacing
-
-static const char *TAG = "UiService";
+namespace {
+constexpr uint8_t WIDTH = 128U;                                  // pixels
+constexpr uint8_t HEIGHT = 64U;                                  // pixels
+constexpr uint8_t PAGE_HEIGHT = 8U;                              // pixels
+constexpr uint8_t PAGE_BIT_MASK = PAGE_HEIGHT - 1U;              // works for power of 2 heights
+constexpr uint8_t PAGES = HEIGHT / PAGE_HEIGHT;                  // number of pages
+constexpr uint8_t GLYPH_WIDTH = 5U;                              // pixels
+constexpr uint8_t GLYPH_HEIGHT = 7U;                             // pixels
+constexpr uint8_t CHAR_WIDTH = GLYPH_WIDTH + 1U;                 // 5px glyph + 1px spacing
+constexpr uint8_t CHAR_HEIGHT = GLYPH_HEIGHT + 1U;               // 7px glyph + 1px spacing
+constexpr uint8_t STATUS_BAR_AREA_END = 8U;                      // pixels
+constexpr uint8_t STATION_NAME_START_X = 6U;                     // pixels
+constexpr uint8_t MAX_STATIONS = 6U;                             // max stations to show
+constexpr uint8_t MAX_STATION_NAME = (WIDTH / CHAR_WIDTH) - 1U;  // -1 because of icon
+constexpr uint8_t SPACE_BYTE = 0x00;                             // empty byte for spacing
+constexpr const char *TAG = "UiService";
+}  // namespace
 
 UiService::UiService(adapters::IDisplay &display, IStationRepository &stationRepo)
     : mDisplay(display), mStationRepo(stationRepo), mFramebuffer(WIDTH * PAGES, 0) {
@@ -43,23 +43,28 @@ bool UiService::init() {
     return true;
 }
 
-void UiService::onEvent(const common::UiEvent &e) {
-    switch (e.type) {
-        case common::UiEvent::Type::RENDER_BOOT:
-            ESP_LOGI(TAG, "Rendering boot screen");
-            renderBoot();
-            break;
-        case common::UiEvent::Type::RENDER_STATIONS:
-            ESP_LOGI(TAG, "Rendering stations");
-            renderStations(e.selectedIndex);
-            break;
-        case common::UiEvent::Type::RENDER_STATUS:
-            ESP_LOGI(TAG, "Rendering UI status");
-            renderStatus();
-            break;
-        default:
-            ESP_LOGW(TAG, "Unknown UI event type");
-            break;
+void UiService::onEvent(const common::AppEvent &event) {
+    if (std::holds_alternative<common::UiRenderEvent>(event)) {
+        const auto &uiEvent = std::get<common::UiRenderEvent>(event);
+        switch (uiEvent.renderType) {
+            case common::RenderType::Boot:
+                ESP_LOGI(TAG, "Rendering boot screen");
+                renderBoot();
+                break;
+            case common::RenderType::Stations:
+                ESP_LOGI(TAG, "Rendering stations");
+                renderStations();
+                break;
+            case common::RenderType::Status:
+                ESP_LOGI(TAG, "Rendering UI status");
+                renderStatus();
+                break;
+            default:
+                ESP_LOGW(TAG, "Unknown render type");
+                break;
+        }
+    } else {
+        ESP_LOGW(TAG, "Unhandled event type in UiService");
     }
 }
 
@@ -76,12 +81,12 @@ void UiService::renderStatus() {
     // playback status - play stop near the active station
 }
 
-void UiService::renderStations(int selectedIndex) {
-    ESP_LOGI(TAG, "Rendering stations, selected index: %d", selectedIndex);
+void UiService::renderStations() {
+    ESP_LOGI(TAG, "Rendering stations");
 
     const auto &stations = mStationRepo.getStations();
     for (int i = 0; i < static_cast<int>(stations.size()) && i < MAX_STATIONS; ++i) {
-        const uint8_t startY = (STATUS_BAR_AREA_END + (i * 8));
+        const uint8_t startY = (STATUS_BAR_AREA_END + (i * PAGE_HEIGHT));
 
         std::string name = stations[i].name;
         if (name.size() > MAX_STATION_NAME) {
@@ -102,7 +107,7 @@ void UiService::flushFramebuffer() {
     mDisplay.showFramebuffer(mFramebuffer.data(), mFramebuffer.size());
 }
 
-void UiService::drawText(uint8_t x, uint8_t y, const std::string_view &txt) {
+void UiService::drawText(const uint8_t &x, const uint8_t &y, const std::string_view &txt) {
     if ((y + CHAR_HEIGHT) > HEIGHT) {
         ESP_LOGE(TAG, "drawText: Y coordinate out of bounds: %u", y);
         return;
@@ -121,7 +126,7 @@ void UiService::drawText(uint8_t x, uint8_t y, const std::string_view &txt) {
     }
 }
 
-void UiService::drawChar(uint8_t x, uint8_t y, char c) {
+void UiService::drawChar(const uint8_t &x, const uint8_t &y, const char &c) {
     if (x >= WIDTH || y >= HEIGHT) {
         ESP_LOGE(TAG, "drawChar: coordinates out of bounds (%u,%u)", x, y);
         return;

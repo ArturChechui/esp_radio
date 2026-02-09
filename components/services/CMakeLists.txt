@@ -2,9 +2,12 @@ idf_component_register(
   SRCS
   "src/StationRepository.cpp"
   "src/UiService.cpp"
+  "src/PlayerService.cpp"
+  "src/InputService.cpp"
+  "src/WifiService.cpp"
   INCLUDE_DIRS
   "include"
   REQUIRES
   adapters
-  core
+  common
   log)

@@ -1,1 +1,13 @@
-idf_component_register(INCLUDE_DIRS include REQUIRES driver)
+idf_component_register(
+  SRCS
+  "src/RingBuffer.cpp"
+  "src/Mutex.cpp"
+  "src/SemaphoreGuard.cpp"
+  "src/BinarySemaphore.cpp"
+  "src/StopToken.cpp"
+  "src/TaskRunner.cpp"
+  INCLUDE_DIRS
+  include
+  REQUIRES
+  driver
+  freertos)

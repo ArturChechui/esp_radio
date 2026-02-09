@@ -7,4 +7,6 @@ idf_component_register(
   core
   common
   freertos
-  log)
+  log
+  esp_system
+  esp_psram)

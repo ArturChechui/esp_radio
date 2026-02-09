@@ -2,7 +2,9 @@
 
 #include <cstring>
 
-#include "UiTypes.hpp"
+#include "Events.hpp"
+#include "Fonts.hpp"
+#include "Types.hpp"
 
 using ::testing::_;
 using ::testing::ElementsAreArray;
@@ -24,7 +26,7 @@ void UiServiceTest::TearDown() {
     mockRepo.reset();
 }
 
-TEST_F(UiServiceTest, OnEvent_RenderStations_FetchesFromRepoAndDisplays) {
+TEST_F(UiServiceTest, tc01_onEvent_renderStations_fetchesFromRepoAndDisplays) {
     // Preparation
     std::vector<common::StationData> stations = {{"id1", "S1", "url1"}, {"id2", "S2", "url2"}};
     std::vector<uint8_t> expectedFrameBuffer(FRAMEBUFFER_SIZE, 0);
@@ -59,17 +61,19 @@ TEST_F(UiServiceTest, OnEvent_RenderStations_FetchesFromRepoAndDisplays) {
     expectedFrameBuffer[page2base + 10] = common::FONT5x7[static_cast<uint8_t>('2')][4];
     expectedFrameBuffer[page2base + 11] = 0x00;  // 1px spacing
 
-    common::UiEvent event;
-    event.type = common::UiEvent::Type::RENDER_STATIONS;
-    event.selectedIndex = 1;
+    common::UiRenderEvent event;
+    event.renderType = common::RenderType::Stations;
+    event.selectedStationIndex = 1;
 
     // Expectations
     EXPECT_CALL(*mockRepo, getStations()).WillOnce(::testing::ReturnRef(stations));
     EXPECT_CALL(*mockDisplay, showFramebuffer(_, expectedFrameBuffer.size()))
         .Times(1)
-        .WillOnce([expectedFrameBuffer](const uint8_t* framebuffer, const size_t& len) {
+        .WillOnce([&expectedFrameBuffer](const uint8_t* framebuffer, const size_t& len) {
             EXPECT_EQ(expectedFrameBuffer.size(), len);
             EXPECT_TRUE(std::memcmp(framebuffer, expectedFrameBuffer.data(), len) == 0);
+
+            return true;
         });
 
     // Act

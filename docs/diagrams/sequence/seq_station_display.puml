@@ -5,7 +5,7 @@ actor "app_main" as APP
 box "Core" #LightBlue
 participant "AppContext" as CTX
 participant "AppController" as CTRL
-participant "UiTask\n(IUiSink)" as UITASK
+participant "EventTask\n(IUiEventSink)" as UITASK
 end box
 
 box "Services" #LightGreen
@@ -14,8 +14,8 @@ participant "StationRepository" as REPO
 end box
 
 box "Adapters" #LightYellow
-participant "OledSsd1306Display\n(IDisplay)" as DISP
-participant "EspI2cBus\n(II2cBus)" as I2C
+participant "Display\n(IDisplay)" as DISP
+participant "I2cBus\n(II2cBus)" as I2C
 
 end box
 box "ESP-IDF" #LightGray

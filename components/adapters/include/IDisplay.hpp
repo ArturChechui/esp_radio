@@ -9,7 +9,7 @@ class IDisplay {
     virtual ~IDisplay() = default;
 
     virtual bool init() = 0;
-    virtual void showFramebuffer(const uint8_t* framebuffer, const size_t& len) = 0;
+    virtual bool showFramebuffer(const uint8_t* framebuffer, const size_t& len) = 0;
 };
 
 }  // namespace adapters

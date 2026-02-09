@@ -15,7 +15,7 @@ skinparam ranksep 30
 class AppContext {
     +controllerTask: ControllerTask
     +updaterTask: UpdaterTask
-    +uiTask: UiTask
+    +uiTask: EventTask
     +uiService: UiService
     +inputService: InputService
     +playerService: PlayerService
@@ -27,7 +27,7 @@ class AppContext {
     +littleFsFileStore: LittleFsFileStore
     +espIdfHttpClient: EspIdfHttpClient
     +cJsonCodec: CJsonCodec
-    +oledSsd1306Display: OledSsd1306Display
+    +oledSsd1306Display: Display
     +gpioInputDriver: GpioInputDriver
     +espAdfPlayer: EspAdfPlayer
     +espIdfWifi: EspIdfWifi
@@ -60,7 +60,7 @@ class UpdaterTask {
     -RunLoop(): void
 }
 
-class UiTask {
+class EventTask {
     -queue: QueueHandle_t 
     -uiService: UiService
     -logger: ILogger
@@ -77,7 +77,7 @@ interface IUpdaterSink {
     +Post(e: UpdaterEvent): void
 }
 
-interface IUiSink {
+interface IUiEventSink {
     +Post(e: UiEvent): void
 }
 
@@ -97,7 +97,7 @@ class NvsSettingsStore
 class LittleFsFileStore
 class EspIdfHttpClient
 class CJsonCodec
-class OledSsd1306Display
+class Display
 class GpioInputDriver
 class EspAdfPlayer
 class EspIdfWifi
@@ -105,7 +105,7 @@ class Aht20Sensors
 
 AppContext *-up- ControllerTask
 AppContext *-up- UpdaterTask
-AppContext *-up- UiTask
+AppContext *-up- EventTask
 
 AppContext *-- UiService
 AppContext *-- InputService
@@ -119,7 +119,7 @@ AppContext *-- NvsSettingsStore
 AppContext *-- LittleFsFileStore
 AppContext *-- EspIdfHttpClient
 AppContext *-- CJsonCodec
-AppContext *-- OledSsd1306Display
+AppContext *-- Display
 AppContext *-- GpioInputDriver
 AppContext *-- EspAdfPlayer
 AppContext *-- EspIdfWifi
@@ -134,12 +134,12 @@ UpdaterTask ..|> IUpdaterSink
 UpdaterTask *-- IUpdaterCommand
 UpdaterTask --> AppContext
 
-UiTask ..|> IUiSink
-UiTask --> UiService
-UiTask -up-> ILogger
+EventTask ..|> IUiEventSink
+EventTask --> UiService
+EventTask -up-> ILogger
 
 AppController --> IUpdaterSink
-AppController --> IUiSink
+AppController --> IUiEventSink
 AppController *-- IAppCommand
 AppController --> AppContext
 AppController -up-> ILogger

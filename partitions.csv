@@ -1,0 +1,12 @@
+# ESP32-S3 SuperMini (4MB flash) Partition Table
+# bootloader + partition table: 36 KB
+# nvs      = 92 KB
+# phy_init = 16 KB
+# storage  = 48 KB
+# factory  = 3904 KB
+
+# Name,   Type, SubType, Offset,  Size,    Flags
+nvs,      data, nvs,     0x9000,  0x17000,
+phy_init, data, phy,     0x20000, 0x4000,
+storage,  data, littlefs,0x24000, 0xC000,
+factory,  app,  factory, 0x30000, 0x3D0000,

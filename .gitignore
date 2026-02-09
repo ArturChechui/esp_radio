@@ -1,6 +1,8 @@
 # Configuration files for ESP-IDF projects
 sdkconfig
 sdkconfig.old
+sdkconfig.defaults.local
+dependencies.lock
 
 # Prerequisites
 *.d

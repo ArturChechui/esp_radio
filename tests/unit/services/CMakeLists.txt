@@ -2,14 +2,20 @@ add_executable(
   test_services
   ${CMAKE_SOURCE_DIR}/services/UiServiceTest.cpp
   ${CMAKE_SOURCE_DIR}/services/StationRepositoryTest.cpp
+  ${CMAKE_SOURCE_DIR}/services/PlayerServiceTest.cpp
   ${COMPONENTS_DIR}/services/src/UiService.cpp
-  ${COMPONENTS_DIR}/services/src/StationRepository.cpp)
+  ${COMPONENTS_DIR}/services/src/StationRepository.cpp
+  ${COMPONENTS_DIR}/services/src/PlayerService.cpp)
 
 target_include_directories(
   test_services
-  PRIVATE ${CMAKE_SOURCE_DIR}/stubs ${COMPONENTS_DIR}/services/include
-          ${COMPONENTS_DIR}/services/mock ${COMPONENTS_DIR}/common/include
-          ${COMPONENTS_DIR}/adapters/mock ${COMPONENTS_DIR}/adapters/include)
+  PRIVATE ${CMAKE_SOURCE_DIR}/stubs
+          ${COMPONENTS_DIR}/services/include
+          ${COMPONENTS_DIR}/services/mock
+          ${COMPONENTS_DIR}/common/include
+          ${COMPONENTS_DIR}/common/mock
+          ${COMPONENTS_DIR}/adapters/include
+          ${COMPONENTS_DIR}/adapters/mock)
 
 target_compile_definitions(test_services PUBLIC UNIT_TESTS)
 
