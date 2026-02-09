@@ -1,0 +1,53 @@
+@startuml seq_init.puml
+title ESP32 Internet Radio - Sequence Diagram (Init)
+
+actor "app_main" as APP
+box "Core" #LightBlue
+participant "EventTask\n(IEventQueue)" as CORETASK
+participant "AppContext" as CTX
+participant "AppController" as CTRL
+end box
+
+box "Services" #LightGreen
+participant "PlayerService" as PLSVC
+participant "StationRepository" as REPO
+end box
+
+box "Adapters" #LightYellow
+participant "I2sBus\n(II2sBus)" as I2S
+participant "WifiClient\n(IWifiClient)" as WC
+end box
+
+
+box "ESP-IDF" #LightGray
+participant "ESP-IDF" as IDF
+end box
+
+== Init ==
+activate APP
+APP -> CTX ++: AppContext.init()
+CTX -> WC ++: init()
+WC -> IDF ++: init wifi and start it
+return res 
+return res 
+
+CTX -> I2S ++: init()
+I2S -> IDF ++: i2s_new_channel()  
+return res
+I2S -> IDF ++: i2s_channel_init_std_mode()
+return res
+I2S -> IDF ++: i2s_channel_enable()
+return res
+return res
+
+CTX -> REPO ++: init()
+return res
+CTX -> PLSVC ++: init()
+return res
+CTX -> CORETASK ++: init()
+return res
+CTX -> CTRL ++: init()
+return res
+deactivate CTX
+
+@enduml

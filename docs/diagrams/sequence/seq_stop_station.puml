@@ -1,0 +1,57 @@
+@startuml seq_stop_station.puml
+title ESP32 Internet Radio - Sequence Diagram (Stop Station)
+
+box "Core" #LightBlue
+participant "EventTask\n(IEventQueue)" as CORETASK
+participant "AppController" as CTRL
+end box
+
+box "Commands" #LightCyan
+participant "PlayStopSkipCommand" as CMD
+end box
+
+box "Services" #LightGreen
+participant "PlayerService" as PLSVC
+end box
+
+box "Common" #LightGray
+participant "TaskRunner" as TR
+end box
+
+== Stop ==
+CORETASK  -> CTRL ++: onEvent(ButtonPressedEvent{.button=PlayStop})
+CTRL -> CMD ++: create
+CTRL -> CMD : handle(event)
+CMD -> PLSVC ++: get current status
+return status
+
+alt status == Playing || status == Buffering  
+    CMD -> PLSVC ++: stop()
+    PLSVC -> PLSVC : check if tasks (Http and Player) are running
+    alt Http and Player are running
+        PLSVC -> TR ++: stop(Http, timeoutMs)
+        TR -> TR: sets stopRequested and waits for the exit
+        return res
+        PLSVC -> CORETASK++: post(PlaybackStatusChangedEvent{.status=Stopped})
+        CORETASK -> CORETASK: adds to the event queue
+        return res
+    end
+    return stop result
+    CMD -> CTRL : event is handled
+    deactivate CMD
+    CTRL -> CMD++: isFinished()
+    return false (CMD is waiting for the playback status to finish the cmd)
+    deactivate CTRL
+    CORETASK -> CTRL ++: onEvent(PlaybackStatusChangedEvent{.status=Stopped})
+    CTRL -> CMD++: handle(event)
+    CMD -> CMD: check status
+    alt status == Stopped
+        CMD -> CTRL: true
+    else 
+        CMD -> CTRL--: false
+    end
+    CTRL -> CTRL: CMD is finished, destroy it
+    deactivate CTRL
+end
+
+@enduml

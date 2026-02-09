@@ -15,6 +15,9 @@ class MockStationRepository : public IStationRepository {
    public:
     MOCK_METHOD(bool, init, (), (override));
     MOCK_METHOD(const std::vector<common::StationData> &, getStations, (), (const, override));
+    MOCK_METHOD(const common::StationData &, nextStation, (), (override));
+    MOCK_METHOD(const common::StationData &, prevStation, (), (override));
+    MOCK_METHOD(const common::StationData &, currentStation, (), (const, override));
 };
 
 }  // namespace services

@@ -1,7 +1,7 @@
 idf_component_register(
   SRCS
   "src/AppController.cpp"
-  "src/UiTask.cpp"
+  "src/EventTask.cpp"
   "src/AppContext.cpp"
   INCLUDE_DIRS
   "include"
@@ -11,4 +11,5 @@ idf_component_register(
   services
   driver
   freertos
-  log)
+  log
+  commands)

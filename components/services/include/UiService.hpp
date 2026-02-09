@@ -4,9 +4,8 @@
 #include <string_view>
 #include <vector>
 
-namespace common {
-struct UiEvent;
-}  // namespace common
+#include "Events.hpp"
+#include "IEventHandler.hpp"
 
 namespace adapters {
 class IDisplay;
@@ -15,11 +14,11 @@ class IDisplay;
 namespace services {
 class IStationRepository;
 
-class UiService {
+class UiService : public common::IEventHandler {
    public:
     explicit UiService(adapters::IDisplay &display, IStationRepository &stationRepo);
     bool init();
-    void onEvent(const common::UiEvent &e);
+    void onEvent(const common::AppEvent &event) override;
 
 #ifdef UNIT_TESTS
     const std::vector<uint8_t> &getFramebuffer() {
@@ -29,19 +28,16 @@ class UiService {
    private:
     void renderBoot();
     void renderStatus();
-    void renderStations(int selectedIndex);
+    void renderStations();
 
     void clearFramebuffer();
     void flushFramebuffer();
 
-    void drawText(uint8_t x, uint8_t y, const std::string_view &txt);
-    void drawChar(uint8_t x, uint8_t y, char c);
-    // DEPRECATED: decide if I need drawing pixel by pixel or Y with page alignment only
-    // void drawPixel(uint8_t x, uint8_t y, bool on);
+    void drawText(const uint8_t &x, const uint8_t &y, const std::string_view &txt);
+    void drawChar(const uint8_t &x, const uint8_t &y, const char &c);
 
     adapters::IDisplay &mDisplay;
     IStationRepository &mStationRepo;
-
     std::vector<uint8_t> mFramebuffer;
 };
 

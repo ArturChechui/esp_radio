@@ -78,7 +78,7 @@ class NvsSettingsStore
 class LittleFsFileStore
 class EspIdfHttpClient
 class CJsonCodec
-class OledSsd1306Display
+class Display
 class GpioInputDriver
 class EspAdfPlayer
 class EspIdfWifi
@@ -94,7 +94,7 @@ NvsSettingsStore .up.|> ISettingsStore
 LittleFsFileStore .up.|> IFileStore
 EspIdfHttpClient .up.|> IHttpClient
 CJsonCodec .down.|> IJsonCodec
-OledSsd1306Display .up.|> IDisplay
+Display .up.|> IDisplay
 GpioInputDriver .down.|> IInputDriver
 EspAdfPlayer .down.|> IPlayer
 EspIdfWifi .down.|> IWifi
@@ -106,7 +106,7 @@ NvsSettingsStore -down-> ESPIDF
 LittleFsFileStore -down-> ESPIDF
 EspIdfHttpClient -down-> ESPIDF
 GpioInputDriver -up-> ESPIDF
-OledSsd1306Display -down-> ESPIDF
+Display -down-> ESPIDF
 EspLogLogger -up-> ESPIDF
 Aht20Sensors -up-> ESPIDF
 EspAdfPlayer -up-> ESPADF

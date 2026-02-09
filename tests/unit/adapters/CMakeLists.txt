@@ -1,6 +1,5 @@
-add_executable(
-  test_adapters ${CMAKE_SOURCE_DIR}/adapters/OledDisplayTest.cpp
-                ${COMPONENTS_DIR}/adapters/src/OledSsd1306Display.cpp)
+add_executable(test_adapters ${CMAKE_SOURCE_DIR}/adapters/DisplayTest.cpp
+                             ${COMPONENTS_DIR}/adapters/src/Display.cpp)
 
 target_include_directories(
   test_adapters

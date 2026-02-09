@@ -1,1 +1,9 @@
-
+idf_component_register(
+  SRCS
+  "src/PlayStopSkipCommand.cpp"
+  INCLUDE_DIRS
+  "include"
+  REQUIRES
+  common
+  services
+  log)

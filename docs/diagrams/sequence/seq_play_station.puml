@@ -1,0 +1,116 @@
+@startuml seq_play_station.puml
+title ESP32 Internet Radio - Sequence Diagram (Play Station)
+
+box "Core" #LightBlue
+participant "EventTask\n(IEventQueue)" as CORETASK
+participant "AppController" as CTRL
+end box
+
+box "Commands" #LightCyan
+participant "PlayStopSkipCommand" as CMD
+end box
+
+box "Services" #LightGreen
+participant "PlayerService" as PLSVC
+participant "StationRepository" as REPO
+end box
+
+box "Common" #LightGray
+participant "TaskRunner" as TR
+end box
+
+box "Adapters" #LightYellow
+participant "I2sBus\n(II2sBus)" as I2S
+participant "HTTPClient\n(IHTTPClient)" as HTTP
+participant "MP3Decoder\n(IMP3Decoder)" as MP3D
+end box
+
+
+box "ESP-IDF" #LightGray
+participant "ESP-IDF" as IDF
+end box
+
+== Play ==
+CORETASK  -> CTRL ++: onEvent(ButtonPressedEvent{.button=PlayStop})
+CTRL -> CMD ++: create
+CTRL -> CMD : handle(event)
+CMD -> PLSVC ++: get current status
+return status
+
+alt status == Stopped || status == Idle  
+    CMD -> REPO ++: get current station
+    return stationData
+    CMD -> PLSVC ++: playStation(stationData.url)
+    PLSVC -> CORETASK++: post(PlaybackStatusChangedEvent{.status=Buffering})
+    CORETASK -> CORETASK: adds to the event queue
+    return res
+    PLSVC -> TR ++: start(HttpTask)
+    return handle
+    PLSVC -> TR ++: start(PlayerTask)
+    return handle
+    return play result
+    CMD -> CTRL : event is handled
+    deactivate CMD
+
+    CTRL -> CMD++: isFinished()
+    return false (CMD is waiting for the playback status to finish the cmd)
+    deactivate CTRL
+    CORETASK -> CTRL ++: onEvent(PlaybackStatusChangedEvent{.status=Buffering})
+    CTRL -> CMD++: handle(event)
+    CMD -> CMD: check status
+    alt status == Playing || status == Buffering
+        CMD -> CTRL: true
+    else 
+        CMD -> CTRL--: false
+    end
+    CTRL -> CTRL: CMD is finished, destroy it
+    deactivate CTRL
+
+    TR -> TR: start loop
+    loop until stopped or error
+        TR -> PLSVC++: producerStepFn
+
+        PLSVC -> HTTP ++: openStream(url)
+        HTTP -> IDF ++: init and open stream
+        return res
+        return open result
+        
+        PLSVC -> PLSVC: signal that the Stream is Opened
+        PLSVC -> PLSVC: Claim ringBuffer write spans
+        
+        PLSVC -> HTTP ++: readStream(spans.first.ptr, spans.first.len)
+        HTTP -> IDF ++: esp_http_client_read()
+        return bytes
+        return bytes
+
+        return {.action = common::StepAction::Continue}
+    end
+
+
+    TR -> TR: start Player loop
+    loop until stopped or error
+        TR -> PLSVC++: consumerStepFn
+
+        PLSVC -> PLSVC: check if the stream is opened
+        alt mStreamOpen == true
+            PLSVC -> PLSVC: wait for prebuffering
+            PLSVC -> CORETASK++: post(PlaybackStatusChangedEvent{.status=Playing})
+            CORETASK -> CORETASK: adds to the event queue
+            return res
+            PLSVC -> PLSVC: Claim ringBuffer read spans
+            PLSVC -> MP3D ++: decode(spans.first.ptr, spans.first.len, mPcm.data(), mPcm.size())
+            return Mp3FrameInfo
+            PLSVC -> PLSVC: if successful, commitRead in ringBuffer
+            PLSVC -> PLSVC: apply volume level
+            
+            loop (writtenTotalBytes < bytesToWrite && !token.stopRequested())
+                PLSVC -> I2S++: write(reinterpret_cast<const int16_t*>(outBytes + writtenTotalBytes), chunk, I2sTimeoutMs) 
+                return writtenBytes
+            end
+        end
+
+        return {.action = common::StepAction::Continue}
+    end
+end
+
+@enduml

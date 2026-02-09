@@ -1,10 +1,23 @@
 idf_component_register(
   SRCS
-  "src/OledSsd1306Display.cpp"
-  "src/EspI2cBus.cpp"
+  "src/Display.cpp"
+  "src/I2cBus.cpp"
+  "src/I2sBus.cpp"
+  "src/GpioInput.cpp"
+  "src/WifiClient.cpp"
+  "src/HttpClient.cpp"
+  "src/Mp3Decoder.cpp"
+  "lib/minimp3/minimp3_impl.c"
   INCLUDE_DIRS
   "include"
+  "lib/minimp3"
   REQUIRES
   common
   driver
-  log)
+  log
+  freertos
+  esp_http_client
+  esp_wifi
+  nvs_flash
+  PRIV_REQUIRES
+  mbedtls)

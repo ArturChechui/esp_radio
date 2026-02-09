@@ -1,29 +1,26 @@
 #include "AppControllerTest.hpp"
 
+#include "Events.hpp"
+
 using ::testing::_;
 
 void AppControllerTest::SetUp() {
-    mockUiTask = std::make_unique<core::MockUiTask>();
-    appController = std::make_unique<core::AppController>(*mockUiTask);
+    mockEventQueue = std::make_unique<common::MockEventQueue>();
+    mockPlayerService = std::make_unique<services::MockPlayerService>();
+    mockStationRepo = std::make_unique<services::MockStationRepository>();
+
+    appController = std::make_unique<core::AppController>(*mockPlayerService, *mockStationRepo,
+                                                          *mockEventQueue);
 }
 
 void AppControllerTest::TearDown() {
     appController.reset();
-    mockUiTask.reset();
+
+    mockPlayerService.reset();
+    mockStationRepo.reset();
+    mockEventQueue.reset();
 }
 
-TEST_F(AppControllerTest, init_Success) {
-    // Arrange
-    common::UiEvent expectedEvent;
-    expectedEvent.type = common::UiEvent::Type::RENDER_STATIONS;
-    expectedEvent.selectedIndex = 0;
-
-    // Expect
-    EXPECT_CALL(*mockUiTask, post(_)).WillOnce([](const common::UiEvent &e) {
-        EXPECT_EQ(e.type, common::UiEvent::Type::RENDER_STATIONS);
-        EXPECT_EQ(e.selectedIndex, 0);
-    });
-
-    // Act
-    appController->init();
+TEST_F(AppControllerTest, tc01_init_success) {
+    EXPECT_TRUE(appController->init());
 }
