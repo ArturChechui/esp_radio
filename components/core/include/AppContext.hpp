@@ -53,8 +53,8 @@ class AppContext {
     std::unique_ptr<common::AudioBufferStats> mStats;
 
     // Tasks
-    std::unique_ptr<EventTask> mUiEventTask;
-    std::unique_ptr<EventTask> mCoreEventTask;
+    std::unique_ptr<common::EventTask> mUiEventTask;
+    std::unique_ptr<common::EventTask> mCoreEventTask;
 
     // Services
     std::unique_ptr<services::InputService> mInputService;

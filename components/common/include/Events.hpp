@@ -15,25 +15,23 @@ struct PlaybackStatusChangedEvent {
     PlaybackStatus status;
 };
 
-struct TemperatureUpdateEvent {
-    float temperature;
+struct TempHumidUpdateEvent {
+    uint8_t temperature;
+    uint8_t humidity;
 };
 
 struct SystemReadyEvent {
     bool showSplashScreen;
 };
 
-struct UiRenderEvent {
-    RenderType renderType;
-    uint32_t selectedStationIndex{0U};
-};
+struct CurrentStationChangedEvent {};
 
 struct WifiStateChangedEvent {
     bool isConnected;
+    uint8_t bars;
 };
 
-using AppEvent =
-    std::variant<ButtonPressedEvent, PlaybackStatusChangedEvent, TemperatureUpdateEvent,
-                 SystemReadyEvent, UiRenderEvent, WifiStateChangedEvent>;
+using AppEvent = std::variant<ButtonPressedEvent, PlaybackStatusChangedEvent, TempHumidUpdateEvent,
+                              SystemReadyEvent, CurrentStationChangedEvent, WifiStateChangedEvent>;
 
 }  // namespace common

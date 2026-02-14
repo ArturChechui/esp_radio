@@ -3,9 +3,9 @@
 #include <cstdint>
 
 namespace common {
-class IBinarySemaphore {
+class ISignal {
    public:
-    virtual ~IBinarySemaphore() = default;
+    virtual ~ISignal() = default;
 
     virtual bool wait(const uint32_t& timeoutMs) const = 0;
     virtual void signal() = 0;

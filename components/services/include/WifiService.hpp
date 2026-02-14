@@ -29,11 +29,11 @@ class WifiService {
     static common::StepResult signalStepFn(void* arg, common::IStopToken& token);
     common::StepResult signalStep(common::IStopToken& token);
 
-    void onWifiStateChanged(const adapters::WifiStateChangedEvent& event);
+    void onWifiStateChanged(const common::WifiData& data);
 
     std::shared_ptr<adapters::IWifiClient> mWifiAdapter;
     common::IEventQueue* mCoreEventQueue;
-    int16_t mLastBars;
+    uint8_t mLastBars;
     common::TaskHandle mSignalTaskHandle;
     common::ITaskRunner& mTaskRunner;
 };

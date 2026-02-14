@@ -5,7 +5,9 @@ add_executable(
   ${CMAKE_SOURCE_DIR}/services/PlayerServiceTest.cpp
   ${COMPONENTS_DIR}/services/src/UiService.cpp
   ${COMPONENTS_DIR}/services/src/StationRepository.cpp
-  ${COMPONENTS_DIR}/services/src/PlayerService.cpp)
+  ${COMPONENTS_DIR}/services/src/PlayerService.cpp
+  ${COMPONENTS_DIR}/common/src/LockGuard.cpp
+  ${COMPONENTS_DIR}/common/mock/FakeMutex.cpp)
 
 target_include_directories(
   test_services

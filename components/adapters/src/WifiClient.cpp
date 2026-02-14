@@ -120,7 +120,7 @@ bool WifiClient::waitForConnection(uint32_t timeoutMs) {
         return true;
     }
 
-    ESP_LOGE(TAG, "❌ WiFi connection failed");
+    ESP_LOGE(TAG, "WiFi connection failed");
     mIsConnected = false;
     return false;
 }
@@ -139,7 +139,7 @@ std::string WifiClient::getStatus() const {
     return "Disconnected";
 }
 
-void WifiClient::setStateCallback(WifiStateCallback callback) {
+void WifiClient::setStateCallback(common::WifiStateCallback callback) {
     mStateCallback = callback;
 }
 
@@ -180,9 +180,12 @@ void WifiClient::eventHandler(void* arg, esp_event_base_t event_base, int32_t ev
 }
 
 void WifiClient::notifyStateChange(bool isConnected) {
+    mIsConnected = isConnected;
+
+    const auto rssiOpt = tryGetRssiDbm();
     if (mStateCallback) {
-        WifiStateChangedEvent event{isConnected, mSsid};
-        mStateCallback(event);
+        common::WifiData data{.isConnected = mIsConnected, .rssi = rssiOpt.value_or(-100)};
+        mStateCallback(data);
     }
 }
 
@@ -207,7 +210,6 @@ void WifiClient::onEvent(esp_event_base_t event_base, int32_t event_id, void* ev
                 } else {
                     ESP_LOGE(TAG, "WIFI_EVENT_STA_DISCONNECTED (max retries exceeded)");
                     xEventGroupSetBits(mEventGroup, WIFI_FAILED_BIT);
-                    mIsConnected = false;
                     notifyStateChange(false);
                 }
                 break;
@@ -223,9 +225,7 @@ void WifiClient::onEvent(esp_event_base_t event_base, int32_t event_id, void* ev
         mRetryCount = 0;
         xEventGroupSetBits(mEventGroup, WIFI_CONNECTED_BIT);
         xEventGroupClearBits(mEventGroup, WIFI_FAILED_BIT);
-        mIsConnected = true;
 
-        //  Notify all listeners that WiFi is now available
         notifyStateChange(true);
     }
 }
@@ -238,12 +238,12 @@ bool WifiClient::isDnsReady() {
     return (dns1 && dns1->u_addr.ip4.addr != 0) || (dns2 && dns2->u_addr.ip4.addr != 0);
 }
 
-std::optional<int> WifiClient::tryGetRssiDbm() const {
+std::optional<int8_t> WifiClient::tryGetRssiDbm() const {
     wifi_ap_record_t ap{};
     if (esp_wifi_sta_get_ap_info(&ap) != ESP_OK) {
         return std::nullopt;  // not connected / no info
     }
-    return static_cast<int>(ap.rssi);
+    return ap.rssi;
 }
 
 }  // namespace adapters

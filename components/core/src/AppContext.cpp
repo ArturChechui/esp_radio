@@ -5,17 +5,11 @@
 #include <nvs_flash.h>
 #include <sdkconfig.h>
 
-#include "BinarySemaphore.hpp"
 #include "RingBuffer.hpp"
+#include "Signal.hpp"
 
 namespace core {
 namespace {
-constexpr uint8_t UiEventQueueSize = 10U;
-constexpr uint16_t UiEventTaskStackSize = 4096U;
-constexpr uint8_t UiEventTaskPriority = 6U;
-constexpr uint8_t CoreEventQueueSize = 10U;
-constexpr uint16_t CoreEventTaskStackSize = 4096U;
-constexpr uint8_t CoreEventTaskPriority = 5U;
 constexpr const char* Tag = "AppContext";
 }  // namespace
 
@@ -60,17 +54,15 @@ bool AppContext::init() {
     }
 
     // STEP 5: Create tasks (no init yet)
-    mUiEventTask = std::make_unique<EventTask>("UiEventTask", UiEventQueueSize,
-                                               UiEventTaskStackSize, UiEventTaskPriority);
-    mCoreEventTask = std::make_unique<EventTask>("CoreEventTask", CoreEventQueueSize,
-                                                 CoreEventTaskStackSize, CoreEventTaskPriority);
+    mUiEventTask = std::make_unique<common::EventTask>("UiEventTask", *mTaskRunner);
+    mCoreEventTask = std::make_unique<common::EventTask>("CoreEventTask", *mTaskRunner);
 
     // STEP 6: Create services
     mInputService = std::make_unique<services::InputService>(*mGpioInput, *mCoreEventTask);
     mPlayerService = std::make_unique<services::PlayerService>(
         *mI2sBus, *mHttpClient, *mMp3Decoder, *mTaskRunner,
         std::make_unique<common::RingBuffer>(services::PlayerService::RingBufferSize), *mStats,
-        *mCoreEventTask, std::make_unique<common::BinarySemaphore>());
+        *mCoreEventTask, std::make_unique<common::Signal>());
     mStationRepository = std::make_unique<services::StationRepository>();
     mUiService = std::make_unique<services::UiService>(*mDisplay, *mStationRepository);
     ESP_LOGI(Tag, "UiService is disabled for testing.");

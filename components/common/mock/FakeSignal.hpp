@@ -1,12 +1,12 @@
 #pragma once
 
-#include "IBinarySemaphore.hpp"
+#include "ISignal.hpp"
 
 namespace common {
-class FakeBinarySemaphore : public IBinarySemaphore {
+class FakeSignal : public ISignal {
    public:
-    FakeBinarySemaphore() = default;
-    ~FakeBinarySemaphore() override = default;
+    FakeSignal() = default;
+    ~FakeSignal() override = default;
 
     bool wait(const uint32_t& timeoutMs) const override {
         return true;

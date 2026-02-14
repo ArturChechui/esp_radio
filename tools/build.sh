@@ -18,6 +18,7 @@ DO_MONITOR=0
 DO_FLASH_MONITOR=0
 DO_FULLCLEAN=0
 
+# TODO: fix the tabs!
 usage() {
 	cat <<'EOF'
 Usage:
@@ -101,6 +102,13 @@ unit_build() {
 unit_run() {
 	unit_build
 	ctest --test-dir "${UNIT_BUILD_DIR}" --output-on-failure --verbose
+
+	# TODO: use only src in the report? or both?
+	# --filter '.*components/.*/src/.*' \
+	gcovr -r . "${UNIT_BUILD_DIR}" \
+		--exclude '.*(lib|tests|mock).*' \
+		--html --html-details -o "${UNIT_BUILD_DIR}/coverage.html" \
+		--print-summary
 }
 
 parse_args() {

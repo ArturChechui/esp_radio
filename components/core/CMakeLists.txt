@@ -1,15 +1,12 @@
 idf_component_register(
   SRCS
   "src/AppController.cpp"
-  "src/EventTask.cpp"
   "src/AppContext.cpp"
   INCLUDE_DIRS
   "include"
   REQUIRES
   common
+  commands
   adapters
   services
-  driver
-  freertos
-  log
-  commands)
+  log)

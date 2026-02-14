@@ -4,41 +4,57 @@
 #include <string_view>
 #include <vector>
 
-#include "Events.hpp"
+#include "IDisplay.hpp"
 #include "IEventHandler.hpp"
-
-namespace adapters {
-class IDisplay;
-}  // namespace adapters
+#include "IStationRepository.hpp"
+#include "Types.hpp"
 
 namespace services {
-class IStationRepository;
 
 class UiService : public common::IEventHandler {
    public:
-    explicit UiService(adapters::IDisplay &display, IStationRepository &stationRepo);
-    bool init();
-    void onEvent(const common::AppEvent &event) override;
+    UiService(adapters::IDisplay& display, IStationRepository& stationRepo);
 
-#ifdef UNIT_TESTS
-    const std::vector<uint8_t> &getFramebuffer() {
+    bool init();
+
+    void onEvent(const common::AppEvent& event) override;
+
+    // TODO: make ifdef for tests
+    const std::vector<uint8_t>& getFramebuffer() const {
         return mFramebuffer;
     }
-#endif
+
    private:
-    void renderBoot();
-    void renderStatus();
-    void renderStations();
+    // no I2C, only draws into mFramebuffer
+    void renderFullToFramebuffer();
 
-    void clearFramebuffer();
-    void flushFramebuffer();
+    // Partial updates
+    void updateStatusText(const bool doFlush = true);
+    void updateWifiIcon(const bool doFlush = true);
+    void updateBatteryIcon(const bool doFlush = true);
+    void updatePlaybackIcon(const bool doFlush = true);
+    void updateStationName(const bool doFlush = true);
 
-    void drawText(const uint8_t &x, const uint8_t &y, const std::string_view &txt);
-    void drawChar(const uint8_t &x, const uint8_t &y, const char &c);
+    // Low-level framebuffer ops
+    void clearRect(const common::Rect r);
+    void blitRect(const common::Rect r, const uint8_t* data);
+    void flushRect(const common::Rect r);
 
-    adapters::IDisplay &mDisplay;
-    IStationRepository &mStationRepo;
+   private:
+    adapters::IDisplay& mDisplay;
+    IStationRepository& mStationRepo;
+
     std::vector<uint8_t> mFramebuffer;
+    std::vector<uint8_t> mTxBuf;
+
+    // UI state
+    uint8_t mTemperatureC;
+    uint8_t mHumidityPct;
+    common::Icon mWifi;
+    common::Icon mBattery;
+    common::Icon mPlayback;
+
+    bool mFullFlushPending;
 };
 
 }  // namespace services

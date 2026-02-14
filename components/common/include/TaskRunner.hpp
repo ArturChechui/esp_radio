@@ -7,8 +7,8 @@
 #include <cstdint>
 #include <cstring>
 
-#include "BinarySemaphore.hpp"
 #include "ITaskRunner.hpp"
+#include "Signal.hpp"
 #include "Types.hpp"
 
 namespace common {
@@ -36,7 +36,7 @@ class TaskRunner : public ITaskRunner {
         std::atomic<uint16_t> runId{0U};
 
         TaskHandle_t task{nullptr};
-        common::BinarySemaphore done{};
+        common::Signal done{};
 
         StepFn fn{nullptr};
         void* user{nullptr};

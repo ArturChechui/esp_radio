@@ -8,31 +8,30 @@
 
 namespace services {
 namespace {
-static int rssiToBars(int rssiDbm) {
-    if (rssiDbm >= -55)
-        return 4;
-    if (rssiDbm >= -65)
-        return 3;
-    if (rssiDbm >= -75)
-        return 2;
-    if (rssiDbm >= -85)
-        return 1;
-    return 0;
-}
-
-static const char* Tag = "WifiService";
-
+constexpr const char* Tag = "WifiService";
 constexpr int SignalTaskPriority = 5;
 constexpr int SignalTaskCore = 0;
-constexpr uint32_t SignalTaskStackWords = 2304U;  // 16 KB
-constexpr uint32_t TimeoutToExitTasks = 7000U;    // 7s
+constexpr uint32_t SignalTaskStackWords = 3456U;
+constexpr uint32_t TimeoutToExitTasksMs = 7000U;
+
+static uint8_t rssiToBars(int8_t rssiDbm) {
+    if (rssiDbm >= -55) {
+        return 3U;
+    } else if (rssiDbm >= -70) {
+        return 2U;
+    } else if (rssiDbm >= -85) {
+        return 1U;
+    } else {
+        return 0U;
+    }
+}
 }  // namespace
 
 WifiService::WifiService(std::shared_ptr<adapters::IWifiClient> adapter,
                          common::ITaskRunner& taskRunner)
     : mWifiAdapter(adapter),
       mCoreEventQueue(nullptr),
-      mLastBars(-1),
+      mLastBars(0U),
       mSignalTaskHandle(),
       mTaskRunner(taskRunner) {}
 
@@ -52,9 +51,8 @@ bool WifiService::connect(const std::string& ssid, const std::string& password,
         return false;
     }
 
-    // Register callback for WiFi state changes
     mWifiAdapter->setStateCallback(
-        [this](const adapters::WifiStateChangedEvent& event) { this->onWifiStateChanged(event); });
+        [this](const common::WifiData& data) { this->onWifiStateChanged(data); });
 
     if (!mWifiAdapter->waitForConnection(timeoutMs)) {
         ESP_LOGE(Tag, "Failed to connect to WiFi");
@@ -84,13 +82,13 @@ std::string WifiService::getStatus() const {
 }
 
 void WifiService::disconnect() {
-    (void)mTaskRunner.stop(mSignalTaskHandle, TimeoutToExitTasks);
+    (void)mTaskRunner.stop(mSignalTaskHandle, TimeoutToExitTasksMs);
 
     if (mWifiAdapter) {
         mWifiAdapter->deinit();
     }
 
-    mLastBars = -1;
+    mLastBars = 0U;
 }
 
 common::StepResult WifiService::signalStepFn(void* arg, common::IStopToken& token) {
@@ -108,28 +106,22 @@ common::StepResult WifiService::signalStep(common::IStopToken& token) {
     }
 
     const auto rssiOpt = mWifiAdapter->tryGetRssiDbm();
-    const int bars = rssiOpt ? rssiToBars(*rssiOpt) : 0;
-    const int rssi = rssiOpt.value_or(-100);
-
+    const uint8_t bars = rssiToBars(rssiOpt.value_or(-100));
     if (bars != mLastBars) {
         mLastBars = bars;
-        ESP_LOGI(Tag, "Signal: rssi=%d dBm, bars=%d", rssi, bars);
-
-        // later:
-        // mCoreEventQueue.post(WifiSignalChangedEvent{.rssiDbm=rssi, .bars=bars});
+        ESP_LOGI(Tag, "Signal: bars=%d", bars);
+        mCoreEventQueue->post(common::WifiStateChangedEvent{.isConnected = true, .bars = bars});
     }
 
-    return {.action = common::StepAction::Sleep, .sleepMs = 10000U};  // 10s
+    return {.action = common::StepAction::Sleep, .sleepMs = 10000U};
 }
 
-void WifiService::onWifiStateChanged(const adapters::WifiStateChangedEvent& event) {
-    ESP_LOGI(Tag, "WiFi state changed: isConnected=%d, ssid=%s", event.isConnected,
-             event.ssid.c_str());
+void WifiService::onWifiStateChanged(const common::WifiData& data) {
+    ESP_LOGI(Tag, "WiFi state changed: rssi=%d, isConnected=%d", data.rssi, data.isConnected);
 
-    // Notify any service that's listening
     if (mCoreEventQueue) {
-        common::WifiStateChangedEvent coreEvent{event.isConnected};
-        mCoreEventQueue->post(coreEvent);
+        mCoreEventQueue->post(common::WifiStateChangedEvent{.isConnected = data.isConnected,
+                                                            .bars = rssiToBars(data.rssi)});
     }
 }
 

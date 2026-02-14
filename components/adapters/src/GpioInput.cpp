@@ -6,7 +6,7 @@
 #include <freertos/task.h>
 
 #include "BoardConfig.hpp"
-#include "SemaphoreGuard.hpp"
+#include "LockGuard.hpp"
 
 namespace adapters {
 
@@ -154,7 +154,7 @@ void GpioInput::deinit() {
     // Other components might also use it, and uninstalling causes surprises.
 
     {
-        common::SemaphoreGuard guard(mCallbackMutex);
+        common::LockGuard guard(mCallbackMutex);
         mInputDataCb = nullptr;
     }
 
@@ -164,7 +164,7 @@ void GpioInput::deinit() {
 }
 
 void GpioInput::setInputCallback(common::GpioInputDataCallback cb) {
-    common::SemaphoreGuard guard(mCallbackMutex);
+    common::LockGuard guard(mCallbackMutex);
     mInputDataCb = std::move(cb);
 }
 
@@ -262,7 +262,7 @@ void GpioInput::gpioTaskLoop() {
 void GpioInput::dispatchButtonPress(const uint32_t gpioNum) {
     common::GpioInputDataCallback cb;
     {
-        common::SemaphoreGuard guard(mCallbackMutex);
+        common::LockGuard guard(mCallbackMutex);
         cb = mInputDataCb;
     }
 

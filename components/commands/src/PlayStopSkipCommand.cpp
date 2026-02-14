@@ -17,7 +17,11 @@ static bool isPlayingOrBuffering(common::PlaybackStatus s) {
 PlayStopSkipCommand::PlayStopSkipCommand(services::IPlayerService& playerService,
                                          services::IStationRepository& stationRepo,
                                          const common::Button btn)
-    : mPlayerService(playerService), mStationRepo(stationRepo), mButton(btn) {}
+    : mPlayerService(playerService),
+      mStationRepo(stationRepo),
+      mButton(btn),
+      mStarted(false),
+      mFinished(false) {}
 
 bool PlayStopSkipCommand::handle(const common::AppEvent& e) {
     if (mFinished) {
@@ -32,6 +36,7 @@ bool PlayStopSkipCommand::handle(const common::AppEvent& e) {
         return true;
     }
 
+    // TODO: use Overloaded here as well?
     // Finish conditions
     if (std::holds_alternative<common::PlaybackStatusChangedEvent>(e)) {
         const auto ev = std::get<common::PlaybackStatusChangedEvent>(e);
@@ -58,27 +63,24 @@ void PlayStopSkipCommand::startAction() {
             break;
         }
         case common::Button::Up: {
-            const auto& station = mStationRepo.nextStation();
-
             if (isPlayingOrBuffering(st)) {
-                ESP_LOGI(Tag, "Skip -> stop then play %s", station.name.c_str());
+                ESP_LOGI(Tag, "Skip -> stop");
                 (void)mPlayerService.stop();
-            } else {
-                ESP_LOGI(Tag, "Skip -> play %s", station.name.c_str());
             }
 
+            const auto& station = mStationRepo.nextStation();
+            ESP_LOGI(Tag, "Skip -> play %s", station.name.c_str());
             (void)mPlayerService.playStation(station.url);
             break;
         }
         case common::Button::Down: {
-            const auto& station = mStationRepo.prevStation();
-
             if (isPlayingOrBuffering(st)) {
-                ESP_LOGI(Tag, "Skip -> stop then play%s", station.name.c_str());
+                ESP_LOGI(Tag, "Skip -> stop");
                 (void)mPlayerService.stop();
-            } else {
-                ESP_LOGI(Tag, "Skip -> play %s", station.name.c_str());
             }
+
+            const auto& station = mStationRepo.prevStation();
+            ESP_LOGI(Tag, "Skip -> play %s", station.name.c_str());
             (void)mPlayerService.playStation(station.url);
             break;
         }
@@ -99,7 +101,7 @@ bool PlayStopSkipCommand::onPlaybackStatus(common::PlaybackStatus s) {
             // so accept either "started" or "stopped" end states.
             // but we know what we requested, we should save what we sent and expect result
             if (s == common::PlaybackStatus::Playing || s == common::PlaybackStatus::Buffering ||
-                s == common::PlaybackStatus::Stopped || s == common::PlaybackStatus::Idle) {
+                s == common::PlaybackStatus::Stopped) {
                 mFinished = true;
                 ESP_LOGI(Tag, "Finished");
             }
@@ -120,10 +122,6 @@ bool PlayStopSkipCommand::onPlaybackStatus(common::PlaybackStatus s) {
 
 bool PlayStopSkipCommand::isFinished() {
     return mFinished;
-}
-
-common::CommandType PlayStopSkipCommand::getCmdType() {
-    return common::CommandType::PlayStopSkip;
 }
 
 }  // namespace commands

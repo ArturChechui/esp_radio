@@ -10,7 +10,7 @@ class DisplayTest : public ::testing::Test {
     void SetUp() override;
     void TearDown() override;
 
-    void initDisplay();
+    void initOkExpectations();
 
     adapters::MockI2cBus mockI2cBus;
     std::unique_ptr<adapters::Display> display;

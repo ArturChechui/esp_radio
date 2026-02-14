@@ -7,9 +7,9 @@
 #include <string>
 #include <vector>
 
-#include "IBinarySemaphore.hpp"
 #include "IPlayerService.hpp"
 #include "IRingBuffer.hpp"
+#include "ISignal.hpp"
 #include "Types.hpp"
 
 namespace adapters {
@@ -22,7 +22,7 @@ namespace common {
 class IEventQueue;
 class ITaskRunner;
 class IAudioBufferStats;
-class IBinarySemaphore;
+class ISignal;
 }  // namespace common
 
 namespace services {
@@ -32,7 +32,7 @@ class PlayerService : public IPlayerService {
                            adapters::IMp3Decoder& mp3Decoder, common::ITaskRunner& runner,
                            std::unique_ptr<common::IRingBuffer> ringBuffer,
                            common::IAudioBufferStats& stats, common::IEventQueue& coreEventQueue,
-                           std::unique_ptr<common::IBinarySemaphore> semaphore);
+                           std::unique_ptr<common::ISignal> semaphore);
     ~PlayerService() override;
 
     bool init() override;
@@ -71,7 +71,7 @@ class PlayerService : public IPlayerService {
     adapters::IMp3Decoder& mMp3Decoder;
     common::ITaskRunner& mTaskRunner;
     common::IAudioBufferStats& mStats;
-    std::unique_ptr<common::IBinarySemaphore> mStreamOpenSignal;
+    std::unique_ptr<common::ISignal> mStreamOpenSignal;
 
     uint8_t mNoDataCount;
     bool mPlayingNotified;

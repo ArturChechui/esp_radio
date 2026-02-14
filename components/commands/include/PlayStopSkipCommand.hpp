@@ -24,7 +24,6 @@ class PlayStopSkipCommand : public ICommand {
 
     bool handle(const common::AppEvent& e) override;
     bool isFinished() override;
-    common::CommandType getCmdType() override;
 
    private:
     void startAction();  // does the initial play/stop/skip call
@@ -34,8 +33,8 @@ class PlayStopSkipCommand : public ICommand {
     services::IPlayerService& mPlayerService;
     services::IStationRepository& mStationRepo;
     common::Button mButton;
-    bool mStarted{false};
-    bool mFinished{false};
+    bool mStarted;
+    bool mFinished;
 };
 
 }  // namespace commands

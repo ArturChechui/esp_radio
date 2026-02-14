@@ -5,90 +5,114 @@
 // IDF
 #include <esp_log.h>
 
-namespace services {
-static const char* TAG = "StationRepository";
+#include "LockGuard.hpp"
 
-StationRepository::StationRepository() : mStations(), mInitialized(false), mCurrentStationIdx(0U) {
-    ESP_LOGI(TAG, "StationRepository created");
+namespace services {
+static const char* Tag = "StationRepository";
+
+StationRepository::StationRepository()
+    : mStations(), mInitialized(false), mCurrentStationIdx(0U), mMutex() {
+    ESP_LOGI(Tag, "StationRepository created");
 }
 
 bool StationRepository::init() {
+    common::LockGuard guard(mMutex);
+
     if (mInitialized) {
-        ESP_LOGW(TAG, "Already initialized, ignoring");
+        ESP_LOGW(Tag, "Already initialized, ignoring");
         return true;
     }
 
     // TODO: Load from LittleFS stations.json
     // For now, hardcoded stations for FR-01
-    mStations = {{"hitfm_hd_1", "HitFM_HD", "https://online.hitfm.ua/HitFM_HD"},
-                 {"hitfm_2", "HitFM", "https://online.hitfm.ua/HitFM"},
-                 {"radio1_3", "Radio1", "http://play.global.audio/radio164"},
-                 {"caroline_4", "Caroline", "https://stream.radiocaroline.net/;"},
-                 {"luxfmhd_5", "LuxFM_HD", "http://icecast.luxnet.ua/luxlviv_hd"},
-                 {"nasheradio_6", "NasheRadio", "http://online.nasheradio.ua/NasheRadio"}};
+    mStations = {{"hitfm_1", "Hit FM", "https://online.hitfm.ua/HitFM"},
+                 {"hitfmhd_2", "HitHD", "https://online.hitfm.ua/HitFM_HD"},
+                 {"kissfm_3", "KissFM", "http://online.kissfm.ua/KissFM"},
+                 {"kissfmhd_4", "KissHD", "https://online.kissfm.ua/KissFM_HD"},
+                 {"luxfmhd_5", "LuxHD", "http://icecast.luxnet.ua/luxlviv_hd"},
+                 {"relax_6", "Relax", "https://online.radiorelax.ua/RadioRelax_Ukr"},
+                 {"pyatnica_7", "Friday", "https://cast.mediaonline.net.ua/radiopyatnica"},
+                 {"nasheradio_8", "Nashe", "http://online.nasheradio.ua/NasheRadio"}};
 
     // mCurrentStationIdx() -- read from persistance?
 
-    ESP_LOGI(TAG, "Loaded %d stations", static_cast<int>(mStations.size()));
+    ESP_LOGI(Tag, "Loaded %d stations", static_cast<int>(mStations.size()));
 
     mInitialized = true;
     return true;
 }
 
 const std::vector<common::StationData>& StationRepository::getStations() const {
+    common::LockGuard guard(mMutex);
+
     if (!mInitialized) {
-        ESP_LOGW(TAG, "Not initialized yet");
+        ESP_LOGW(Tag, "Not initialized yet");
     }
 
     return mStations;
 }
 
 const common::StationData& StationRepository::nextStation() {
+    common::LockGuard guard(mMutex);
+
     static const common::StationData kEmpty{"", "", ""};
 
     if (!mInitialized) {
-        ESP_LOGW(TAG, "Not initialized yet");
+        ESP_LOGW(Tag, "Not initialized yet");
         return kEmpty;
     }
     if (mStations.empty()) {
-        ESP_LOGW(TAG, "No stations available");
+        ESP_LOGW(Tag, "No stations available");
         return kEmpty;
     }
 
     mCurrentStationIdx = (mCurrentStationIdx + 1U) % static_cast<uint32_t>(mStations.size());
+    ESP_LOGI(Tag, "nextStation: name=%s, idx=%u", mStations[mCurrentStationIdx].name.c_str(),
+             static_cast<unsigned>(mCurrentStationIdx));
+
     return mStations[mCurrentStationIdx];
 }
 
 const common::StationData& StationRepository::prevStation() {
+    common::LockGuard guard(mMutex);
+
     static const common::StationData kEmpty{"", "", ""};
 
     if (!mInitialized) {
-        ESP_LOGW(TAG, "Not initialized yet");
+        ESP_LOGW(Tag, "Not initialized yet");
         return kEmpty;
     }
     if (mStations.empty()) {
-        ESP_LOGW(TAG, "No stations available");
+        ESP_LOGW(Tag, "No stations available");
         return kEmpty;
     }
 
     const uint32_t n = static_cast<uint32_t>(mStations.size());
     mCurrentStationIdx = (mCurrentStationIdx + n - 1U) % n;  // wrap backwards
+    ESP_LOGI(Tag, "prevStation: name=%s, idx=%u", mStations[mCurrentStationIdx].name.c_str(),
+             static_cast<unsigned>(mCurrentStationIdx));
+
     return mStations[mCurrentStationIdx];
 }
 
 const common::StationData& StationRepository::currentStation() const {
+    common::LockGuard guard(mMutex);
+
     static const common::StationData kEmpty{"", "", ""};
 
     if (!mInitialized) {
-        ESP_LOGW(TAG, "Not initialized yet");
+        ESP_LOGW(Tag, "Not initialized yet");
         return kEmpty;
     }
     if (mStations.empty()) {
-        ESP_LOGW(TAG, "No stations available");
+        ESP_LOGW(Tag, "No stations available");
         return kEmpty;
     }
 
-    const size_t idx = std::min<size_t>(mCurrentStationIdx, mStations.size() - 1U);
+    const uint32_t idx = std::min<uint32_t>(mCurrentStationIdx, mStations.size() - 1U);
+    ESP_LOGI(Tag, "currentStation: name=%s, idx=%u", mStations[idx].name.c_str(),
+             static_cast<unsigned>(idx));
+
     return mStations[idx];
 }
 

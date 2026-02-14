@@ -18,11 +18,12 @@ class WifiClient : public IWifiClient {
 
     bool init(const std::string& ssid, const std::string& password) override;
     bool waitForConnection(uint32_t timeoutMs = 30000) override;
+    // TODO:: do I need it?
     bool isConnected() const override;
     std::string getStatus() const override;
-    void setStateCallback(WifiStateCallback callback) override;
+    void setStateCallback(common::WifiStateCallback callback) override;
     void deinit() override;
-    std::optional<int> tryGetRssiDbm() const override;
+    std::optional<int8_t> tryGetRssiDbm() const override;
 
    private:
     static void eventHandler(void* arg, esp_event_base_t event_base, int32_t event_id,
@@ -33,7 +34,7 @@ class WifiClient : public IWifiClient {
     bool isDnsReady();
 
     EventGroupHandle_t mEventGroup = nullptr;
-    WifiStateCallback mStateCallback = nullptr;
+    common::WifiStateCallback mStateCallback = nullptr;
     bool mIsInitialized = false;
     bool mIsConnected = false;
     int mRetryCount = 0;

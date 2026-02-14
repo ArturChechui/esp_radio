@@ -4,13 +4,13 @@
 #include <freertos/semphr.h>
 #include <freertos/task.h>
 
-#include "IBinarySemaphore.hpp"
+#include "ISignal.hpp"
 
 namespace common {
-class BinarySemaphore : public IBinarySemaphore {
+class Signal : public ISignal {
    public:
-    BinarySemaphore();
-    ~BinarySemaphore() override;
+    Signal();
+    ~Signal() override;
 
     bool wait(const uint32_t& timeoutMs) const override;
     void signal() override;
@@ -18,8 +18,8 @@ class BinarySemaphore : public IBinarySemaphore {
     void reset() override;
 
     // Prevent copying
-    BinarySemaphore(const BinarySemaphore&) = delete;
-    BinarySemaphore& operator=(const BinarySemaphore&) = delete;
+    Signal(const Signal&) = delete;
+    Signal& operator=(const Signal&) = delete;
 
    private:
     StaticSemaphore_t mStorage;

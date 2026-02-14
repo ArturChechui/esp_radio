@@ -5,9 +5,9 @@
 namespace common {
 
 // I2C Configuration
-static constexpr int I2C_SCL_GPIO = 1;  // GP1
-static constexpr int I2C_SDA_GPIO = 2;  // GP2
-static constexpr uint32_t I2C_FREQ_HZ = 400000;
+static constexpr int I2C_SCL_GPIO = 1;           // GP1
+static constexpr int I2C_SDA_GPIO = 2;           // GP2
+static constexpr uint32_t I2C_FREQ_HZ = 100000;  // TODO: test with 400000 later
 static constexpr uint8_t OLED_I2C_ADDR = 0x3C;
 
 // I2S Configuration (audio output)
