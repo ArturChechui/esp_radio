@@ -12,6 +12,14 @@ find_package(GTest REQUIRED)
 
 enable_testing()
 
+# Coverage build option
+option(ENABLE_COVERAGE "Enable coverage" ON)
+
+if(ENABLE_COVERAGE)
+  add_compile_options(-O0 -g --coverage)
+  add_link_options(--coverage)
+endif()
+
 include(adapters/CMakeLists.txt)
 include(services/CMakeLists.txt)
 include(core/CMakeLists.txt)

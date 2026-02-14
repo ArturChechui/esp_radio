@@ -28,14 +28,14 @@ static void freeMem(void* p) {
 }
 
 constexpr const char* TR = "TaskRunner";
-
-static void logHeap(const char* where) {
-    ESP_LOGI("TaskRunner", "[%s] int: free=%u largest=%u | psram: free=%u largest=%u", where,
-             (unsigned)heap_caps_get_free_size(MALLOC_CAP_INTERNAL),
-             (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL),
-             (unsigned)heap_caps_get_free_size(MALLOC_CAP_SPIRAM),
-             (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM));
-}
+// Remove all the logs or add to a debug mode
+// static void logHeap(const char* where) {
+//     ESP_LOGI("TaskRunner", "[%s] int: free=%u largest=%u | psram: free=%u largest=%u", where,
+//              (unsigned)heap_caps_get_free_size(MALLOC_CAP_INTERNAL),
+//              (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL),
+//              (unsigned)heap_caps_get_free_size(MALLOC_CAP_SPIRAM),
+//              (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM));
+// }
 }  // namespace
 
 TaskRunner::TaskRunner() : mSlots() {
@@ -64,7 +64,7 @@ TaskHandle TaskRunner::start(const TaskParams& params, uint32_t stackWords, Step
         return {};
     }
 
-    logHeap("before slot");
+    // logHeap("before slot");
 
     const int slotIdx = findFreeSlot();
     if (slotIdx < 0) {
@@ -78,16 +78,6 @@ TaskHandle TaskRunner::start(const TaskParams& params, uint32_t stackWords, Step
     ESP_LOGI(TR, "start(%s): slot=%d core=%d prio=%u stackWords=%u (%u bytes)",
              params.name ? params.name : "?", slotIdx, (int)params.core, (unsigned)params.priority,
              (unsigned)stackWords, (unsigned)(stackWords * sizeof(StackType_t)));
-
-    // Validate core early (helps catch “pinned to non-existent core”)
-#ifdef portNUM_PROCESSORS
-    if ((int)params.core >= (int)portNUM_PROCESSORS) {
-        ESP_LOGE(TR, "start(%s): invalid core=%d (num=%d)", s.name, (int)params.core,
-                 (int)portNUM_PROCESSORS);
-        s.inUse.store(false, std::memory_order_release);
-        return {};
-    }
-#endif
 
     // bump runId (never 0)
     uint16_t next = static_cast<uint16_t>(s.runId.load(std::memory_order_relaxed) + 1U);
@@ -118,7 +108,7 @@ TaskHandle TaskRunner::start(const TaskParams& params, uint32_t stackWords, Step
         s.stack = nullptr;
     }
 
-    logHeap("before alloc");
+    // logHeap("before alloc");
 
     // allocate new internal task memory
     s.tcb = static_cast<StaticTask_t*>(allocTcbMem(sizeof(StaticTask_t)));
@@ -127,7 +117,7 @@ TaskHandle TaskRunner::start(const TaskParams& params, uint32_t stackWords, Step
     if (!s.tcb || !s.stack) {
         ESP_LOGE(TR, "start(%s): alloc failed tcb=%p stack=%p", s.name, (void*)s.tcb,
                  (void*)s.stack);
-        logHeap("alloc failed");
+        // logHeap("alloc failed");
 
         freeMem(s.tcb);
         freeMem(s.stack);
@@ -139,7 +129,7 @@ TaskHandle TaskRunner::start(const TaskParams& params, uint32_t stackWords, Step
         return {};
     }
 
-    logHeap("before create");
+    // logHeap("before create");
 
     // Create task
     s.task = xTaskCreateStaticPinnedToCore(&TaskRunner::taskEntry, s.name, s.stackWords, &s,
@@ -148,7 +138,7 @@ TaskHandle TaskRunner::start(const TaskParams& params, uint32_t stackWords, Step
 
     if (s.task == nullptr) {
         ESP_LOGE(TR, "start(%s): xTaskCreateStaticPinnedToCore FAILED", s.name);
-        logHeap("create failed");
+        // logHeap("create failed");
 
         freeMem(s.tcb);
         freeMem(s.stack);
@@ -231,6 +221,7 @@ StopResult TaskRunner::stop(const TaskHandle& h, uint32_t waitMs) {
 }
 
 void TaskRunner::cleanupSlotFromTask(Slot& s) {
+    // TODO: Correctly free stack or change to simple task creation
     // Free internal allocations owned by runner
     // freeMem(s.tcb);
     // freeMem(s.stack);
@@ -259,6 +250,7 @@ void TaskRunner::taskEntry(void* arg) {
     const TaskHandle h{s->index, s->runId.load(std::memory_order_acquire)};
     StopToken token(runner, h);
     TickType_t lastPrint = 0;
+    ESP_LOGI(TR, "[%s] Task is running", s->name);
 
     while (!token.stopRequested()) {
         const StepResult r = s->fn(s->user, token);
@@ -266,7 +258,7 @@ void TaskRunner::taskEntry(void* arg) {
         const TickType_t now = xTaskGetTickCount();
         if ((now - lastPrint) >= pdMS_TO_TICKS(30000)) {
             lastPrint = now;
-            UBaseType_t hw = uxTaskGetStackHighWaterMark(nullptr);  // current task
+            UBaseType_t hw = uxTaskGetStackHighWaterMark(nullptr);
             ESP_LOGI(TR, "[%s] high-water=%u words (%u bytes free)", s->name, (unsigned)hw,
                      (unsigned)(hw * sizeof(StackType_t)));
         }
@@ -282,9 +274,10 @@ void TaskRunner::taskEntry(void* arg) {
             continue;
         }
 
-        // Done or Error ends loop
         break;
     }
+
+    ESP_LOGI(TR, "[%s] Task is exiting", s->name);
 
     runner.cleanupSlotFromTask(*s);
     vTaskDelete(nullptr);

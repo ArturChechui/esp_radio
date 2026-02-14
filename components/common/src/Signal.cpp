@@ -1,17 +1,16 @@
-#include "BinarySemaphore.hpp"
-
 #include <freertos/FreeRTOS.h>
 
 #include "Helper.hpp"
+#include "Signal.hpp"
 
 namespace common {
-BinarySemaphore::BinarySemaphore() : mStorage(), mHandle(xSemaphoreCreateBinaryStatic(&mStorage)) {}
+Signal::Signal() : mStorage(), mHandle(xSemaphoreCreateBinaryStatic(&mStorage)) {}
 
-BinarySemaphore::~BinarySemaphore() {
+Signal::~Signal() {
     mHandle = nullptr;
 }
 
-bool BinarySemaphore::wait(const uint32_t& timeoutMs) const {
+bool Signal::wait(const uint32_t& timeoutMs) const {
     if (mHandle == nullptr) {
         return false;
     }
@@ -21,7 +20,7 @@ bool BinarySemaphore::wait(const uint32_t& timeoutMs) const {
     return (res == pdTRUE);
 }
 
-void BinarySemaphore::signal() {
+void Signal::signal() {
     if (mHandle == nullptr) {
         return;
     }
@@ -29,11 +28,11 @@ void BinarySemaphore::signal() {
     xSemaphoreGive(mHandle);
 }
 
-bool BinarySemaphore::isValid() const {
+bool Signal::isValid() const {
     return (mHandle != nullptr);
 }
 
-void BinarySemaphore::reset() {
+void Signal::reset() {
     if (mHandle == nullptr) {
         return;
     }

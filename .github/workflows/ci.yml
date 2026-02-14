@@ -17,24 +17,52 @@ jobs:
       - name: Install deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build g++ clang libgtest-dev libgmock-dev shfmt shellcheck
+          sudo apt-get install -y \
+            cmake ninja-build g++ clang \
+            python3-pip \
+            libgtest-dev libgmock-dev \
+            shfmt shellcheck
+          python3 -m pip install --upgrade pip
+          python3 -m pip install gcovr
 
-      - name: Configure host tests (CMake)
+      - name: Configure unit tests (CMake)
         run: |
           CXX=$([ "${{ matrix.compiler }}" = "gcc" ] && echo g++ || echo clang++)
+          rm -rf tests/unit/build
           mkdir -p tests/unit/build
           cd tests/unit/build
-          cmake .. -G Ninja -DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_COMPILER=${CXX}
 
-      - name: Build host tests
+          if [ "${{ matrix.compiler }}" = "gcc" ]; then
+            cmake .. -G Ninja \
+              -DCMAKE_CXX_STANDARD=17 \
+              -DCMAKE_CXX_COMPILER=${CXX} \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DCMAKE_CXX_FLAGS="--coverage -O0 -g" \
+              -DCMAKE_EXE_LINKER_FLAGS="--coverage"
+          else
+            cmake .. -G Ninja \
+              -DCMAKE_CXX_STANDARD=17 \
+              -DCMAKE_CXX_COMPILER=${CXX} \
+              -DCMAKE_BUILD_TYPE=Release
+          fi
+
+      - name: Build unit tests
         run: |
           cd tests/unit/build
-          cmake --build . --config Release -j
+          cmake --build . -j
 
       - name: Run unit tests
         run: |
           cd tests/unit/build
           ctest --output-on-failure
+
+      - name: Coverage summary (gcovr, GCC only)
+        if: matrix.compiler == 'gcc'
+        run: |
+          gcovr -r . tests/unit/build \
+            --exclude '.*(lib|external|mock|tests).*' \
+            --print-summary \
+            --fail-under-line 70
 
       - name: Check shell formatting (shfmt)
         run: shfmt -d . || true

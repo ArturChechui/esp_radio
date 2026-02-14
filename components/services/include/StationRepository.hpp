@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "IStationRepository.hpp"
+#include "Mutex.hpp"
 #include "Types.hpp"
 
 namespace services {
@@ -22,6 +23,7 @@ class StationRepository : public IStationRepository {
     std::vector<common::StationData> mStations;
     bool mInitialized;
     uint32_t mCurrentStationIdx;
+    mutable common::Mutex mMutex;
 };
 
 }  // namespace services

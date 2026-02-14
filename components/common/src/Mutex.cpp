@@ -1,31 +1,38 @@
 #include "Mutex.hpp"
 
-namespace common {
-Mutex::Mutex() : mHandle(xSemaphoreCreateMutexStatic(&mStorage)) {}
+#include <freertos/FreeRTOS.h>
+#include <freertos/semphr.h>
 
-Mutex::~Mutex() {
-    mHandle = nullptr;
+namespace common {
+struct Mutex::Impl {
+    StaticSemaphore_t storage{};
+    SemaphoreHandle_t handle{nullptr};
+
+    Impl() {
+        handle = xSemaphoreCreateMutexStatic(&storage);
+    }
+};
+
+Mutex::Mutex() : m(std::make_unique<Impl>()) {}
+
+Mutex::~Mutex() = default;
+
+void Mutex::lock() {
+    (void)xSemaphoreTake(m->handle, portMAX_DELAY);
 }
 
-SemaphoreHandle_t Mutex::handle() const {
-    return mHandle;
+void Mutex::unlock() {
+    (void)xSemaphoreGive(m->handle);
+}
+
+bool Mutex::tryLock(uint32_t timeoutMs) {
+    const TickType_t ticks = (timeoutMs == 0xFFFFFFFF) ? portMAX_DELAY : pdMS_TO_TICKS(timeoutMs);
+
+    return (xSemaphoreTake(m->handle, ticks) == pdTRUE);
 }
 
 bool Mutex::isValid() const {
-    return (mHandle != nullptr);
-}
-
-Mutex::Mutex(Mutex&& other) noexcept : mHandle(other.mHandle) {
-    other.mHandle = nullptr;
-}
-
-Mutex& Mutex::operator=(Mutex&& other) noexcept {
-    if (this != &other) {
-        mHandle = other.mHandle;
-        other.mHandle = nullptr;
-    }
-
-    return *this;
+    return (m->handle != nullptr);
 }
 
 }  // namespace common

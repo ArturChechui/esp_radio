@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <cstring>
 
+#include "Dumpers.hpp"
 #include "Events.hpp"
 #include "IAudioBufferStats.hpp"
 #include "IEventQueue.hpp"
@@ -26,8 +27,8 @@ constexpr int PlayerTaskCore = 1;
 constexpr int HttpTaskPriority = 9;  // slightly lower than player to favor audio
 constexpr int HttpTaskCore = 0;
 constexpr uint32_t TimeoutToExitTasks = 7000U;  // 7s
-constexpr uint32_t PlayerTaskStackWords = 20480U;
-constexpr uint32_t HttpTaskStackWords = 4096U;
+constexpr uint32_t PlayerTaskStackWords = 22480U;
+constexpr uint32_t HttpTaskStackWords = 8192U;
 
 constexpr size_t ReadMaxBytes = 4 * 1024U;  // Max read from ring buffer per decode
 constexpr size_t PrebufferBytes = 8U * 1024U;
@@ -49,15 +50,14 @@ constexpr int32_t VolumeQ15 = 3277;
 // 4915;  // 6554;          // Volume in Q15 fixed point (0..32768). 0.20 ~= 6554
 
 constexpr size_t ResyncThresholdBytes = 2048U;  // if more, try to resync MP3 frame
-constexpr uint8_t MaxNoDataReads =
-    10000U;  // after this many zero-byte reads, consider stream ended
+constexpr size_t MaxNoDataReads = 100U;  // after this many zero-byte reads, consider stream ended
 }  // namespace
 
 PlayerService::PlayerService(adapters::II2sBus& i2sBus, adapters::IHttpClient& httpClient,
                              adapters::IMp3Decoder& mp3Decoder, common::ITaskRunner& runner,
                              std::unique_ptr<common::IRingBuffer> ringBuffer,
                              common::IAudioBufferStats& stats, common::IEventQueue& coreEventQueue,
-                             std::unique_ptr<common::IBinarySemaphore> semaphore)
+                             std::unique_ptr<common::ISignal> semaphore)
     : mStatus(common::PlaybackStatus::Idle),
       mCurrentUrl(""),
       mCoreEventQueue(coreEventQueue),
@@ -133,7 +133,6 @@ bool PlayerService::playStation(const std::string& url) {
 
     onPlaybackStatusChanged(common::PlaybackStatus::Buffering);
 
-    ESP_LOGI(Tag, "Creating HttpTask");
     mHttpTaskHandle = mTaskRunner.start(
         common::TaskParams{.name = "HttpTask", .priority = HttpTaskPriority, .core = HttpTaskCore},
         HttpTaskStackWords, &PlayerService::producerStepFn, this);
@@ -144,7 +143,6 @@ bool PlayerService::playStation(const std::string& url) {
         return false;
     }
 
-    ESP_LOGI(Tag, "Creating PlayerTask");
     mPlayerTaskHandle = mTaskRunner.start(
         common::TaskParams{
             .name = "PlayerTask", .priority = PlayerTaskPriority, .core = PlayerTaskCore},
@@ -163,9 +161,8 @@ bool PlayerService::playStation(const std::string& url) {
         return false;
     }
 
-    ESP_LOGI(Tag, "Tasks started: Player(slot=%u,runId=%u), Http(slot=%u,runId=%u)",
-             mPlayerTaskHandle.slot, mPlayerTaskHandle.runId, mHttpTaskHandle.slot,
-             mHttpTaskHandle.runId);
+    ESP_LOGI(Tag, "Tasks started: Player%s, Http%s", common::dump(mPlayerTaskHandle).c_str(),
+             common::dump(mHttpTaskHandle).c_str());
     return true;
 }
 
@@ -191,6 +188,8 @@ bool PlayerService::stop() {
 
     (void)mTaskRunner.stop(mHttpTaskHandle, TimeoutToExitTasks);
     (void)mTaskRunner.stop(mPlayerTaskHandle, TimeoutToExitTasks);
+    mHttpTaskHandle.reset();
+    mPlayerTaskHandle.reset();
 
     onPlaybackStatusChanged(common::PlaybackStatus::Stopped);
     mCurrentUrl.clear();
@@ -210,7 +209,8 @@ void PlayerService::onPlaybackStatusChanged(const common::PlaybackStatus& status
         return;
     }
 
-    ESP_LOGI(Tag, "Status changed: %d -> %d", static_cast<int>(mStatus), static_cast<int>(status));
+    ESP_LOGI(Tag, "Status changed: %s -> %s", common::dump(mStatus).c_str(),
+             common::dump(status).c_str());
     mStatus = status;
 
     mCoreEventQueue.post(common::PlaybackStatusChangedEvent{status});
@@ -312,6 +312,7 @@ common::StepResult PlayerService::produceOnce(common::IStopToken& token) {
         if (++mNoDataCount > MaxNoDataReads) {
             ESP_LOGW(Tag, "HTTP: no data for too long, stopping stream");
             shutdownStream();
+            // !!!!!!!!!!!!!!!!!!! Reopen so it works better
             return {.action = common::StepAction::Error};
         }
         const uint32_t backoffMs = std::min<uint32_t>(30000U, 10U * mNoDataCount);
@@ -345,15 +346,11 @@ common::StepResult PlayerService::consumerStep(common::IStopToken& token) {
     }
 
     if (mRingBuffer->available() < PrebufferBytes) {
+        onPlaybackStatusChanged(common::PlaybackStatus::Buffering);
         (void)mRingBuffer->waitForData(AvailDataTimeoutMs);
         // TODO: instead of a big sleep, wait for a specific about of data here, like
         // 2xPrebufferBytes so that it doesn't have glitches when 1 frame is downloaded and it goes
         return {.action = common::StepAction::Sleep, .sleepMs = 2000U};
-    }
-
-    if (!mPlayingNotified) {
-        onPlaybackStatusChanged(common::PlaybackStatus::Playing);
-        mPlayingNotified = true;
     }
 
     return consumeOnce(token);
@@ -414,6 +411,8 @@ common::StepResult PlayerService::consumeOnce(common::IStopToken& token) {
         applyVolumeStereoQ15(mPcm.data(), info.samplesPerCh, VolumeQ15);
         outSamples = mPcm.data();
     }
+
+    onPlaybackStatusChanged(common::PlaybackStatus::Playing);
 
     const size_t bytesToWrite =
         static_cast<size_t>(info.samplesPerCh) * StereoChannels * sizeof(outSamples[0]);

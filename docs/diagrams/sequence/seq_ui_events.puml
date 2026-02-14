@@ -1,0 +1,78 @@
+@startuml seq_ui_events.puml
+title ESP32 Internet Radio - Sequence Diagram (partial updates on events)
+
+box "Common" #LightBlue
+participant "EventTask\n(IEventQueue)" as UITASK
+end box
+
+box "Services" #LightGreen
+participant "UiService" as UISVC
+participant "StationRepository" as REPO
+end box
+
+box "Adapters" #LightYellow
+participant "Display\n(IDisplay)" as DISP
+participant "I2cBus\n(II2cBus)" as I2C
+
+end box
+box "ESP-IDF" #LightGray
+participant "ESP-IDF I2C driver" as IDF
+end box
+
+== Current station Changed ==
+UITASK -> UISVC ++: onEvent(event)
+note right
+All of these events will update predefined specific area on the screen.
+
+CurrentStationChangedEvent{} - Main Text area - from (x=28, y=16) to the end of the screen
+TempHumidUpdateEvent{} - Status Text area - from (x=0, y=0) to the Battery Icon
+WifiStateChangedEvent{} - Wifi Icon area - from (x=112, y=0) to the end
+PlaybackStatusChangedEvent{} - Main Icon area - from (x=0, y=16) to the Main Text area
+end note
+
+alt event == CurrentStationChangedEvent{}
+UISVC -> REPO ++: currentStation()
+return station
+end
+UISVC -> UISVC: prepare data (either get icon bytes\n or get glyph for each letter)
+UISVC -> DISP ++: showWindow(col0, col1, page0, page1, mTxBuf.data(), mTxBuf.size())
+
+loop (writtenBytes < len)
+    DISP -> I2C ++: writeBytes(mI2cAddr, buf.data(), 1 + chunk, 5000)
+    note right
+    Col cmd
+    end note
+    I2C -> IDF ++: i2c_master_transmit(dev, data, len, ticks)
+    return res
+    return res
+end
+
+loop (writtenBytes < len) 
+    DISP -> I2C ++: writeBytes(mI2cAddr, buf.data(), 1 + chunk, 5000)
+    note right
+    Page cmd
+    end note
+    I2C -> IDF ++: i2c_master_transmit(dev, data, len, ticks)
+    return res
+    return res
+end
+
+loop (writtenBytes < len) 
+    DISP -> I2C ++: writeBytes(mI2cAddr, buf.data(), 1 + chunk, 5000)
+    note right
+    Data
+    end note
+    I2C -> IDF ++: i2c_master_transmit(dev, data, len, ticks)
+    return res
+    return res
+end
+return res
+return res
+
+deactivate UISVC
+deactivate DISP
+deactivate I2C
+deactivate IDF
+deactivate UITASK
+
+@enduml

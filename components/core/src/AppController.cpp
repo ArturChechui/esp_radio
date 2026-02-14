@@ -1,8 +1,10 @@
 #include "AppController.hpp"
 
+#include "Dumpers.hpp"
 #include "IEventQueue.hpp"
 #include "IPlayerService.hpp"
 #include "IStationRepository.hpp"
+#include "Overloaded.hpp"
 #include "PlayStopSkipCommand.hpp"
 
 // IDF
@@ -30,6 +32,8 @@ bool AppController::init() {
 }
 
 void AppController::onEvent(const common::AppEvent& event) {
+    ESP_LOGI(Tag, "onEvent(%s)", common::dump(event).c_str());
+
     // try to handle it by the current cmd
     if (mCurrentCmd && !mCurrentCmd->isFinished()) {
         if (mCurrentCmd->handle(event)) {
@@ -38,50 +42,36 @@ void AppController::onEvent(const common::AppEvent& event) {
                 // command is finished, so can be destroyed
                 mCurrentCmd.reset();
             }
-            return;
+            // TODO: temporary comment since so far it is not clear when we should intercept the
+            // event and ignore it further
+            // return;
         }
     }
 
-    if (std::holds_alternative<common::SystemReadyEvent>(event)) {
-        handleSystemReadyEvent(std::get<common::SystemReadyEvent>(event));
-    } else if (std::holds_alternative<common::ButtonPressedEvent>(event)) {
-        const auto& ev = std::get<common::ButtonPressedEvent>(event);
+    std::visit(common::Overloaded{
+                   [this](const common::SystemReadyEvent&) {
+                       // TODO: Start restore lastmode cmd
+                   },
+                   [this](const common::ButtonPressedEvent& b) {
+                       // TODO: handle the case when play is active and stop is being pressed or
+                       // vice versa
+                       mCurrentCmd = std::make_unique<commands::PlayStopSkipCommand>(
+                           mPlayerService, mStationRepository, b.button);
+                       if (mCurrentCmd && mCurrentCmd->handle(b) && mCurrentCmd->isFinished()) {
+                           mCurrentCmd.reset();
+                       }
 
-        // TODO: handle the case when play is active and stop is being pressed or vice versa
-        mCurrentCmd = std::make_unique<commands::PlayStopSkipCommand>(
-            mPlayerService, mStationRepository, ev.button);
-        if (mCurrentCmd && mCurrentCmd->handle(event) && mCurrentCmd->isFinished()) {
-            mCurrentCmd.reset();
-        }
-    } else if (std::holds_alternative<common::TemperatureUpdateEvent>(event)) {
-        handleTemperatureUpdateEvent(std::get<common::TemperatureUpdateEvent>(event));
-    } else if (std::holds_alternative<common::WifiStateChangedEvent>(event)) {
-        ESP_LOGI(Tag, "Wifi is connected. Work can be started");
-    } else if (std::holds_alternative<common::PlaybackStatusChangedEvent>(event)) {
-        ESP_LOGI(Tag, "PlaybackStatusChangedEvent %d",
-                 static_cast<int>(std::get<common::PlaybackStatusChangedEvent>(event).status));
-    } else {
-        ESP_LOGW(Tag, "Unhandled event type");
-    }
-}
-
-void AppController::handleSystemReadyEvent(const common::SystemReadyEvent& event) {
-    ESP_LOGI(Tag, "System ready event received (showSplashScreen=%d)", event.showSplashScreen);
-
-    // TODO: booting + restore last mode cmd
-
-    // mUiEventQueue.post(common::UiRenderEvent{.renderType = common::RenderType::Boot});
-
-    // Temporarily show stations screen after boot before implementing full logic
-    mUiEventQueue.post(common::UiRenderEvent{.renderType = common::RenderType::Stations});
-}
-
-void AppController::handleButtonPressedEvent(const common::ButtonPressedEvent& event) {
-    ESP_LOGI(Tag, "Button pressed: %d", static_cast<int>(event.button));
-}
-
-void AppController::handleTemperatureUpdateEvent(const common::TemperatureUpdateEvent& event) {
-    ESP_LOGI(Tag, "Temperature: %.1f°C", event.temperature);
+                       if (b.button == common::Button::Down || b.button == common::Button::Up) {
+                           mUiEventQueue.post(common::CurrentStationChangedEvent{});
+                       }
+                   },
+                   [this](const common::TempHumidUpdateEvent& t) { mUiEventQueue.post(t); },
+                   [this](const common::WifiStateChangedEvent& w) { mUiEventQueue.post(w); },
+                   [this](const common::PlaybackStatusChangedEvent& p) { mUiEventQueue.post(p); },
+                   [](const auto&) {
+                       // ignore other events
+                   }},
+               event);
 }
 
 }  // namespace core

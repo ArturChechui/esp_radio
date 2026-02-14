@@ -6,7 +6,7 @@
 #include <cstring>
 
 #include "Helper.hpp"
-#include "SemaphoreGuard.hpp"
+#include "LockGuard.hpp"
 
 namespace {
 constexpr const char* Tag = "RingBuffer";
@@ -130,7 +130,7 @@ RingBuffer::ReadSpans RingBuffer::claimReadSpans(const size_t maxBytes) const {
         return out;
     }
 
-    SemaphoreGuard lock(mMutex);
+    LockGuard lock(mMutex);
     if (mAborted) {
         return out;
     }
@@ -169,7 +169,7 @@ void RingBuffer::commitRead(size_t bytes) {
     bool wasFull = false;
 
     {
-        SemaphoreGuard lock(mMutex);
+        LockGuard lock(mMutex);
         if (mAborted) {
             return;
         }
@@ -197,7 +197,7 @@ RingBuffer::WriteSpans RingBuffer::claimWriteSpans(const size_t maxBytes) {
         return out;
     }
 
-    SemaphoreGuard lock(mMutex);
+    LockGuard lock(mMutex);
     if (mAborted) {
         return out;
     }
@@ -239,7 +239,7 @@ void RingBuffer::commitWrite(size_t bytes) {
     bool wasEmpty = false;
 
     {
-        SemaphoreGuard lock(mMutex);
+        LockGuard lock(mMutex);
         if (mAborted) {
             return;
         }
@@ -261,7 +261,7 @@ void RingBuffer::commitWrite(size_t bytes) {
 
 bool RingBuffer::waitForData(const uint32_t timeoutMs) {
     {
-        SemaphoreGuard lock(mMutex);
+        LockGuard lock(mMutex);
         if (mAborted) {
             return false;
         }
@@ -275,7 +275,7 @@ bool RingBuffer::waitForData(const uint32_t timeoutMs) {
 
 bool RingBuffer::waitForSpace(const uint32_t timeoutMs) {
     {
-        SemaphoreGuard lock(mMutex);
+        LockGuard lock(mMutex);
         if (mAborted) {
             return false;
         }
@@ -288,19 +288,19 @@ bool RingBuffer::waitForSpace(const uint32_t timeoutMs) {
 }
 
 size_t RingBuffer::available() const {
-    SemaphoreGuard lock(mMutex);
+    LockGuard lock(mMutex);
 
     return availableUnlocked();
 }
 
 size_t RingBuffer::space() const {
-    SemaphoreGuard lock(mMutex);
+    LockGuard lock(mMutex);
 
     return spaceUnlocked();
 }
 
 IRingBuffer::FillLevels RingBuffer::getFillLevels() const {
-    SemaphoreGuard lock(mMutex);
+    LockGuard lock(mMutex);
 
     return {availableUnlocked(), spaceUnlocked()};
 }
@@ -313,7 +313,7 @@ void RingBuffer::abort() {
     ESP_LOGW(Tag, "abort()");
 
     {
-        SemaphoreGuard lock(mMutex);
+        LockGuard lock(mMutex);
         mAborted = true;
     }
 
@@ -326,7 +326,7 @@ void RingBuffer::reset() {
     ESP_LOGI(Tag, "reset()");
 
     {
-        SemaphoreGuard lock(mMutex);
+        LockGuard lock(mMutex);
         mReadPos = 0UL;
         mWritePos = 0UL;
         mAborted = false;

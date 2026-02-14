@@ -1,20 +1,82 @@
 #include "UiServiceTest.hpp"
 
+#include <algorithm>
+#include <cstdint>
 #include <cstring>
+#include <memory>
+#include <vector>
 
 #include "Events.hpp"
 #include "Fonts.hpp"
 #include "Types.hpp"
 
 using ::testing::_;
-using ::testing::ElementsAreArray;
-using ::testing::Ref;
+using ::testing::Return;
+using ::testing::ReturnRef;
 
-static constexpr size_t FRAMEBUFFER_SIZE = 1024U;  // bytes. 128x64 / 8
+namespace {
+
+// Geometry (must match UiService.cpp)
+constexpr uint8_t kWidth = 128;
+constexpr uint8_t kHeight = 64;
+constexpr uint8_t kPages = kHeight / 8;
+constexpr size_t kFramebufferSize = static_cast<size_t>(kWidth) * kPages;  // 1024
+
+// Layout (must match UiService.cpp)
+constexpr common::Rect kStatusTextRect{0U, 0U, 96U, 16U};
+constexpr common::Rect kStatusBatRect{96U, 0U, 16U, 16U};
+constexpr common::Rect kStatusWifiRect{112U, 0U, 16U, 16U};
+
+constexpr common::Rect kMainIconRect{0U, 16U, common::fonts::Icon48W, common::fonts::Icon48H};
+constexpr common::Rect kMainTextRect{static_cast<uint8_t>(common::fonts::Icon48W + 4U), 16U,
+                                     static_cast<uint8_t>(128U - (common::fonts::Icon48W + 4U)),
+                                     48U};
+
+struct Window {
+    uint8_t col0, col1, page0, page1;
+    size_t len;
+};
+
+inline Window rectToWindow(const common::Rect& r) {
+    const uint16_t x0 = r.x;
+    const uint16_t y0 = r.y;
+    const uint16_t x1 = std::min<uint16_t>(static_cast<uint16_t>(r.x) + r.w, kWidth);
+    const uint16_t y1 = std::min<uint16_t>(static_cast<uint16_t>(r.y) + r.h, kHeight);
+
+    Window w{};
+    w.col0 = static_cast<uint8_t>(x0);
+    w.col1 = static_cast<uint8_t>(x1 - 1);
+    w.page0 = static_cast<uint8_t>(y0 / 8);
+    w.page1 = static_cast<uint8_t>((y1 - 1) / 8);
+
+    const size_t widthBytes = static_cast<size_t>(x1 - x0);
+    const size_t pagesCnt = static_cast<size_t>(w.page1 - w.page0 + 1);
+    w.len = widthBytes * pagesCnt;
+    return w;
+}
+
+inline std::vector<uint8_t> packFromFramebuffer(const std::vector<uint8_t>& fb, uint8_t col0,
+                                                uint8_t col1, uint8_t page0, uint8_t page1) {
+    const size_t widthBytes = static_cast<size_t>(col1 - col0 + 1);
+    const size_t pagesCnt = static_cast<size_t>(page1 - page0 + 1);
+
+    std::vector<uint8_t> out;
+    out.resize(widthBytes * pagesCnt);
+
+    size_t off = 0;
+    for (uint8_t p = page0; p <= page1; ++p) {
+        const size_t base = static_cast<size_t>(p) * kWidth + col0;
+        std::memcpy(out.data() + off, fb.data() + base, widthBytes);
+        off += widthBytes;
+    }
+    return out;
+}
+
+}  // namespace
 
 void UiServiceTest::SetUp() {
-    mockDisplay = std::make_unique<adapters::MockDisplay>();
-    mockRepo = std::make_unique<services::MockStationRepository>();
+    mockDisplay = std::make_unique<StrictMock<adapters::MockDisplay>>();
+    mockRepo = std::make_unique<StrictMock<services::MockStationRepository>>();
 
     uiService = std::make_unique<services::UiService>(*mockDisplay, *mockRepo);
 }
@@ -26,56 +88,161 @@ void UiServiceTest::TearDown() {
     mockRepo.reset();
 }
 
-TEST_F(UiServiceTest, tc01_onEvent_renderStations_fetchesFromRepoAndDisplays) {
-    // Preparation
-    std::vector<common::StationData> stations = {{"id1", "S1", "url1"}, {"id2", "S2", "url2"}};
-    std::vector<uint8_t> expectedFrameBuffer(FRAMEBUFFER_SIZE, 0);
+void UiServiceTest::initSuccess() {
+    static const common::StationData station{"id", "AB", "url"};
+    EXPECT_CALL(*mockRepo, currentStation()).WillRepeatedly(ReturnRef(station));
 
-    // TODO: make a copy of the src for filling or leave as is?
-    // after status bar + indicator
-    const uint16_t page1base = (8U / 8U) * 128U + 6U;
-    // after status bar + after station 1 + indicator
-    const uint16_t page2base = (16U / 8U) * 128U + 6U;
-    expectedFrameBuffer[page1base + 0] = common::FONT5x7[static_cast<uint8_t>('S')][0];
-    expectedFrameBuffer[page1base + 1] = common::FONT5x7[static_cast<uint8_t>('S')][1];
-    expectedFrameBuffer[page1base + 2] = common::FONT5x7[static_cast<uint8_t>('S')][2];
-    expectedFrameBuffer[page1base + 3] = common::FONT5x7[static_cast<uint8_t>('S')][3];
-    expectedFrameBuffer[page1base + 4] = common::FONT5x7[static_cast<uint8_t>('S')][4];
-    expectedFrameBuffer[page1base + 5] = 0x00;  // 1px spacing
-    expectedFrameBuffer[page1base + 6] = common::FONT5x7[static_cast<uint8_t>('1')][0];
-    expectedFrameBuffer[page1base + 7] = common::FONT5x7[static_cast<uint8_t>('1')][1];
-    expectedFrameBuffer[page1base + 8] = common::FONT5x7[static_cast<uint8_t>('1')][2];
-    expectedFrameBuffer[page1base + 9] = common::FONT5x7[static_cast<uint8_t>('1')][3];
-    expectedFrameBuffer[page1base + 10] = common::FONT5x7[static_cast<uint8_t>('1')][4];
-    expectedFrameBuffer[page1base + 11] = 0x00;  // 1px spacing
-    expectedFrameBuffer[page2base + 0] = common::FONT5x7[static_cast<uint8_t>('S')][0];
-    expectedFrameBuffer[page2base + 1] = common::FONT5x7[static_cast<uint8_t>('S')][1];
-    expectedFrameBuffer[page2base + 2] = common::FONT5x7[static_cast<uint8_t>('S')][2];
-    expectedFrameBuffer[page2base + 3] = common::FONT5x7[static_cast<uint8_t>('S')][3];
-    expectedFrameBuffer[page2base + 4] = common::FONT5x7[static_cast<uint8_t>('S')][4];
-    expectedFrameBuffer[page2base + 5] = 0x00;  // 1px spacing
-    expectedFrameBuffer[page2base + 6] = common::FONT5x7[static_cast<uint8_t>('2')][0];
-    expectedFrameBuffer[page2base + 7] = common::FONT5x7[static_cast<uint8_t>('2')][1];
-    expectedFrameBuffer[page2base + 8] = common::FONT5x7[static_cast<uint8_t>('2')][2];
-    expectedFrameBuffer[page2base + 9] = common::FONT5x7[static_cast<uint8_t>('2')][3];
-    expectedFrameBuffer[page2base + 10] = common::FONT5x7[static_cast<uint8_t>('2')][4];
-    expectedFrameBuffer[page2base + 11] = 0x00;  // 1px spacing
-
-    common::UiRenderEvent event;
-    event.renderType = common::RenderType::Stations;
-    event.selectedStationIndex = 1;
-
-    // Expectations
-    EXPECT_CALL(*mockRepo, getStations()).WillOnce(::testing::ReturnRef(stations));
-    EXPECT_CALL(*mockDisplay, showFramebuffer(_, expectedFrameBuffer.size()))
-        .Times(1)
-        .WillOnce([&expectedFrameBuffer](const uint8_t* framebuffer, const size_t& len) {
-            EXPECT_EQ(expectedFrameBuffer.size(), len);
-            EXPECT_TRUE(std::memcmp(framebuffer, expectedFrameBuffer.data(), len) == 0);
-
+    EXPECT_CALL(*mockDisplay, showFramebuffer(_, _))
+        .WillOnce([&](const uint8_t* fb, const size_t len) {
+            EXPECT_EQ(len, kFramebufferSize);
+            const auto& v = uiService->getFramebuffer();
+            EXPECT_EQ(fb, v.data());
+            EXPECT_TRUE(std::any_of(v.begin(), v.end(), [](uint8_t b) { return b != 0; }));
             return true;
         });
 
-    // Act
-    uiService->onEvent(event);
+    EXPECT_TRUE(uiService->init());
+}
+
+TEST_F(UiServiceTest, tc01_init_success) {
+    initSuccess();
+}
+
+TEST_F(UiServiceTest, tc02_init_fail_wifiEvent_fullFlush) {
+    static const common::StationData station{"id", "AB", "url"};
+    EXPECT_CALL(*mockRepo, currentStation()).WillRepeatedly(ReturnRef(station));
+
+    EXPECT_CALL(*mockDisplay, showFramebuffer(_, _)).WillOnce(Return(false));
+    EXPECT_FALSE(uiService->init());
+
+    EXPECT_CALL(*mockDisplay, showFramebuffer(_, _)).WillOnce(Return(true));
+
+    common::WifiStateChangedEvent e{};
+    e.isConnected = true;
+    e.bars = 3;
+    uiService->onEvent(e);
+}
+
+TEST_F(UiServiceTest, tc03_stationEvent_partialFlush) {
+    initSuccess();
+
+    static const common::StationData station{"id", "AB", "url"};
+    EXPECT_CALL(*mockRepo, currentStation()).WillOnce(ReturnRef(station));
+
+    const auto win = rectToWindow(kMainTextRect);
+
+    EXPECT_CALL(*mockDisplay, showWindow(win.col0, win.col1, win.page0, win.page1, _, _))
+        .WillOnce([&](const uint8_t col0, const uint8_t col1, const uint8_t page0,
+                      const uint8_t page1, const uint8_t* data, const size_t len) {
+            EXPECT_EQ(len, win.len);
+
+            const auto expected =
+                packFromFramebuffer(uiService->getFramebuffer(), col0, col1, page0, page1);
+            EXPECT_EQ(expected.size(), len);
+            EXPECT_EQ(0, std::memcmp(data, expected.data(), len));
+            return true;
+        });
+
+    uiService->onEvent(common::CurrentStationChangedEvent{});
+
+    const uint8_t x = kMainTextRect.x;
+    const uint8_t page0 = 2;
+    const auto* glyphA = common::fonts::mainGlyph('A');
+    ASSERT_NE(glyphA, nullptr);
+
+    for (uint8_t p = 0; p < common::fonts::MainPages; ++p) {
+        const size_t fbBase = static_cast<size_t>(page0 + p) * kWidth + x;
+        const size_t srcBase = static_cast<size_t>(p) * common::fonts::MainW;
+        EXPECT_EQ(0, std::memcmp(uiService->getFramebuffer().data() + fbBase, glyphA + srcBase,
+                                 common::fonts::MainW));
+    }
+}
+
+TEST_F(UiServiceTest, tc04_wifiEvent_partialFlush) {
+    initSuccess();
+
+    const auto win = rectToWindow(kStatusWifiRect);
+
+    EXPECT_CALL(*mockDisplay, showWindow(win.col0, win.col1, win.page0, win.page1, _, _))
+        .WillOnce([&](const uint8_t col0, const uint8_t col1, const uint8_t page0,
+                      const uint8_t page1, const uint8_t* data, const size_t len) {
+            EXPECT_EQ(len, win.len);
+            const auto expected =
+                packFromFramebuffer(uiService->getFramebuffer(), col0, col1, page0, page1);
+            EXPECT_EQ(0, std::memcmp(data, expected.data(), len));
+            return true;
+        });
+
+    common::WifiStateChangedEvent e{};
+    e.isConnected = true;
+    e.bars = 3;
+    uiService->onEvent(e);
+}
+
+TEST_F(UiServiceTest, tc05_wifiEvent_noFlush) {
+    initSuccess();
+
+    common::WifiStateChangedEvent e{};
+    e.isConnected = false;
+    e.bars = 0;
+    uiService->onEvent(e);
+}
+
+TEST_F(UiServiceTest, tc06_tempEvent_partialFlush) {
+    initSuccess();
+    const auto win = rectToWindow(kStatusTextRect);
+
+    EXPECT_CALL(*mockDisplay, showWindow(win.col0, win.col1, win.page0, win.page1, _, _))
+        .WillOnce([&](const uint8_t col0, const uint8_t col1, const uint8_t page0,
+                      const uint8_t page1, const uint8_t* data, const size_t len) {
+            EXPECT_EQ(len, win.len);
+            const auto expected =
+                packFromFramebuffer(uiService->getFramebuffer(), col0, col1, page0, page1);
+            EXPECT_EQ(0, std::memcmp(data, expected.data(), len));
+            return true;
+        });
+
+    common::TempHumidUpdateEvent t{};
+    t.temperature = 12;
+    t.humidity = 34;
+    uiService->onEvent(t);
+}
+
+TEST_F(UiServiceTest, tc07_playbackEvent_partialFlush) {
+    initSuccess();
+    const auto win = rectToWindow(kMainIconRect);
+
+    EXPECT_CALL(*mockDisplay, showWindow(win.col0, win.col1, win.page0, win.page1, _, _))
+        .WillOnce([&](const uint8_t col0, const uint8_t col1, const uint8_t page0,
+                      const uint8_t page1, const uint8_t* data, const size_t len) {
+            EXPECT_EQ(len, win.len);
+            const auto expected =
+                packFromFramebuffer(uiService->getFramebuffer(), col0, col1, page0, page1);
+            EXPECT_EQ(0, std::memcmp(data, expected.data(), len));
+            return true;
+        });
+
+    common::PlaybackStatusChangedEvent p{};
+    p.status = common::PlaybackStatus::Playing;
+    uiService->onEvent(p);
+}
+
+TEST_F(UiServiceTest, tc08_wifiEvent_partialFlush_fail_tempEvent_fullFlush) {
+    initSuccess();
+
+    const auto win = rectToWindow(kStatusWifiRect);
+    EXPECT_CALL(*mockDisplay, showWindow(win.col0, win.col1, win.page0, win.page1, _, _))
+        .WillOnce(Return(false));
+
+    common::WifiStateChangedEvent e{};
+    e.isConnected = true;
+    e.bars = 2;
+    uiService->onEvent(e);
+
+    EXPECT_CALL(*mockDisplay, showFramebuffer(_, _)).WillOnce(Return(true));
+
+    common::TempHumidUpdateEvent t{};
+    t.temperature = 20;
+    t.humidity = 50;
+    uiService->onEvent(t);
 }

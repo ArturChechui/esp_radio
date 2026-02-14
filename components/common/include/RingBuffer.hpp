@@ -7,9 +7,9 @@
 #include <cstdint>
 #include <vector>
 
-#include "BinarySemaphore.hpp"
 #include "IRingBuffer.hpp"
 #include "Mutex.hpp"
+#include "Signal.hpp"
 
 namespace common {
 /**
@@ -72,8 +72,8 @@ class RingBuffer : public IRingBuffer {
     bool mAborted;
 
     mutable common::Mutex mMutex;
-    mutable common::BinarySemaphore mDataSignal;
-    mutable common::BinarySemaphore mSpaceSignal;
+    mutable common::Signal mDataSignal;
+    mutable common::Signal mSpaceSignal;
 };
 
 }  // namespace common

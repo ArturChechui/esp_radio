@@ -2,10 +2,11 @@ idf_component_register(
   SRCS
   "src/RingBuffer.cpp"
   "src/Mutex.cpp"
-  "src/SemaphoreGuard.cpp"
-  "src/BinarySemaphore.cpp"
+  "src/LockGuard.cpp"
+  "src/Signal.cpp"
   "src/StopToken.cpp"
   "src/TaskRunner.cpp"
+  "src/EventTask.cpp"
   INCLUDE_DIRS
   include
   REQUIRES

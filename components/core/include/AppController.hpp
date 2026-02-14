@@ -35,7 +35,7 @@ class AppController : public common::IEventHandler {
    private:
     void handleSystemReadyEvent(const common::SystemReadyEvent& event);
     void handleButtonPressedEvent(const common::ButtonPressedEvent& event);
-    void handleTemperatureUpdateEvent(const common::TemperatureUpdateEvent& event);
+    void handleTempHumidUpdateEvent(const common::TempHumidUpdateEvent& event);
 
     services::IPlayerService& mPlayerService;
     services::IStationRepository& mStationRepository;

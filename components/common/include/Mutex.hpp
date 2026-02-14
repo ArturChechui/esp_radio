@@ -1,51 +1,28 @@
 #pragma once
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/semphr.h>
-#include <freertos/task.h>
+#include <cstdint>
+#include <memory>
 
 namespace common {
-
-/**
- * @brief Thread-safe mutex wrapper (FreeRTOS semaphore)
- *
- * Handles creation/deletion, safe for concurrent access.
- * Use with SemaphoreGuard for automatic locking/unlocking.
- */
 class Mutex {
    public:
-    /**
-     * @brief Create a new mutex
-     */
     Mutex();
-
-    /**
-     * @brief Destroy mutex and free resources
-     */
     ~Mutex();
 
-    /**
-     * @brief Get native FreeRTOS handle (for SemaphoreGuard)
-     */
-    SemaphoreHandle_t handle() const;
-
-    /**
-     * @brief Check if mutex is valid
-     */
-    bool isValid() const;
-
-    // Prevent copying
     Mutex(const Mutex&) = delete;
     Mutex& operator=(const Mutex&) = delete;
 
-    // Allow moving
-    Mutex(Mutex&& other) noexcept;
-    Mutex& operator=(Mutex&& other) noexcept;
+    Mutex(Mutex&&) = delete;
+    Mutex& operator=(Mutex&&) = delete;
+
+    void lock();
+    void unlock();
+    bool tryLock(const uint32_t timeoutMs = 0);
+    bool isValid() const;
 
    private:
-    // Static storage for the mutex
-    StaticSemaphore_t mStorage{};
-    SemaphoreHandle_t mHandle;
+    struct Impl;
+    std::unique_ptr<Impl> m;
 };
 
 }  // namespace common
