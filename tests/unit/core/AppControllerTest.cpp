@@ -113,7 +113,7 @@ TEST_F(AppControllerTest, tc08_buttonEvent_playStop_stop) {
     appController->onEvent(e2);
 }
 
-TEST_F(AppControllerTest, tc09_buttonEvent_up_stop_nextStation_playStation) {
+TEST_F(AppControllerTest, tc09_buttonEvent_next_stop_nextStation_playStation) {
     EXPECT_TRUE(appController->init());
 
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
@@ -123,7 +123,7 @@ TEST_F(AppControllerTest, tc09_buttonEvent_up_stop_nextStation_playStation) {
     EXPECT_CALL(*mockStationRepo, nextStation()).WillOnce(ReturnRef(station));
     EXPECT_CALL(*mockPlayerService, playStation(station.url)).WillOnce(Return(true));
     common::ButtonPressedEvent e{};
-    e.button = common::Button::Up;
+    e.button = common::Button::Next;
     appController->onEvent(e);
 
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
@@ -138,7 +138,7 @@ TEST_F(AppControllerTest, tc09_buttonEvent_up_stop_nextStation_playStation) {
     appController->onEvent(e3);
 }
 
-TEST_F(AppControllerTest, tc10_buttonEvent_up_nextStation_playStation) {
+TEST_F(AppControllerTest, tc10_buttonEvent_next_nextStation_playStation) {
     EXPECT_TRUE(appController->init());
 
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
@@ -147,7 +147,7 @@ TEST_F(AppControllerTest, tc10_buttonEvent_up_nextStation_playStation) {
     EXPECT_CALL(*mockStationRepo, nextStation()).WillOnce(ReturnRef(station));
     EXPECT_CALL(*mockPlayerService, playStation(station.url)).WillOnce(Return(true));
     common::ButtonPressedEvent e{};
-    e.button = common::Button::Up;
+    e.button = common::Button::Next;
     appController->onEvent(e);
 
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
@@ -156,7 +156,7 @@ TEST_F(AppControllerTest, tc10_buttonEvent_up_nextStation_playStation) {
     appController->onEvent(e2);
 }
 
-TEST_F(AppControllerTest, tc11_buttonEvent_up_nextStation_playStation_Error) {
+TEST_F(AppControllerTest, tc11_buttonEvent_next_nextStation_playStation_Error) {
     EXPECT_TRUE(appController->init());
 
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
@@ -165,7 +165,7 @@ TEST_F(AppControllerTest, tc11_buttonEvent_up_nextStation_playStation_Error) {
     EXPECT_CALL(*mockStationRepo, nextStation()).WillOnce(ReturnRef(station));
     EXPECT_CALL(*mockPlayerService, playStation(station.url)).WillOnce(Return(true));
     common::ButtonPressedEvent e{};
-    e.button = common::Button::Up;
+    e.button = common::Button::Next;
     appController->onEvent(e);
 
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
@@ -174,7 +174,7 @@ TEST_F(AppControllerTest, tc11_buttonEvent_up_nextStation_playStation_Error) {
     appController->onEvent(e2);
 }
 
-TEST_F(AppControllerTest, tc12_buttonEvent_down_stop_prevStation_playStation) {
+TEST_F(AppControllerTest, tc12_buttonEvent_prev_stop_prevStation_playStation) {
     EXPECT_TRUE(appController->init());
 
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
@@ -184,7 +184,7 @@ TEST_F(AppControllerTest, tc12_buttonEvent_down_stop_prevStation_playStation) {
     EXPECT_CALL(*mockStationRepo, prevStation()).WillOnce(ReturnRef(station));
     EXPECT_CALL(*mockPlayerService, playStation(station.url)).WillOnce(Return(true));
     common::ButtonPressedEvent e{};
-    e.button = common::Button::Down;
+    e.button = common::Button::Previous;
     appController->onEvent(e);
 
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
@@ -193,7 +193,7 @@ TEST_F(AppControllerTest, tc12_buttonEvent_down_stop_prevStation_playStation) {
     appController->onEvent(e2);
 }
 
-TEST_F(AppControllerTest, tc13_buttonEvent_down_nextStation_playStation) {
+TEST_F(AppControllerTest, tc13_buttonEvent_prev_nextStation_playStation) {
     EXPECT_TRUE(appController->init());
 
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
@@ -202,11 +202,22 @@ TEST_F(AppControllerTest, tc13_buttonEvent_down_nextStation_playStation) {
     EXPECT_CALL(*mockStationRepo, prevStation()).WillOnce(ReturnRef(station));
     EXPECT_CALL(*mockPlayerService, playStation(station.url)).WillOnce(Return(true));
     common::ButtonPressedEvent e{};
-    e.button = common::Button::Down;
+    e.button = common::Button::Previous;
     appController->onEvent(e);
 
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
     common::PlaybackStatusChangedEvent e2{};
     e2.status = common::PlaybackStatus::Playing;
     appController->onEvent(e2);
+}
+
+TEST_F(AppControllerTest, tc14_volEvent_setVolume) {
+    EXPECT_TRUE(appController->init());
+
+    EXPECT_CALL(*mockPlayerService, setVolume(50)).Times(1);
+    EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
+
+    common::VolumeChangedEvent e{};
+    e.volume = 50;
+    appController->onEvent(e);
 }

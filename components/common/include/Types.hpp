@@ -12,7 +12,7 @@ namespace common {
 enum class CommandType : uint8_t { PlayStopSkip, RestoreLastMode, UpdateStations };
 enum class StopResult : uint8_t { Ok, InvalidHandle, Timeout };
 enum class StepAction : uint8_t { Continue, Sleep, Done, Error };
-enum class Button : uint8_t { PlayStop = 0U, Up, Down };
+enum class Button : uint8_t { PlayStop = 0U, Next, Previous };
 enum class PlaybackStatus : uint8_t { Idle = 0U, Buffering, Playing, Stopped, Error };
 enum class GpioInputType : uint8_t {
     ButtonPressed = 0U,
@@ -30,7 +30,12 @@ enum class Icon : uint8_t {
     BatteryLow = 7U,
     BatteryMid = 8U,
     BatteryFull = 9U,
-    Speaker = 10U,
+    Volume0 = 10U,
+    Volume1 = 11U,
+    Volume2 = 12U,
+    Volume3 = 13U,
+    Volume4 = 14U,
+    Volume5 = 15U,
     _MAX = 31U
 };
 

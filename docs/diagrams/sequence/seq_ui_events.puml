@@ -28,6 +28,7 @@ CurrentStationChangedEvent{} - Main Text area - from (x=28, y=16) to the end of 
 TempHumidUpdateEvent{} - Status Text area - from (x=0, y=0) to the Battery Icon
 WifiStateChangedEvent{} - Wifi Icon area - from (x=112, y=0) to the end
 PlaybackStatusChangedEvent{} - Main Icon area - from (x=0, y=16) to the Main Text area
+VolumeChangedEvent{} - Volume Icon area - from (x=80, y=0) to (x=96, y=0)
 end note
 
 alt event == CurrentStationChangedEvent{}

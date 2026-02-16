@@ -42,6 +42,7 @@ EventTask::~EventTask() {
         mTaskRunner.stop(mTaskHandle, 2000U);
     }
 
+    // TODO: make a leak if stop failed, it is safer
     if (mEventQueue != nullptr) {
         // Drain leftovers safely
         AppEvent* eventPtr = nullptr;

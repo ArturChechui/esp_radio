@@ -7,6 +7,7 @@ idf_component_register(
   "src/StopToken.cpp"
   "src/TaskRunner.cpp"
   "src/EventTask.cpp"
+  "src/Clock.cpp"
   INCLUDE_DIRS
   include
   REQUIRES

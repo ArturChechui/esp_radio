@@ -62,7 +62,7 @@ void PlayStopSkipCommand::startAction() {
             }
             break;
         }
-        case common::Button::Up: {
+        case common::Button::Next: {
             if (isPlayingOrBuffering(st)) {
                 ESP_LOGI(Tag, "Skip -> stop");
                 (void)mPlayerService.stop();
@@ -73,7 +73,7 @@ void PlayStopSkipCommand::startAction() {
             (void)mPlayerService.playStation(station.url);
             break;
         }
-        case common::Button::Down: {
+        case common::Button::Previous: {
             if (isPlayingOrBuffering(st)) {
                 ESP_LOGI(Tag, "Skip -> stop");
                 (void)mPlayerService.stop();
@@ -107,8 +107,8 @@ bool PlayStopSkipCommand::onPlaybackStatus(common::PlaybackStatus s) {
             }
             break;
         }
-        case common::Button::Up:
-        case common::Button::Down: {
+        case common::Button::Next:
+        case common::Button::Previous: {
             if (s == common::PlaybackStatus::Playing || s == common::PlaybackStatus::Buffering) {
                 mFinished = true;
                 ESP_LOGI(Tag, "Finished");

@@ -11,7 +11,7 @@ skinparam ranksep 90
 component "5V Supply" as PWR #EEEEEE
 
 package "Inputs" as INP {
-  component "Buttons x3\n(Up, Down, Play/Stop)" as BTN #F5F5F5
+  component "Buttons x3\n(Next, Previous, Play/Stop)" as BTN #F5F5F5
   component "Rotary Encoder EC11" as ENC #F5F5F5
 }
 

@@ -37,7 +37,6 @@ constexpr uint32_t AvailDataTimeoutMs = 200U;         // for waiting for data
 constexpr uint32_t NoWaitMs = 0U;                     // for non-blocking calls
 constexpr uint32_t LowWaterMarkBytes = 40U * 1024U;   // Speeds up the HTTP task
 constexpr uint32_t HighWaterMarkBytes = 60U * 1024U;  // Slows down the HTTP task
-// TODO: uint32_t to TickType_t?
 
 constexpr int StereoChannels = 2;
 constexpr int MonoChannels = 1;
@@ -46,11 +45,12 @@ constexpr size_t I2sChunkBytes = 2304U;  // must be multiple of sample size to a
 constexpr uint32_t I2sTimeoutMs = 600U;  // allow blocking/yielding to keep IDLE alive
 
 constexpr size_t InputScratchBytes = 4096U;  // Scratch buffer for wrap-boundary frames
-constexpr int32_t VolumeQ15 = 3277;
-// 4915;  // 6554;          // Volume in Q15 fixed point (0..32768). 0.20 ~= 6554
+constexpr int32_t InitVolQ15 = 3277;         // Volume in Q15 fixed point (0..32768). 0.10 ~= 3277
 
 constexpr size_t ResyncThresholdBytes = 2048U;  // if more, try to resync MP3 frame
 constexpr size_t MaxNoDataReads = 100U;  // after this many zero-byte reads, consider stream ended
+
+constexpr int32_t Q15One = 0x7FFF;  // 32767
 }  // namespace
 
 PlayerService::PlayerService(adapters::II2sBus& i2sBus, adapters::IHttpClient& httpClient,
@@ -75,7 +75,8 @@ PlayerService::PlayerService(adapters::II2sBus& i2sBus, adapters::IHttpClient& h
       mRingBuffer(std::move(ringBuffer)),
       mInputScratch(InputScratchBytes),
       mPcm(adapters::MaxSamplesPerFrame),
-      mMonoToStereo(adapters::MaxSamplesPerFrame * StereoChannels) {
+      mMonoToStereo(adapters::MaxSamplesPerFrame * StereoChannels),
+      mVolumeQ15(InitVolQ15) {
     ESP_LOGI(Tag, "PlayerService created");
 }
 
@@ -95,11 +96,11 @@ PlayerService::~PlayerService() {
 
     if (mHttpTaskHandle.isValid()) {
         (void)mTaskRunner.stop(mHttpTaskHandle, TimeoutToExitTasks);
-        mHttpTaskHandle = {};
+        mHttpTaskHandle.reset();
     }
     if (mPlayerTaskHandle.isValid()) {
         (void)mTaskRunner.stop(mPlayerTaskHandle, TimeoutToExitTasks);
-        mPlayerTaskHandle = {};
+        mPlayerTaskHandle.reset();
     }
 }
 
@@ -202,6 +203,17 @@ common::PlaybackStatus PlayerService::getStatus() const {
 
 std::string PlayerService::getCurrentUrl() const {
     return mCurrentUrl;
+}
+
+int32_t PlayerService::getVolumeQ15() const {
+    return mVolumeQ15.load(std::memory_order_relaxed);
+}
+
+void PlayerService::setVolume(const uint8_t vol) {
+    ESP_LOGI(Tag, "setVolume(%u)", vol);
+
+    const int32_t volQ15 = volumePercentToQ15(vol);
+    mVolumeQ15.store(volQ15, std::memory_order_relaxed);
 }
 
 void PlayerService::onPlaybackStatusChanged(const common::PlaybackStatus& status) {
@@ -403,12 +415,13 @@ common::StepResult PlayerService::consumeOnce(common::IStopToken& token) {
         (void)mI2sBus.reconfigureClock(static_cast<uint32_t>(info.hz));
     }
 
+    const int32_t volQ15 = mVolumeQ15.load(std::memory_order_relaxed);
     const int16_t* outSamples = nullptr;
     if (info.channels == MonoChannels) {
-        convertMonoToStereoQ15(mPcm.data(), mMonoToStereo.data(), info.samplesPerCh, VolumeQ15);
+        convertMonoToStereoQ15(mPcm.data(), mMonoToStereo.data(), info.samplesPerCh, volQ15);
         outSamples = mMonoToStereo.data();
     } else {
-        applyVolumeStereoQ15(mPcm.data(), info.samplesPerCh, VolumeQ15);
+        applyVolumeStereoQ15(mPcm.data(), info.samplesPerCh, volQ15);
         outSamples = mPcm.data();
     }
 
@@ -509,6 +522,10 @@ void PlayerService::applyVolumeStereoQ15(int16_t* stereo, const int samplesPerCh
 
         stereo[i] = static_cast<int16_t>(x);
     }
+}
+
+int32_t PlayerService::volumePercentToQ15(const uint8_t volume) {
+    return (static_cast<int32_t>(volume) * Q15One) / 100;
 }
 
 }  // namespace services

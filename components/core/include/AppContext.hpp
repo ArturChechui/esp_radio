@@ -18,6 +18,8 @@
 
 // Common
 #include "AudioBufferStats.hpp"
+#include "Clock.hpp"
+#include "Queue.hpp"
 #include "TaskRunner.hpp"
 
 // Services
@@ -51,6 +53,8 @@ class AppContext {
     // Common
     std::unique_ptr<common::TaskRunner> mTaskRunner;
     std::unique_ptr<common::AudioBufferStats> mStats;
+    std::unique_ptr<common::Queue<uint32_t>> mQueue;
+    std::unique_ptr<common::Clock> mClock;
 
     // Tasks
     std::unique_ptr<common::EventTask> mUiEventTask;

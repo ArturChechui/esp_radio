@@ -34,7 +34,7 @@ An ESP32-S3 based internet radio device that:
 - Temp/Hum: AHT20 (I2C)
 - Audio: 2x MAX98357 (I2S DAC/amp) + 2x 8Ohms 3W speakers
 - Inputs:
-  - Buttons: Up, Down, Play/Stop
+  - Buttons: Next, Previous, Play/Stop
   - Rotary encoder EC11 for Volume
 
 ## 3. Functional Requirements (FR)
@@ -42,7 +42,7 @@ An ESP32-S3 based internet radio device that:
 ### FR-01 Station list display
 
 - The device shall display a list of stations.
-- Up to 6 stations shall be visible at once.
+- Next to 6 stations shall be visible at once.
 - Station names shall be truncated if they exceed display width.
 
 Acceptance:
@@ -68,13 +68,13 @@ Acceptance:
 ### FR-04 Active station indicator & navigation
 
 - The selected station shall be marked with a play icon if playing, and a stop icon if stopped.
-- `Up` shall switch to the previous station and start playback.
-- `Down` shall switch to the next station and start playback.
+- `Next` shall switch to the previous station and start playback.
+- `Previous` shall switch to the next station and start playback.
 - Selection wraps at list boundaries.
 
 Acceptance:
 
-- Pressing Up/Down switches station and updates the marker within 50 ms.
+- Pressing Next/Previous switches station and updates the marker within 50 ms.
 - UI shows correct playback status icon for the active/selected station.
 
 ### FR-05 Volume control (rotary encoder)

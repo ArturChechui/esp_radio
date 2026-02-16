@@ -392,3 +392,11 @@ TEST_F(PlayerServiceTest, tc12_playStation_decodeFail_retry_decodeOk) {
         .Times(::testing::Exactly(2))
         .WillRepeatedly(::testing::Return(common::StopResult::Ok));
 }
+
+TEST_F(PlayerServiceTest, tc13_setVolume) {
+    playerService->setVolume(50);
+    EXPECT_EQ(playerService->getVolumeQ15(), 16383);
+
+    playerService->setVolume(10);
+    EXPECT_EQ(playerService->getVolumeQ15(), 3276);
+}
