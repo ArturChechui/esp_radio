@@ -40,6 +40,8 @@ class PlayerService : public IPlayerService {
     bool stop() override;
     common::PlaybackStatus getStatus() const override;
     std::string getCurrentUrl() const override;
+    int32_t getVolumeQ15() const override;
+    void setVolume(const uint8_t vol) override;
 
     static constexpr size_t RingBufferSize = 64U * 1024U;
 
@@ -61,6 +63,7 @@ class PlayerService : public IPlayerService {
     static void convertMonoToStereoQ15(const int16_t* mono, int16_t* outStereo, const int samples,
                                        const int32_t volQ15);
     static void applyVolumeStereoQ15(int16_t* stereo, const int samplesPerCh, const int32_t volQ15);
+    static int32_t volumePercentToQ15(const uint8_t volume);
 
     common::PlaybackStatus mStatus;
     std::string mCurrentUrl;
@@ -84,6 +87,8 @@ class PlayerService : public IPlayerService {
     std::vector<uint8_t> mInputScratch;  // only for ring wrap boundary decode
     std::vector<int16_t> mPcm;           // minimp3 output
     std::vector<int16_t> mMonoToStereo;  // mono->stereo conversion buffer
+
+    std::atomic<int32_t> mVolumeQ15;
 };
 
 }  // namespace services

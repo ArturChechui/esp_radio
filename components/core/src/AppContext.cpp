@@ -35,6 +35,8 @@ bool AppContext::init() {
     // STEP 2: Common components
     mTaskRunner = std::make_unique<common::TaskRunner>();
     mStats = std::make_unique<common::AudioBufferStats>(10000U);
+    mClock = std::make_unique<common::Clock>();
+    mQueue = std::make_unique<common::Queue<uint32_t>>("InputQueue");
 
     // STEP 3: Initialize WiFi
     ESP_LOGI(Tag, "Step 2: Initializing WiFi...");
@@ -47,7 +49,7 @@ bool AppContext::init() {
     mHttpClient = std::make_unique<adapters::HttpClient>();
     mMp3Decoder = std::make_unique<adapters::Mp3Decoder>();
     mDisplay = std::make_unique<adapters::Display>(*mI2cBus);
-    mGpioInput = std::make_unique<adapters::GpioInput>();
+    mGpioInput = std::make_unique<adapters::GpioInput>(*mQueue);
     if (!mI2sBus->init() || !mI2cBus->init() || !mDisplay->init() || !mGpioInput->init()) {
         ESP_LOGE(Tag, "Failed to init adapters");
         return false;
@@ -58,7 +60,8 @@ bool AppContext::init() {
     mCoreEventTask = std::make_unique<common::EventTask>("CoreEventTask", *mTaskRunner);
 
     // STEP 6: Create services
-    mInputService = std::make_unique<services::InputService>(*mGpioInput, *mCoreEventTask);
+    mInputService = std::make_unique<services::InputService>(*mGpioInput, *mCoreEventTask, *mQueue,
+                                                             *mTaskRunner, *mClock);
     mPlayerService = std::make_unique<services::PlayerService>(
         *mI2sBus, *mHttpClient, *mMp3Decoder, *mTaskRunner,
         std::make_unique<common::RingBuffer>(services::PlayerService::RingBufferSize), *mStats,
@@ -86,6 +89,7 @@ bool AppContext::init() {
         return false;
     }
 
+    // TODO: move to AppController to do it on SystemReady event
     // STEP 7: Connect to WiFi (temporary here, later will be in a cmd)
     if (!mWifiService->connect(CONFIG_ESP_RADIO_WIFI_SSID, CONFIG_ESP_RADIO_WIFI_PASS,
                                *mCoreEventTask, 30000U)) {

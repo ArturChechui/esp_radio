@@ -1,0 +1,90 @@
+@startuml seq_change_volume.puml
+title ESP32 Internet Radio - Sequence Diagram (Change Volume)
+
+box "Core" #LightBlue
+participant "Core EventTask\n(IEventQueue)" as CET
+participant "Ui EventTask\n(IEventQueue)" as UET
+participant "AppController" as AC
+end box
+
+box "Services" #LightGreen
+participant "PlayerService" as PL
+participant "UiService" as UI
+participant "InputService" as IS
+end box
+
+box "Common" #LightGray
+participant "TaskRunner" as TR
+participant "Queue\n(IQueue)" as Q
+participant "Clock\n(IClock)" as C
+end box
+
+box "Adapters" #LightYellow
+participant "GpioInput\n(IGpioInput)" as GI
+end box
+
+
+box "ESP-IDF" #LightGray
+participant "ESP-IDF" as IDF
+end box
+
+== Init ==
+GI -> IDF ++: initialize and add isr handlers of the gpio pins
+return res
+IS -> TR ++: start task that handles queue
+activate IS
+return res
+
+== Change Volume ==
+
+IDF  -> GI ++: gpioIsrHandler(gpioNum)
+GI -> Q ++: pushFromIsr(gpioNum);
+return res
+return
+
+IS -> Q ++: get(gpioNum)
+return res
+
+alt gpioNum == EncS1Gpio || gpioNum == EncS2Gpio
+    IS -> IS: handle encoder gpio
+    IS -> GI ++: getLevel(s1);
+    GI -> IDF ++: gpio_get_level(gpioNum)
+    return val
+    return val
+    IS -> GI ++: getLevel(s2);
+    GI -> IDF ++: gpio_get_level(gpioNum)
+    return val
+    return val
+    IS -> IS: calc current QuadratureState
+    IS -> IS: decode transition
+    IS -> IS: accumulate quarter detents
+    IS -> IS: if there are full detents, apply
+    IS -> CET ++: post(VolumeChangedEvent{vol})
+    return res
+
+   
+    CET -> AC++: onEvent(VolumeChangedEvent{vol})
+    activate CET
+    AC -> PL++: setVolume(vol)
+    PL -> PL: store vol to atomic value \n that later be used in the player task
+    return
+    AC -> UET ++: post(VolumeChangedEvent{vol})
+    return res
+    return
+    deactivate CET
+
+    UET -> UI++: onEvent(VolumeChangedEvent{vol})
+    activate UET
+    UI -> UI: get volume icon
+    note right
+        See seq_ui_events.puml for details
+    end note
+    return
+    deactivate UET
+else
+    IS -> IS: handle button gpio
+    note right
+        See play, skip and stop seq diagrams for more details
+    end note
+end
+@enduml

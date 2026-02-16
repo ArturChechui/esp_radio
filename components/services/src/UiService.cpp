@@ -26,7 +26,8 @@ constexpr uint8_t Pages = Height / PageH;
 
 // Layout StatusRect + MainRect are not used, remove or reuse?
 constexpr common::Rect StatusRect{0U, 0U, 128U, 16U};  // pages 0..1
-constexpr common::Rect StatusTextRect{0U, 0U, 96U, 16U};
+constexpr common::Rect StatusTextRect{0U, 0U, 80U, 16U};
+constexpr common::Rect StatusVolRect{80U, 0U, 16U, 16U};
 constexpr common::Rect StatusBatRect{96U, 0U, 16U, 16U};
 constexpr common::Rect StatusWifiRect{112U, 0U, 16U, 16U};
 
@@ -51,7 +52,7 @@ static common::Icon barsToIcon(uint8_t bars) {
     }
 }
 
-static common::Icon playbackStatusToIcon(common::PlaybackStatus status) {
+static common::Icon playbackStatusToIcon(const common::PlaybackStatus status) {
     switch (status) {
         case common::PlaybackStatus::Playing:
             return common::Icon::Stop;
@@ -61,6 +62,26 @@ static common::Icon playbackStatusToIcon(common::PlaybackStatus status) {
         default:
             return common::Icon::Play;
     }
+}
+
+static common::Icon volumeToIcon(const uint8_t vol) {
+    if (vol == 0) {
+        return common::Icon::Volume0;
+    }
+    if (vol <= 20) {
+        return common::Icon::Volume1;
+    }
+    if (vol <= 35) {
+        return common::Icon::Volume2;
+    }
+    if (vol <= 45) {
+        return common::Icon::Volume3;
+    }
+    if (vol <= 69) {
+        return common::Icon::Volume4;
+    }
+    // vol 70..100
+    return common::Icon::Volume5;
 }
 
 static char toUpperAscii(const char ch) {
@@ -82,7 +103,7 @@ static inline bool validateRect(const common::Rect& r) {
     return true;
 }
 
-///
+// TODO: Do I introduce a new struct to simplify the code?
 // struct Window {
 //     uint8_t col0, col1, page0, page1;
 //     size_t len;
@@ -116,6 +137,7 @@ UiService::UiService(adapters::IDisplay& display, IStationRepository& stationRep
       mWifi(common::Icon::WifiOff),
       mBattery(common::Icon::BatteryMid),
       mPlayback(common::Icon::Play),
+      mVolume(common::Icon::Volume1),
       mFullFlushPending(false) {
     ESP_LOGI(Tag, "Creating UiService");
     mTxBuf.reserve(Width * Pages);
@@ -165,6 +187,14 @@ void UiService::onEvent(const common::AppEvent& event) {
                        mPlayback = next;
                        updatePlaybackIcon();
                    },
+                   [this](const common::VolumeChangedEvent& v) {
+                       const common::Icon next = volumeToIcon(v.volume);
+                       if (mVolume == next) {
+                           return;
+                       }
+                       mVolume = next;
+                       updateVolumeIcon();
+                   },
                    [](const auto&) {
                        // ignore other events
                    }},
@@ -176,6 +206,7 @@ void UiService::renderFullToFramebuffer() {
 
     const bool doFlush = false;
     updateStatusText(doFlush);
+    updateVolumeIcon(doFlush);
     updateBatteryIcon(doFlush);
     updateWifiIcon(doFlush);
 
@@ -237,6 +268,18 @@ void UiService::updateBatteryIcon(const bool doFlush) {
 
     if (doFlush) {
         flushRect(StatusBatRect);
+    }
+}
+
+void UiService::updateVolumeIcon(const bool doFlush) {
+    clearRect(StatusVolRect);
+
+    if (const auto* bmp = common::fonts::icon16(mVolume)) {
+        blitRect(StatusVolRect, bmp);
+    }
+
+    if (doFlush) {
+        flushRect(StatusVolRect);
     }
 }
 

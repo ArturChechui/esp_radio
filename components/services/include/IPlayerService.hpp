@@ -15,6 +15,8 @@ class IPlayerService {
     virtual bool stop() = 0;
     virtual common::PlaybackStatus getStatus() const = 0;
     virtual std::string getCurrentUrl() const = 0;
+    virtual int32_t getVolumeQ15() const = 0;
+    virtual void setVolume(const uint8_t vol) = 0;
 };
 
 }  // namespace services

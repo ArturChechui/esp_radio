@@ -3,8 +3,12 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
-namespace adapters {
+namespace common {
 void Clock::sleepMs(uint32_t ms) {
     vTaskDelay(pdMS_TO_TICKS(ms));
 }
-}  // namespace adapters
+
+uint64_t Clock::nowMs() const {
+    return static_cast<uint64_t>(pdTICKS_TO_MS(xTaskGetTickCount()));
+}
+}  // namespace common

@@ -10,10 +10,10 @@ inline std::string dump(const Button& b) {
     switch (b) {
         case Button::PlayStop:
             return "PlayStop";
-        case Button::Up:
-            return "Up";
-        case Button::Down:
-            return "Down";
+        case Button::Next:
+            return "Next";
+        case Button::Previous:
+            return "Previous";
         default:
             return "Unknown";
     }
@@ -58,8 +58,18 @@ inline std::string dump(const Icon& i) {
             return "BatteryMid";
         case Icon::BatteryFull:
             return "BatteryFull";
-        case Icon::Speaker:
-            return "Speaker";
+        case Icon::Volume0:
+            return "Volume0";
+        case Icon::Volume1:
+            return "Volume1";
+        case Icon::Volume2:
+            return "Volume2";
+        case Icon::Volume3:
+            return "Volume3";
+        case Icon::Volume4:
+            return "Volume4";
+        case Icon::Volume5:
+            return "Volume5";
         default:
             return "Unknown";
     }
@@ -108,6 +118,9 @@ inline std::string dump(const common::AppEvent& ev) {
                        return std::string("WifiStateChangedEvent{c=") +
                               (e.isConnected ? "true, b=" : "false, b=") + std::to_string(e.bars) +
                               "}";
+                   },
+                   [](const VolumeChangedEvent& e) {
+                       return std::string("VolumeChangedEvent{v=") + std::to_string(e.volume) + "}";
                    },
                    [](const auto&) { return std::string{"<unknown event>"}; }},
         ev);

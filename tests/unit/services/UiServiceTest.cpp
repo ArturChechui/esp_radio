@@ -23,7 +23,8 @@ constexpr uint8_t kPages = kHeight / 8;
 constexpr size_t kFramebufferSize = static_cast<size_t>(kWidth) * kPages;  // 1024
 
 // Layout (must match UiService.cpp)
-constexpr common::Rect kStatusTextRect{0U, 0U, 96U, 16U};
+constexpr common::Rect kStatusTextRect{0U, 0U, 80U, 16U};
+constexpr common::Rect kStatusVolRect{80U, 0U, 16U, 16U};
 constexpr common::Rect kStatusBatRect{96U, 0U, 16U, 16U};
 constexpr common::Rect kStatusWifiRect{112U, 0U, 16U, 16U};
 
@@ -245,4 +246,24 @@ TEST_F(UiServiceTest, tc08_wifiEvent_partialFlush_fail_tempEvent_fullFlush) {
     t.temperature = 20;
     t.humidity = 50;
     uiService->onEvent(t);
+}
+
+TEST_F(UiServiceTest, tc09_volEvent_partialFlush) {
+    initSuccess();
+
+    const auto win = rectToWindow(kStatusVolRect);
+
+    EXPECT_CALL(*mockDisplay, showWindow(win.col0, win.col1, win.page0, win.page1, _, _))
+        .WillOnce([&](const uint8_t col0, const uint8_t col1, const uint8_t page0,
+                      const uint8_t page1, const uint8_t* data, const size_t len) {
+            EXPECT_EQ(len, win.len);
+            const auto expected =
+                packFromFramebuffer(uiService->getFramebuffer(), col0, col1, page0, page1);
+            EXPECT_EQ(0, std::memcmp(data, expected.data(), len));
+            return true;
+        });
+
+    common::VolumeChangedEvent e{};
+    e.volume = 70;
+    uiService->onEvent(e);
 }

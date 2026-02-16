@@ -8,6 +8,7 @@
 #include "MockEventQueue.hpp"
 #include "MockStopToken.hpp"
 #include "MockTaskRunner.hpp"
+#include "Types.hpp"
 
 // Adapters
 #include "MockHttpClient.hpp"
@@ -16,7 +17,6 @@
 
 // Service
 #include "PlayerService.hpp"
-#include "Types.hpp"
 
 class PlayerServiceTest : public ::testing::Test {
    protected:

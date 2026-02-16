@@ -5,12 +5,13 @@
 
 #include "IClock.hpp"
 
-namespace adapters {
+namespace common {
 class Clock : public IClock {
    public:
     Clock() = default;
-
     ~Clock() override = default;
-    void sleepMs(uint32_t ms) override;
+
+    void sleepMs(const uint32_t ms) override;
+    uint64_t nowMs() const override;
 };
-}  // namespace adapters
+}  // namespace common

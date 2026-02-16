@@ -32,6 +32,10 @@ end box
 
 == Play ==
 CORETASK  -> CTRL ++: onEvent(ButtonPressedEvent{.button=PlayStop})
+note right
+TODO: Add a missing part, from input adapter to the posting event\n to show how it appeared
+end note
+
 CTRL -> CMD ++: create
 CTRL -> CMD : handle(event)
 CMD -> PLSVC ++: get current status

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 
 namespace common {
@@ -16,8 +17,15 @@ static constexpr uint8_t I2S_LRCK_GPIO = 5;
 static constexpr uint8_t I2S_DOUT_GPIO = 7;
 static constexpr uint32_t I2S_SAMPLE_RATE = 44100;
 
-// Buttons (TODO: adjust GPIOs)
-static constexpr int BUTTON_UP_GPIO = 8;
-static constexpr int BUTTON_DOWN_GPIO = 9;
-static constexpr int BUTTON_PLAY_STOP_GPIO = 10;
+// Buttons
+static constexpr uint64_t ButtonNextGpio = 8;
+static constexpr uint64_t ButtonPrevGpio = 9;
+static constexpr uint64_t ButtonPlayStopGpio = 10;
+static constexpr std::array<uint64_t, 3> ButtonGpios = {
+    ButtonPlayStopGpio,
+    ButtonNextGpio,
+    ButtonPrevGpio,
+};
+static constexpr uint64_t EncS1Gpio = 13;
+static constexpr uint64_t EncS2Gpio = 12;
 }  // namespace common

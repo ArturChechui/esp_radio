@@ -62,16 +62,16 @@ return res
 deactivate CTX
 
 == Skip (Next/Prev) ==
-CORETASK  -> CTRL ++: onEvent(ButtonPressedEvent{.button=Up (or Down)})
+CORETASK  -> CTRL ++: onEvent(ButtonPressedEvent{.button=Next (or Previous)})
 CTRL -> CMD ++: create
 CTRL -> CMD : handle(event)
 CMD -> PLSVC ++: get current status
 return status
 
-alt button == Up
+alt button == Next
     CMD -> REPO ++: nextStation
     return stationData
-else button == Down
+else button == Previous
     CMD -> REPO ++: prevStation
     return stationData
 end

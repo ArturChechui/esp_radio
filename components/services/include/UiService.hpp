@@ -32,6 +32,7 @@ class UiService : public common::IEventHandler {
     void updateStatusText(const bool doFlush = true);
     void updateWifiIcon(const bool doFlush = true);
     void updateBatteryIcon(const bool doFlush = true);
+    void updateVolumeIcon(const bool doFlush = true);
     void updatePlaybackIcon(const bool doFlush = true);
     void updateStationName(const bool doFlush = true);
 
@@ -53,6 +54,7 @@ class UiService : public common::IEventHandler {
     common::Icon mWifi;
     common::Icon mBattery;
     common::Icon mPlayback;
+    common::Icon mVolume;
 
     bool mFullFlushPending;
 };

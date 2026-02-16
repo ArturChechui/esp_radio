@@ -31,7 +31,12 @@ struct WifiStateChangedEvent {
     uint8_t bars;
 };
 
+struct VolumeChangedEvent {
+    uint8_t volume;
+};
+
 using AppEvent = std::variant<ButtonPressedEvent, PlaybackStatusChangedEvent, TempHumidUpdateEvent,
-                              SystemReadyEvent, CurrentStationChangedEvent, WifiStateChangedEvent>;
+                              SystemReadyEvent, CurrentStationChangedEvent, WifiStateChangedEvent,
+                              VolumeChangedEvent>;
 
 }  // namespace common

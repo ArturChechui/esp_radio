@@ -3,9 +3,11 @@ add_executable(
   ${CMAKE_SOURCE_DIR}/services/UiServiceTest.cpp
   ${CMAKE_SOURCE_DIR}/services/StationRepositoryTest.cpp
   ${CMAKE_SOURCE_DIR}/services/PlayerServiceTest.cpp
+  ${CMAKE_SOURCE_DIR}/services/InputServiceTest.cpp
   ${COMPONENTS_DIR}/services/src/UiService.cpp
   ${COMPONENTS_DIR}/services/src/StationRepository.cpp
   ${COMPONENTS_DIR}/services/src/PlayerService.cpp
+  ${COMPONENTS_DIR}/services/src/InputService.cpp
   ${COMPONENTS_DIR}/common/src/LockGuard.cpp
   ${COMPONENTS_DIR}/common/mock/FakeMutex.cpp)
 
