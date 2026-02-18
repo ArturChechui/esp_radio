@@ -138,17 +138,19 @@ common::StepResult InputService::processStepFn(void* arg, common::IStopToken& to
 }
 
 common::StepResult InputService::processStep(common::IStopToken& token) {
-    if (!token.stopRequested()) {
-        uint32_t gpioNum = 0;
-        if (!mQueue.get(gpioNum)) {
-            return {.action = common::StepAction::Continue};
-        }
+    if (token.stopRequested()) {
+        return {.action = common::StepAction::Done};
+    }
 
-        if (common::EncS1Gpio == gpioNum || common::EncS2Gpio == gpioNum) {
-            handleEncoderGpio();
-        } else {
-            handleButtonGpio(gpioNum, token);
-        }
+    uint32_t gpioNum = 0;
+    if (!mQueue.get(gpioNum)) {
+        return {.action = common::StepAction::Continue};
+    }
+
+    if (common::EncS1Gpio == gpioNum || common::EncS2Gpio == gpioNum) {
+        handleEncoderGpio();
+    } else {
+        handleButtonGpio(gpioNum, token);
     }
 
     return {.action = common::StepAction::Continue};
@@ -234,7 +236,9 @@ void InputService::handleButtonGpio(const uint32_t gpioNum, common::IStopToken& 
 
     // sample level now, wait a short confirm delay, sample again
     const int levelBefore = mGpioInput.getLevel(gpioNum);
-    token.sleepMs(ConfirmDelayMs);
+    if (token.sleepMs(ConfirmDelayMs)) {
+        return;
+    }
     const int levelAfter = mGpioInput.getLevel(gpioNum);
 
     // require both samples to indicate "pressed"

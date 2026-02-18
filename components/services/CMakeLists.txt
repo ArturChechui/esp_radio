@@ -5,6 +5,7 @@ idf_component_register(
   "src/PlayerService.cpp"
   "src/InputService.cpp"
   "src/WifiService.cpp"
+  "src/SensorService.cpp"
   INCLUDE_DIRS
   "include"
   REQUIRES

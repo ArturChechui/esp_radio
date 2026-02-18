@@ -125,7 +125,7 @@ bool HttpClient::openConnection() {
     }
 
     // Give WiFi driver time to stabilize
-    vTaskDelay(pdMS_TO_TICKS(200));
+    // vTaskDelay(pdMS_TO_TICKS(200));
 
     esp_http_client_config_t cfg = {};
     cfg.url = mUrl.c_str();
@@ -178,7 +178,7 @@ bool HttpClient::openConnection() {
     }
 
     // Give server time to start sending audio data
-    vTaskDelay(pdMS_TO_TICKS(100));
+    // vTaskDelay(pdMS_TO_TICKS(100));
 
     return true;
 }

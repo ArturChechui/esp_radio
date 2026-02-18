@@ -60,6 +60,8 @@ bool AppContext::init() {
     mCoreEventTask = std::make_unique<common::EventTask>("CoreEventTask", *mTaskRunner);
 
     // STEP 6: Create services
+    mSensorService =
+        std::make_unique<services::SensorService>(*mI2cBus, *mCoreEventTask, *mTaskRunner);
     mInputService = std::make_unique<services::InputService>(*mGpioInput, *mCoreEventTask, *mQueue,
                                                              *mTaskRunner, *mClock);
     mPlayerService = std::make_unique<services::PlayerService>(
@@ -70,7 +72,7 @@ bool AppContext::init() {
     mUiService = std::make_unique<services::UiService>(*mDisplay, *mStationRepository);
     ESP_LOGI(Tag, "UiService is disabled for testing.");
     if (!mPlayerService->init() || !mStationRepository->init() || !mUiService->init() ||
-        !mInputService->init()) {
+        !mInputService->init() || !mSensorService->init()) {
         ESP_LOGE(Tag, "Failed to init services");
         return false;
     }

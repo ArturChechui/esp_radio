@@ -25,6 +25,7 @@
 // Services
 #include "InputService.hpp"
 #include "PlayerService.hpp"
+#include "SensorService.hpp"
 #include "StationRepository.hpp"
 #include "UiService.hpp"
 
@@ -65,6 +66,7 @@ class AppContext {
     std::unique_ptr<services::PlayerService> mPlayerService;
     std::unique_ptr<services::StationRepository> mStationRepository;
     std::unique_ptr<services::UiService> mUiService;
+    std::unique_ptr<services::SensorService> mSensorService;
 
     // Controller
     std::unique_ptr<AppController> mAppController;

@@ -49,7 +49,7 @@ class UiService : public common::IEventHandler {
     std::vector<uint8_t> mTxBuf;
 
     // UI state
-    uint8_t mTemperatureC;
+    int8_t mTemperatureC;
     uint8_t mHumidityPct;
     common::Icon mWifi;
     common::Icon mBattery;

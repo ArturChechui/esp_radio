@@ -76,7 +76,7 @@ alt gpioNum == EncS1Gpio || gpioNum == EncS2Gpio
     UET -> UI++: onEvent(VolumeChangedEvent{vol})
     activate UET
     UI -> UI: get volume icon
-    note right
+    note left
         See seq_ui_events.puml for details
     end note
     return
