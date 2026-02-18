@@ -7,6 +7,7 @@
 #include <map>
 
 #include "II2cBus.hpp"
+#include "Mutex.hpp"
 
 namespace adapters {
 class I2cBus final : public II2cBus {
@@ -28,6 +29,7 @@ class I2cBus final : public II2cBus {
     uint32_t mFreqHz;
 
     std::map<uint8_t, i2c_master_dev_handle_t> mDeviceHandles;
+    common::Mutex mMutex;
 };
 
 }  // namespace adapters

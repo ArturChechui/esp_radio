@@ -1,6 +1,7 @@
 #include "I2cBus.hpp"
 
 #include "BoardConfig.hpp"
+#include "LockGuard.hpp"
 
 // IDF
 #include <driver/i2c_master.h>
@@ -13,7 +14,7 @@ namespace {
 constexpr const char* Tag = "I2cBus";
 }  // namespace
 
-I2cBus::I2cBus() : mBusHandle(nullptr), mFreqHz(common::I2C_FREQ_HZ) {
+I2cBus::I2cBus() : mBusHandle(nullptr), mFreqHz(common::I2C_FREQ_HZ), mMutex() {
     ESP_LOGI(Tag, "Creating I2cBus");
 }
 
@@ -36,6 +37,8 @@ I2cBus::~I2cBus() {
 }
 
 bool I2cBus::init() {
+    common::LockGuard guard(mMutex);
+
     if (mBusHandle) {
         ESP_LOGW(Tag, "I2C bus already configured");
         return true;
@@ -61,6 +64,8 @@ bool I2cBus::init() {
 
 bool I2cBus::writeBytes(const uint8_t deviceAddr, const uint8_t* data, const size_t len,
                         const uint32_t timeoutMs) {
+    common::LockGuard guard(mMutex);
+
     if (!mBusHandle) {
         ESP_LOGE(Tag, "I2C bus not initialized");
         return false;
@@ -89,40 +94,39 @@ bool I2cBus::writeBytes(const uint8_t deviceAddr, const uint8_t* data, const siz
     ESP_LOGW(Tag, "I2C write failed to 0x%02X: %s (len=%u)", deviceAddr, esp_err_to_name(ret),
              static_cast<unsigned>(len));
 
+    // TODO: Adapter shouldn't have any business logic with the retry etc, it has to be handled by
+    // the services, so for now it is commented if works fine, it will be removed
     // One retry path: drop handle, recreate, retry.
-    if (ret == ESP_ERR_INVALID_STATE || ret == ESP_FAIL) {
-        auto it = mDeviceHandles.find(deviceAddr);
-        if (it != mDeviceHandles.end()) {
-            if (it->second) {
-                i2c_master_bus_rm_device(it->second);
-            }
-            mDeviceHandles.erase(it);
-            // TODO: When adding temp/humid - refactor i2c
-            //    i2c_master_bus_reset(mBusHandle);        // recover the bus
-            // vTaskDelay(pdMS_TO_TICKS(5));  // small settle delay
-            // ret = doTransmit(devHandle);   // retry once
-            //
-            ESP_LOGI(Tag, "Dropped device handle for 0x%02X", deviceAddr);
-        }
-
-        devHandle = getOrCreateDeviceHandle(deviceAddr);
-        if (!devHandle) {
-            return false;
-        }
-
-        ret = transmit(devHandle);
-        if (ret == ESP_OK) {
-            return true;
-        }
-
-        ESP_LOGW(Tag, "I2C retry failed to 0x%02X: %s", deviceAddr, esp_err_to_name(ret));
-    }
+    // if (ret == ESP_ERR_INVALID_STATE || ret == ESP_FAIL) {
+    //     auto it = mDeviceHandles.find(deviceAddr);
+    //     if (it != mDeviceHandles.end()) {
+    //         if (it->second) {
+    //             i2c_master_bus_rm_device(it->second);
+    //         }
+    //         mDeviceHandles.erase(it);
+    //         ESP_LOGI(Tag, "Dropped device handle for 0x%02X", deviceAddr);
+    //     }
+    //
+    //     devHandle = getOrCreateDeviceHandle(deviceAddr);
+    //     if (!devHandle) {
+    //         return false;
+    //     }
+    //
+    //     ret = transmit(devHandle);
+    //     if (ret == ESP_OK) {
+    //         return true;
+    //     }
+    //
+    //     ESP_LOGW(Tag, "I2C retry failed to 0x%02X: %s", deviceAddr, esp_err_to_name(ret));
+    // }
 
     return false;
 }
 
 bool I2cBus::readBytes(const uint8_t deviceAddr, uint8_t* data, const size_t len,
                        const uint32_t timeoutMs) {
+    common::LockGuard guard(mMutex);
+
     if (!mBusHandle) {
         ESP_LOGE(Tag, "I2C bus not initialized");
         return false;

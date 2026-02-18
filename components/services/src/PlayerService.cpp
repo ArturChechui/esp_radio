@@ -303,7 +303,9 @@ common::StepResult PlayerService::produceOnce(common::IStopToken& token) {
     if (fillBytes > HighWaterMarkBytes) {
         return {.action = common::StepAction::Sleep, .sleepMs = 10U};
     } else if (fillBytes > LowWaterMarkBytes) {
-        (void)token.sleepMs(30U);
+        if (token.sleepMs(30U)) {
+            return {.action = common::StepAction::Done};
+        }
     }
 
     const auto spans = mRingBuffer->claimWriteSpans(ReadMaxBytes);
@@ -446,7 +448,9 @@ common::StepResult PlayerService::consumeOnce(common::IStopToken& token) {
                 return {.action = common::StepAction::Sleep, .sleepMs = 10U};
             }
 
-            (void)token.sleepMs(10U);
+            if (token.sleepMs(10U)) {
+                return {.action = common::StepAction::Done};
+            }
             continue;
         }
 

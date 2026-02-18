@@ -132,8 +132,8 @@ UiService::UiService(adapters::IDisplay& display, IStationRepository& stationRep
     : mDisplay(display),
       mStationRepo(stationRepo),
       mFramebuffer(Width * Pages, 0x00),
-      mTemperatureC(10U),  // tmp value until feature implemented
-      mHumidityPct(45U),   // tmp value until feature implemented
+      mTemperatureC(0U),
+      mHumidityPct(0U),
       mWifi(common::Icon::WifiOff),
       mBattery(common::Icon::BatteryMid),
       mPlayback(common::Icon::Play),

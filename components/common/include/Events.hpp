@@ -16,7 +16,7 @@ struct PlaybackStatusChangedEvent {
 };
 
 struct TempHumidUpdateEvent {
-    uint8_t temperature;
+    int8_t temperature;
     uint8_t humidity;
 };
 

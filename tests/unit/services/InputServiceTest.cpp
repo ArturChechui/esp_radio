@@ -173,7 +173,7 @@ TEST_F(InputServiceTest, tc05_stepFn_enc_increaseVol) {
         out = common::EncS1Gpio;
         return true;
     });
-    // init value for mEncPrevState
+
     EXPECT_CALL(*mockGpioInput, getLevel(_)).WillOnce(Return(0)).WillOnce(Return(0));
     ASSERT_NE(stepFn, nullptr);
     stepFn(stepUser, token);
@@ -224,7 +224,7 @@ TEST_F(InputServiceTest, tc06_stepFn_enc_decreaseVol) {
         out = common::EncS1Gpio;
         return true;
     });
-    // init value for mEncPrevState
+
     EXPECT_CALL(*mockGpioInput, getLevel(_)).WillOnce(Return(0)).WillOnce(Return(0));
     ASSERT_NE(stepFn, nullptr);
     stepFn(stepUser, token);
@@ -275,7 +275,7 @@ TEST_F(InputServiceTest, tc07_stepFn_enc_3qStepsDec_noPost) {
         out = common::EncS1Gpio;
         return true;
     });
-    // init value for mEncPrevState
+
     EXPECT_CALL(*mockGpioInput, getLevel(_)).WillOnce(Return(0)).WillOnce(Return(0));
     ASSERT_NE(stepFn, nullptr);
     stepFn(stepUser, token);
@@ -315,7 +315,7 @@ TEST_F(InputServiceTest, tc08_stepFn_enc_3qStepsInc_noPost) {
         out = common::EncS1Gpio;
         return true;
     });
-    // init value for mEncPrevState
+
     EXPECT_CALL(*mockGpioInput, getLevel(_)).WillOnce(Return(0)).WillOnce(Return(0));
     ASSERT_NE(stepFn, nullptr);
     stepFn(stepUser, token);
