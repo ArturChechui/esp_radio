@@ -18,7 +18,7 @@ namespace services {
 namespace {
 constexpr char Tag[] = "UiService";
 
-// SSD1306 geometry
+// 128x64 monochrome OLED geometry
 constexpr uint8_t Width = 128;
 constexpr uint8_t Height = 64;
 constexpr uint8_t PageH = 8;
@@ -35,6 +35,8 @@ constexpr common::Rect MainRect{0U, 16U, 128U, 48U};  // pages 2..7
 constexpr common::Rect MainIconRect{0U, 16U, common::fonts::Icon48W, common::fonts::Icon48H};
 constexpr common::Rect MainTextRect{static_cast<uint8_t>(common::fonts::Icon48W + 4U), 16,
                                     static_cast<uint8_t>(128U - (common::fonts::Icon48W + 4U)), 48};
+
+constexpr const char* NoDataText = "NODATA";
 
 static_assert(Width == 128, "This UI assumes 128px Width");
 static_assert(Height == 64, "This UI assumes 64px Height");
@@ -82,6 +84,16 @@ static common::Icon volumeToIcon(const uint8_t vol) {
     }
     // vol 70..100
     return common::Icon::Volume5;
+}
+
+static common::Icon batteryPercentToIcon(const uint8_t pct) {
+    if (pct <= 25U) {
+        return common::Icon::BatteryLow;
+    }
+    if (pct <= 70U) {
+        return common::Icon::BatteryMid;
+    }
+    return common::Icon::BatteryFull;
 }
 
 static char toUpperAscii(const char ch) {
@@ -138,7 +150,14 @@ UiService::UiService(adapters::IDisplay& display, IStationRepository& stationRep
       mBattery(common::Icon::BatteryMid),
       mPlayback(common::Icon::Play),
       mVolume(common::Icon::Volume1),
-      mFullFlushPending(false) {
+      mFullFlushPending(false),
+      mMode(UiMode::Booting),
+      mStationDirty(false),
+      mStatusDirty(false),
+      mWifiDirty(false),
+      mBatteryDirty(false),
+      mPlaybackDirty(false),
+      mVolumeDirty(false) {
     ESP_LOGI(Tag, "Creating UiService");
     mTxBuf.reserve(Width * Pages);
 }
@@ -146,62 +165,112 @@ UiService::UiService(adapters::IDisplay& display, IStationRepository& stationRep
 bool UiService::init() {
     ESP_LOGI(Tag, "Initializing UiService");
 
-    renderFullToFramebuffer();
+    if (const auto* bmp = common::fonts::bootingScreen()) {
+        std::memcpy(mFramebuffer.data(), bmp, common::fonts::FullScreenBytes);
 
-    if (!mDisplay.showFramebuffer(mFramebuffer.data(), mFramebuffer.size())) {
-        ESP_LOGW(Tag, "Initial showFramebuffer failed");
-        mFullFlushPending = true;
-        return false;
+        if (!mDisplay.showFramebuffer(mFramebuffer.data(), mFramebuffer.size())) {
+            ESP_LOGW(Tag, "init showFramebuffer failed");
+            return false;
+        }
     }
-
     return true;
 }
 
-void UiService::onEvent(const common::AppEvent& event) {
-    ESP_LOGI(Tag, "onEvent(%s)", common::dump(event).c_str());
+void UiService::onEvent(const common::AppEvent& e) {
+    ESP_LOGI(Tag, "onEvent(%s)", common::dump(e).c_str());
+
+    const auto prevMode = mMode;
 
     std::visit(common::Overloaded{
-                   [this](const common::CurrentStationChangedEvent&) { updateStationName(); },
+                   [this](const common::CurrentStationChangedEvent&) { mStationDirty = true; },
                    [this](const common::TempHumidUpdateEvent& t) {
-                       if (mTemperatureC == t.temperature && mHumidityPct == t.humidity) {
-                           return;
+                       if (mTemperatureC != t.temperature || mHumidityPct != t.humidity) {
+                           mTemperatureC = t.temperature;
+                           mHumidityPct = t.humidity;
+                           mStatusDirty = true;
                        }
-                       mTemperatureC = t.temperature;
-                       mHumidityPct = t.humidity;
-                       updateStatusText();
                    },
                    [this](const common::WifiStateChangedEvent& w) {
-                       const common::Icon next =
-                           w.isConnected ? barsToIcon(w.bars) : common::Icon::WifiOff;
-                       if (mWifi == next) {
-                           return;
+                       const auto next = w.isConnected ? barsToIcon(w.bars) : common::Icon::WifiOff;
+                       if (mWifi != next) {
+                           mWifi = next;
+                           mWifiDirty = true;
                        }
-                       mWifi = next;
-                       updateWifiIcon();
+                   },
+                   [this](const common::BatteryLevelUpdateEvent& b) {
+                       const auto next = batteryPercentToIcon(b.percent);
+                       if (mBattery != next) {
+                           mBattery = next;
+                           mBatteryDirty = true;
+                       }
                    },
                    [this](const common::PlaybackStatusChangedEvent& p) {
-                       const common::Icon next = playbackStatusToIcon(p.status);
-                       if (mPlayback == next) {
-                           return;
+                       const auto next = playbackStatusToIcon(p.status);
+                       if (mPlayback != next) {
+                           mPlayback = next;
+                           mPlaybackDirty = true;
                        }
-                       mPlayback = next;
-                       updatePlaybackIcon();
                    },
                    [this](const common::VolumeChangedEvent& v) {
-                       const common::Icon next = volumeToIcon(v.volume);
-                       if (mVolume == next) {
-                           return;
+                       const auto next = volumeToIcon(v.volume);
+                       if (mVolume != next) {
+                           mVolume = next;
+                           mVolumeDirty = true;
                        }
-                       mVolume = next;
-                       updateVolumeIcon();
                    },
-                   [](const auto&) {
-                       // ignore other events
-                   }},
-               event);
+                   [this](const common::SwitchToWifiProvScreenEvent&) { mMode = UiMode::WifiProv; },
+                   [this](const common::SwitchToSyncInProgressScreenEvent&) {
+                       mMode = UiMode::SyncInProgress;
+                   },
+                   [this](const common::SwitchToMainScreenEvent&) { mMode = UiMode::Main; },
+                   [](const auto&) {}},
+               e);
+
+    std::visit(common::Overloaded{[this, prevMode](const common::SwitchToWifiProvScreenEvent&) {
+                                      if (prevMode != mMode && mMode == UiMode::WifiProv) {
+                                          showWifiProvisioningScreen();
+                                      }
+                                  },
+                                  [this, prevMode](
+                                      const common::SwitchToSyncInProgressScreenEvent&) {
+                                      if (prevMode != mMode && mMode == UiMode::SyncInProgress) {
+                                          showSyncInProgressScreen();
+                                      }
+                                  },
+                                  [this, prevMode](const common::SwitchToMainScreenEvent&) {
+                                      if (prevMode != mMode && mMode == UiMode::Main) {
+                                          showFullMainScreen();
+                                      }
+                                  },
+                                  [this](const auto&) {
+                                      if (mMode != UiMode::Main) {
+                                          return;
+                                      }
+
+                                      if (mStationDirty) {
+                                          updateStationName();
+                                          mStationDirty = false;
+                                      } else if (mStatusDirty) {
+                                          updateStatusText();
+                                          mStatusDirty = false;
+                                      } else if (mWifiDirty) {
+                                          updateWifiIcon();
+                                          mWifiDirty = false;
+                                      } else if (mBatteryDirty) {
+                                          updateBatteryIcon();
+                                          mBatteryDirty = false;
+                                      } else if (mPlaybackDirty) {
+                                          updatePlaybackIcon();
+                                          mPlaybackDirty = false;
+                                      } else if (mVolumeDirty) {
+                                          updateVolumeIcon();
+                                          mVolumeDirty = false;
+                                      }
+                                  }},
+               e);
 }
 
-void UiService::renderFullToFramebuffer() {
+void UiService::showFullMainScreen() {
     std::fill(mFramebuffer.begin(), mFramebuffer.end(), 0x00);
 
     const bool doFlush = false;
@@ -212,6 +281,38 @@ void UiService::renderFullToFramebuffer() {
 
     updatePlaybackIcon(doFlush);
     updateStationName(doFlush);
+
+    mStationDirty = false;
+    mStatusDirty = false;
+    mWifiDirty = false;
+    mBatteryDirty = false;
+    mPlaybackDirty = false;
+    mVolumeDirty = false;
+
+    if (!mDisplay.showFramebuffer(mFramebuffer.data(), mFramebuffer.size())) {
+        ESP_LOGW(Tag, "showFullMainScreen showFramebuffer failed");
+        mFullFlushPending = true;
+    }
+}
+
+void UiService::showWifiProvisioningScreen() {
+    if (const auto* bmp = common::fonts::wifiProvisioningScreen()) {
+        std::memcpy(mFramebuffer.data(), bmp, common::fonts::FullScreenBytes);
+
+        if (!mDisplay.showFramebuffer(mFramebuffer.data(), mFramebuffer.size())) {
+            ESP_LOGW(Tag, "wifiProvisioningScreen showFramebuffer failed");
+        }
+    }
+}
+
+void UiService::showSyncInProgressScreen() {
+    if (const auto* bmp = common::fonts::syncInProgressScreen()) {
+        std::memcpy(mFramebuffer.data(), bmp, common::fonts::FullScreenBytes);
+
+        if (!mDisplay.showFramebuffer(mFramebuffer.data(), mFramebuffer.size())) {
+            ESP_LOGW(Tag, "syncInProgressScreen showFramebuffer failed");
+        }
+    }
 }
 
 void UiService::updateStatusText(const bool doFlush) {
@@ -302,12 +403,11 @@ void UiService::updateStationName(const bool doFlush) {
 
     const uint8_t maxChars = static_cast<uint8_t>(MainTextRect.w / common::fonts::MainW);
     uint8_t currX = MainTextRect.x;
-    uint8_t count = 0;
+    const std::string_view raw =
+        station.name.empty() ? std::string_view{NoDataText} : std::string_view{station.name};
+    const std::string_view name = raw.substr(0, maxChars);
 
-    for (char ch : station.name) {
-        if (count >= maxChars) {
-            break;
-        }
+    for (char ch : name) {
         const char up = toUpperAscii(ch);
 
         const uint8_t* glyph = common::fonts::mainGlyph(up);
@@ -322,7 +422,6 @@ void UiService::updateStationName(const bool doFlush) {
         blitRect(r, glyph);
 
         currX = static_cast<uint8_t>(currX + common::fonts::MainW);
-        ++count;
     }
 
     if (doFlush) {

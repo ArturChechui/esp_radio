@@ -32,8 +32,8 @@ end box
 
 == Play ==
 CORETASK  -> CTRL ++: onEvent(ButtonPressedEvent{.button=PlayStop})
-note right
-TODO: Add a missing part, from input adapter to the posting event\n to show how it appeared
+note left
+see details in seq_press_button.puml
 end note
 
 CTRL -> CMD ++: create

@@ -11,6 +11,7 @@ skinparam ranksep 95
 left to right direction
 
 rectangle "Core" as Core #E8F4FF
+rectangle "Common" as Common #E8F4FF
 rectangle "Services" as Services #F2FFF2
 rectangle "Commands" as Commands #FFF7E6
 rectangle "Adapters" as Adapters #F7F7F7
@@ -22,8 +23,8 @@ Commands -right-> Services : uses
 Commands --> Adapters : calls
 Services --> Adapters : calls
 Adapters --> External : wraps
-
-Core ..> External : uses tasks/queues/timers
+Core ..> Common : uses tasks/queues/timers
+Common ..> External : wraps
 
 Legend left
 See detailed diagrams:
@@ -31,6 +32,7 @@ See detailed diagrams:
 - class_services.puml
 - class_commands.puml
 - class_adapters.puml
+- class_common.puml
 end legend
 
 @enduml

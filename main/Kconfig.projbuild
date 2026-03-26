@@ -1,8 +1,0 @@
-menu "ESP Radio"
-config ESP_RADIO_WIFI_SSID
-    string "WiFi SSID"
-    default ""
-config ESP_RADIO_WIFI_PASS
-    string "WiFi password"
-    default ""
-endmenu

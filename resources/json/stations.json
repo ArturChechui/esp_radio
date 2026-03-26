@@ -1,0 +1,52 @@
+[
+  {
+    "id": "hitfmukr_0",
+    "name": "HITUKR",
+    "url": "https://online.hitfm.ua/HitFM_Ukr"
+  },
+  {
+    "id": "hitfmGH_1",
+    "name": "HIT GH",
+    "url": "https://online.hitfm.ua/HitFM_Best"
+  },
+  {
+    "id": "hitfmMH_2",
+    "name": "HIT MH",
+    "url": "https://online.hitfm.ua/HitFM_Top"
+  },
+  {
+    "id": "hitfm_3",
+    "name": "Hit FM",
+    "url": "https://online.hitfm.ua/HitFM"
+  },
+  {
+    "id": "hitfmhd_4",
+    "name": "KISSUA",
+    "url": "http://online.kissfm.ua/KissFM_Ukr"
+  },
+  {
+    "id": "kissfm_5",
+    "name": "KissFM",
+    "url": "http://online.kissfm.ua/KissFM"
+  },
+  {
+    "id": "luxfmhd_6",
+    "name": "Lux HD",
+    "url": "http://icecast.luxnet.ua/luxlviv_hd"
+  },
+  {
+    "id": "relax_7",
+    "name": "Relax",
+    "url": "https://online.radiorelax.ua/RadioRelax_Ukr"
+  },
+  {
+    "id": "pyatnica_8",
+    "name": "Friday",
+    "url": "https://cast.mediaonline.net.ua/radiopyatnica"
+  },
+  {
+    "id": "nasheradio_9",
+    "name": "Nashe",
+    "url": "http://online.nasheradio.ua/NasheRadio"
+  }
+]

@@ -9,104 +9,60 @@ skinparam packageStyle rectangle
 hide empty members
 hide empty methods
 hide empty fields
-skinparam nodesep 5
-skinparam ranksep 12
+skinparam nodesep 20
+skinparam ranksep 25
 
-class StationRepository {
-    -files: IFileStore
-    -json: IJsonCodec
-    +Load(): StationsModel
-    +SaveAtomic(m: StationsModel): bool
+interface ICommand {
+    +handle(e: const common::AppEvent&): void
+    +isFinished(): bool
 }
 
-class PlayerService {
-    -player: IPlayer
-    -sink: IEventSink
-    -logger: ILogger
-    +Play(url: string): void
-    +Stop(): void
-    +OnAdfEvent(ev: AdfEvent): void
-    +IsStable(): bool
+class PlayStopSkipCommand {
+    -mPlayerService: services::IPlayerService&
+    -mStationRepo: services::IStationRepository&
+    -mUiEventQueue: common::IEventQueue&
 }
 
-interface ISettingsStore {
-    +GetString(key: string): string
-    +SetString(key: string, v: string): bool
-    +GetU32(key: string): uint32
-    +SetU32(key: string, v: uint32): bool
+class SyncStationsCommand {
+    -mPlayerService: services::IPlayerService&
+    -mStationRepository: services::IStationRepository&
+    -mUiEventQueue: common::IEventQueue&
+    -mWifiService: services::IWifiService& 
+    -mHttpClient: adapters::IHttpClient&
+    -mFileSystem: adapters::IFileSystem&
+    -mJsonParser: common::IJsonParser&
 }
 
-interface ILogger {
-    +D(tag: string, msg: string): void
-    +I(tag: string, msg: string): void
-    +W(tag: string, msg: string): void
-    +E(tag: string, msg: string): void
+class ConnectWifiCommand {
+    -mUiEventQueue: common::IEventQueue&
+    -mWifiService: services::IWifiService& 
 }
 
-interface IAppCommand {
-  +Start(): void
-  +Handle(e: AppEvent): void
-  +IsDone(): bool
-  +Name(): string
-}
+interface IPlayerService
+interface IStationRepository
+interface IEventQueue
+interface IWifiService
+interface IHttpClient
+interface IFileSystem
+interface IJsonParser
 
-class RestoreLastModeCommand
-class PlayStationCommand
-class StopCommand
+PlayStopSkipCommand .up.|> ICommand
+SyncStationsCommand .up.|> ICommand
+ConnectWifiCommand .up.|> ICommand
 
-interface IUpdaterCommand {
-    +Run(): UpdateResult
-    +Name(): string
-}
+PlayStopSkipCommand --> IPlayerService
+PlayStopSkipCommand --> IStationRepository
+PlayStopSkipCommand --> IEventQueue
 
-together {
-    class UpdateStationsCommand
+SyncStationsCommand --> IPlayerService
+SyncStationsCommand --> IStationRepository
+SyncStationsCommand --> IEventQueue
+SyncStationsCommand --> IWifiService
+SyncStationsCommand -up-> IHttpClient
+SyncStationsCommand -up-> IFileSystem
+SyncStationsCommand -right-> IJsonParser
 
-    interface IEventSink {
-        +Post(e: AppEvent): void
-    }
-
-    interface IFileStore {
-        +ReadText(path: string): string
-        +WriteTextAtomic(path: string, tmpPath: string, data: string): bool
-        +Rename(from: string, to: string): bool
-        +Remove(path: string): bool
-        +Exists(path: string): bool
-    }
-
-    interface IHttpClient {
-        +Get(url: string, etag: string = ""): HttpResponse
-        +Download(url: string): ByteArray
-    }
-
-    interface IJsonCodec {
-        +ParseStations(json: string): StationsModel
-        +SerializeStations(model: StationsModel): string
-        +ValidateStations(json: string): bool
-    }
-}
-
-RestoreLastModeCommand .up.|> IAppCommand
-PlayStationCommand .up.|> IAppCommand
-StopCommand .up.|> IAppCommand
-UpdateStationsCommand .up.|> IUpdaterCommand
-
-UpdateStationsCommand --> IHttpClient
-UpdateStationsCommand --> IJsonCodec
-UpdateStationsCommand -left-> IFileStore
-UpdateStationsCommand --> ILogger
-UpdateStationsCommand -up-> IEventSink
-
-PlayStationCommand --> PlayerService
-PlayStationCommand --> StationRepository
-PlayStationCommand --> ILogger
-
-RestoreLastModeCommand --> ISettingsStore
-RestoreLastModeCommand --> StationRepository
-RestoreLastModeCommand --> PlayerService
-RestoreLastModeCommand --> ILogger
-
-StopCommand --> PlayerService
-StopCommand --> ILogger
+ConnectWifiCommand --> IWifiService
+ConnectWifiCommand --> IEventQueue
 
 @enduml

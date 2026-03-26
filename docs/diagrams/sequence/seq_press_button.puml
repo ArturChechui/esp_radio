@@ -1,0 +1,98 @@
+@startuml seq_press_button.puml
+title ESP32 Internet Radio - Sequence Diagram (Press Button)
+
+box "Core" #LightBlue
+participant "Core EventTask\n(IEventQueue)" as CET
+end box
+
+box "Services" #LightGreen
+participant "InputService" as IS
+end box
+
+box "Common" #LightGray
+participant "TaskRunner" as TR
+participant "Queue\n(IQueue)" as Q
+participant "StopToken" as ST
+end box
+
+box "Adapters" #LightYellow
+participant "GpioInput\n(IGpioInput)" as GI
+end box
+
+
+box "ESP-IDF" #LightGray
+participant "ESP-IDF" as IDF
+end box
+
+== Init ==
+GI -> IDF ++: initialize and add isr handlers of the gpio pins
+return res
+IS -> TR ++: start task that handles queue
+activate IS
+return res
+
+== Button Press ==
+
+IDF  -> GI ++: gpioIsrHandler(gpioNum)
+GI -> Q ++: pushFromIsr(gpioNum);
+return res
+return
+
+IS -> Q ++: get(gpioNum)
+return res
+
+alt gpioNum == EncS1Gpio || gpioNum == EncS2Gpio
+    IS -> IS: handle encoder gpio
+    note right
+        see details in seq_change_volume.puml
+    end note
+else
+    IS -> IS: handle button gpio
+    IS -> IS: find btn index by gpio
+    alt #LightPink (nowMs - mLastPressMs[idx]) < LockoutDelayMs
+        IS -> IS: too soon, double trigger. Ignore this one
+    end
+    IS -> GI ++: getLevel(gpioNum)
+    return levelBefore
+    IS -> ST ++: sleepMs(ConfirmDelayMs)
+    return res
+    IS -> GI ++: getLevel(gpioNum)
+    return levelAfter
+    alt #LightPink  !(levelBefore == ButtonPressedLevel && levelAfter == ButtonPressedLevel)
+        IS -> IS: press is not confirmed. Ignore the trigger
+    end
+    IS -> IS: get btn by index and check if this btn supports long press
+    alt supportsLongPress(button)
+        IS -> IS: save pressStartMs
+        loop (elapsedMs < LongPressThresholdMs)
+            IS -> GI ++: getLevel(gpioNum)
+            return level
+            alt #LightPink level != ButtonPressedLevel
+                IS -> IS: didn't exceed threshold, it is a usual press
+            end
+            IS -> IS: calculate remaining time and sleepMs = min(LongPressPollMs, remainingMs)
+            IS -> ST ++: sleepMs(sleepMs)
+            return res
+            IS -> IS:  elapsedMs = (mClock.nowMs() - pressStartMs);
+        end
+        IS -> GI ++: getLevel(gpioNum)
+        return level
+        IS -> IS: check if exceeded long press threshold and level == ButtonPressedLevel
+    end
+
+    IS -> IS: save press timestamp - mLastPressMs[idx] = mClock.nowMs();
+
+    alt isLongPress
+        IS -> CET: post(common::ButtonLongPressedEvent{button})
+    else
+        IS -> CET: post(common::ButtonPressedEvent{button})
+    end
+    note right
+        see details in:
+        seq_play_station.puml
+        seq_skip_station.puml
+        seq_stop_station.puml
+        seq_sync_stations.puml
+    end note
+end
+@enduml

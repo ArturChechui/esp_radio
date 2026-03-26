@@ -13,6 +13,9 @@ class UiServiceTest : public ::testing::Test {
     void SetUp() override;
     void TearDown() override;
     void initSuccess();
+    void switchToMainScreenSuccess();
+    void switchToWifiProvScreenSuccess();
+    void switchToSyncInProgressScreenSuccess();
 
     std::unique_ptr<StrictMock<adapters::MockDisplay>> mockDisplay;
     std::unique_ptr<StrictMock<services::MockStationRepository>> mockRepo;

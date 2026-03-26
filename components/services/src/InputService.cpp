@@ -2,11 +2,14 @@
 
 #include <esp_log.h>
 
+#include <algorithm>
+
 #include "BoardConfig.hpp"
 #include "Events.hpp"
 #include "IClock.hpp"
 #include "IEventQueue.hpp"
 #include "IGpioInput.hpp"
+#include "IPersistentStorage.hpp"
 #include "IQueue.hpp"
 #include "IStopToken.hpp"
 #include "ITaskRunner.hpp"
@@ -22,6 +25,13 @@ constexpr const char* Tag = "InputService";
 constexpr int ButtonPressedLevel = 0;
 constexpr uint64_t ConfirmDelayMs = 20ULL;
 constexpr uint64_t LockoutDelayMs = 200ULL;
+constexpr uint64_t LongPressThresholdMs = 3000ULL;
+constexpr uint64_t LongPressPollMs = 25ULL;
+
+constexpr uint16_t NightModeMaxVolume = 15U;
+constexpr uint16_t DayModeMaxVolume = 100U;
+
+constexpr const char* VolumeStorageKey = "volume";
 
 static inline int findButtonIndexByGpio(const uint32_t gpio) {
     for (size_t i = 0; i < common::ButtonGpios.size(); ++i) {
@@ -46,6 +56,10 @@ static inline bool indexToButton(const size_t idx, common::Button& out) {
         default:
             return false;
     }
+}
+
+static inline bool supportsLongPress(const common::Button button) {
+    return (button == common::Button::PlayStop);
 }
 
 // Number of valid quarter-steps that represent one mechanical detent
@@ -91,22 +105,31 @@ static inline int8_t decodeQuadratureTransition(const uint8_t prevQuadratureStat
 
 InputService::InputService(adapters::IGpioInput& gpioInput, common::IEventQueue& coreEventQueue,
                            common::IQueue<uint32_t>& queue, common::ITaskRunner& runner,
-                           common::IClock& clock)
+                           common::IClock& clock, adapters::IPersistentStorage& persistentStorage)
     : mGpioInput(gpioInput),
       mCoreEventQueue(coreEventQueue),
       mQueue(queue),
       mTaskRunner(runner),
       mTaskHandle(),
       mClock(clock),
+      mPersistentStorage(persistentStorage),
       mLastPressMs({0}),
       mEncPrevQuadratureState(0xFF),
       mEncQuarterAccumulator(0),
       mEncInvert(false),
-      mVolume(10) {
+      mVolume(10),
+      mMaxVolume(DayModeMaxVolume) {
     ESP_LOGI(Tag, "InputService created");
 }
 
 bool InputService::init() {
+    if (!mPersistentStorage.getU32(VolumeStorageKey, mVolume)) {
+        ESP_LOGW(Tag, "Failed to load volume from persistent storage, using default of 10");
+        mVolume = 10;
+    }
+
+    ESP_LOGI(Tag, "Current volume: %lu%%", mVolume);
+
     mTaskHandle = mTaskRunner.start(
         common::TaskParams{.name = "InputTask", .priority = TaskPriority, .core = TaskCore},
         TaskStackWords, &InputService::processStepFn, this);
@@ -116,6 +139,7 @@ bool InputService::init() {
     }
 
     ESP_LOGI(Tag, "InputService initialized");
+
     return true;
 }
 
@@ -126,6 +150,15 @@ void InputService::deinit() {
     }
 
     ESP_LOGI(Tag, "InputService deinitialized");
+}
+
+void InputService::setMode(const bool night) {
+    mMaxVolume = night ? NightModeMaxVolume : DayModeMaxVolume;
+
+    if (mVolume > mMaxVolume) {
+        mVolume = mMaxVolume;
+        (void)mPersistentStorage.setU32(VolumeStorageKey, mVolume);
+    }
 }
 
 common::StepResult InputService::processStepFn(void* arg, common::IStopToken& token) {
@@ -204,15 +237,16 @@ void InputService::applyDetentsToVolume(const int detents) {
     }
 
     const int delta = (detents * VolumePerDetent);
-    int next = mVolume + delta;
+    int next = static_cast<int>(mVolume) + delta;
     if (next < 0) {
         next = 0;
-    } else if (next > 100) {
-        next = 100;
+    } else if (next > mMaxVolume) {
+        next = mMaxVolume;
     }
 
     if (next != mVolume) {
-        mVolume = next;
+        mVolume = static_cast<uint32_t>(next);
+        (void)mPersistentStorage.setU32(VolumeStorageKey, mVolume);
 
         common::VolumeChangedEvent ev;
         ev.volume = static_cast<uint8_t>(next);
@@ -246,9 +280,6 @@ void InputService::handleButtonGpio(const uint32_t gpioNum, common::IStopToken& 
         return;
     }
 
-    // Now we confirmed a valid press, update timestamp
-    mLastPressMs[static_cast<size_t>(idx)] = mClock.nowMs();
-
     // map index to logical button
     common::Button button;
     if (!indexToButton(static_cast<size_t>(idx), button)) {
@@ -256,6 +287,34 @@ void InputService::handleButtonGpio(const uint32_t gpioNum, common::IStopToken& 
         return;
     }
 
-    (void)mCoreEventQueue.post(common::ButtonPressedEvent{button});
+    bool isLongPress = false;
+    if (supportsLongPress(button)) {
+        const uint64_t pressStartMs = mClock.nowMs();
+        uint64_t elapsedMs = 0ULL;
+
+        while (elapsedMs < LongPressThresholdMs) {
+            if (mGpioInput.getLevel(gpioNum) != ButtonPressedLevel) {
+                break;
+            }
+
+            const uint64_t remainingMs = (LongPressThresholdMs - elapsedMs);
+            const uint32_t sleepMs =
+                static_cast<uint32_t>(std::min<uint64_t>(LongPressPollMs, remainingMs));
+
+            if (token.sleepMs(sleepMs)) {
+                return;
+            }
+
+            elapsedMs = (mClock.nowMs() - pressStartMs);
+        }
+
+        isLongPress = (elapsedMs >= LongPressThresholdMs) &&
+                      (mGpioInput.getLevel(gpioNum) == ButtonPressedLevel);
+    }
+
+    mLastPressMs[static_cast<size_t>(idx)] = mClock.nowMs();
+
+    isLongPress ? (void)mCoreEventQueue.post(common::ButtonLongPressedEvent{button})
+                : (void)mCoreEventQueue.post(common::ButtonPressedEvent{button});
 }
 }  // namespace services

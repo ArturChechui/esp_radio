@@ -1,0 +1,208 @@
+@startuml seq_play_station.puml
+title ESP32 Internet Radio - Sequence Diagram (Play Station)
+
+box "Core" #LightBlue
+participant "CoreEventTask\n(IEventQueue)" as CET
+participant "UiEventTask\n(IEventQueue)" as UET
+participant "AppController" as CTRL
+end box
+
+box "Commands" #LightCyan
+participant "SyncStationsCommand" as CMD
+end box
+
+box "Services" #LightGreen
+participant "WifiService" as WS
+participant "PlayerService" as PS
+participant "PersistentStorage" as PersS
+participant "StationRepository" as SP
+end box
+
+box "Common" #LightGray
+participant "JsonParser" as JP
+end box
+
+box "Adapters" #LightYellow
+participant "FileSystem" as FS
+participant "HTTPClient\n(IHTTPClient)" as HC
+end box
+
+
+box "ESP-IDF" #LightGray
+participant "ESP-IDF" as IDF
+end box
+
+!procedure $checkRes()
+alt #LightCoral res == false
+    CMD -> CMD: abort, set finished flag
+    CMD -> UET: post(SwitchToMainScreenEvent{})
+end
+!endprocedure
+
+== ButtonLongPressedEvent ==
+CET  -> CTRL ++: onEvent(ButtonLongPressedEvent{.button=PlayStop})
+note left
+see details in seq_press_button.puml
+end note
+
+CTRL -> CMD ++: create
+CTRL -> CTRL : set input lock flag
+CTRL -> CMD : handle(event)
+CMD -> UET: post(SwitchToSyncInProgressScreenEvent{})
+CMD -> PS++: getStatus()
+return status
+
+== Stop if playing ==
+alt status == Buffering || status == Playing  
+    CMD -> PS ++: stop()
+    return res
+    note right
+    see details in seq_stop_station.puml
+    end note
+end
+
+CMD -> CMD: wait for stopped event if playing
+
+alt if playback was active, wait for the stop
+    CET  -> CTRL: onEvent(PlaybackStatusChangedEvent{.status=Stopped})
+    CTRL -> CMD: handle(event)
+end
+
+== Run Sync ==
+CMD -> CMD : runSync()
+CMD -> WS ++: isConnected()
+return res
+$checkRes()
+
+CMD -> HC ++: download(ManifestUrl, mRemoteManifestJson, DownloadTimeoutMs)
+HC -> IDF++: open connection
+return res
+loop until no data left or error
+    HC -> IDF++ : esp_http_client_read(mHttpClient, reinterpret_cast<char*>(buffer), sizeof(buffer)
+    return res
+end
+return res
+$checkRes()
+
+CMD -> JP ++: parseManifest(mRemoteManifestJson, remoteManifest)
+JP -> JP: parses provided json
+return res
+$checkRes()
+
+CMD -> FS ++: readFile(ManifestPath, localManifestJson)
+FS -> FS: read full file
+return res
+$checkRes()
+
+CMD -> JP ++: parseManifest(localManifestJson, localManifest)
+JP -> JP: parses provided json
+return res
+$checkRes()
+
+CMD -> CMD: compare (localManifest.version != remoteManifest.version)
+alt if not changed
+    CMD -> CMD: Manifest unchanged, nothing to update. Set finished flag
+    CMD -> UET: post(SwitchToMainScreenEvent{})
+end
+
+CMD -> HC ++: download(StationsUrl, outStationsJson, DownloadTimeoutMs)
+HC -> IDF++: open connection
+return res
+loop until no data left or error
+    HC -> IDF++ : esp_http_client_read(mHttpClient, reinterpret_cast<char*>(buffer), sizeof(buffer)
+    return res
+end
+return res
+$checkRes()
+
+CMD -> JP ++: parseStations(outStationsJson, parsed)
+JP -> JP: parses provided json
+return res
+$checkRes()
+
+CMD -> FS ++: writeFile(StationsTmpPath, stationsJson)
+FS -> FS: write provided data to a file
+return res
+$checkRes()
+
+CMD -> FS ++: writeFile(ManifestTmpPath, manifestJson)
+FS -> FS: write provided data to a file
+return res
+$checkRes()
+
+== Stage and Swap files ==
+group #LightCyan it will be repeated for both files: stations and manifest
+    CMD -> FS ++: exists(tmpPath)
+    return res
+    $checkRes()
+
+    CMD -> FS ++: removeFile(backupPath)
+    return res
+    $checkRes()
+
+    CMD -> FS ++: exists(livePath)
+    return res
+    $checkRes()
+
+    CMD -> FS ++: exists(livePath)
+    return hadLiveFile
+    alt hadLiveFile == true
+        CMD -> FS ++: renameFile(livePath, backupPath)
+        return backUpDone
+        alt #LightCoral backUpDone == false 
+            CMD -> CMD: abort, set finished flag
+            CMD -> UET: post(SwitchToMainScreenEvent{})
+        end
+    end
+
+    CMD -> FS ++: renameFile(tmpPath, livePath)
+    return res
+    alt #LightCoral res == false
+        alt hadLiveFile == true
+            CMD -> FS ++: renameFile(backupPath, livePath)
+            return res
+        end
+        CMD -> CMD: abort, set finished flag
+        CMD -> UET: post(SwitchToMainScreenEvent{})
+    end
+
+    alt hadLiveFile == true
+        CMD -> FS ++: removeFile(backupPath)
+        return backUpRemoved
+        alt #LightCoral backUpRemoved == false 
+            CMD -> CMD: abort, set finished flag
+            CMD -> UET: post(SwitchToMainScreenEvent{})
+        end
+    end
+end
+
+== Load New Stations ==
+
+CMD -> SP++: load()
+SP -> FS ++: readFile(StationJsonPath, data)
+FS -> FS: read full file
+return res
+alt #LightCoral res == false
+    SP -> CMD: failed to load
+    CMD -> CMD: abort, set finished flag
+    CMD -> UET: post(SwitchToMainScreenEvent{})
+end
+
+SP -> JP ++: parseStations(data, nextStations)
+JP -> JP: parses provided json
+return res
+alt #LightCoral res == false
+    SP -> CMD: failed to load
+    CMD -> CMD: abort, set finished flag
+    CMD -> UET: post(SwitchToMainScreenEvent{})
+end
+SP -> SP: try to preserve the previous playing station
+SP -> PersS++: setU32(CurrStationIdxStorageKey, mCurrentStationIdx)
+return res
+
+CMD -> UET: post(CurrentStationChangedEvent{})
+
+CMD -> CMD: success, set finished flag
+CMD -> UET: post(SwitchToMainScreenEvent{})
+
+@enduml

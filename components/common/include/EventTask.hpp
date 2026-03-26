@@ -16,7 +16,8 @@ class EventTask : public IEventQueue {
     EventTask(const char* taskName, ITaskRunner& taskRunner);
     ~EventTask() override;
 
-    bool init(IEventHandler& handler);
+    bool init();
+    bool run(IEventHandler& handler);
     bool post(const AppEvent& event) override;
 
    private:

@@ -97,32 +97,47 @@ inline std::string dump(const TaskHandle& t) {
 
 inline std::string dump(const common::AppEvent& ev) {
     return std::visit(
-        Overloaded{[](const ButtonPressedEvent& e) {
-                       return "ButtonPressedEvent{b=" + dump(e.button) + "}";
-                   },
-                   [](const PlaybackStatusChangedEvent& e) {
-                       return "PlaybackStatusChangedEvent{s=" + dump(e.status) + "}";
-                   },
-                   [](const TempHumidUpdateEvent& e) {
-                       return "TempHumidUpdateEvent{t=" + std::to_string(e.temperature) +
-                              ", h=" + std::to_string(e.humidity) + "}";
-                   },
-                   [](const SystemReadyEvent& e) {
-                       return std::string("SystemReadyEvent{s=") +
-                              (e.showSplashScreen ? "true}" : "false}");
-                   },
-                   [](const CurrentStationChangedEvent&) {
-                       return std::string{"CurrentStationChangedEvent{}"};
-                   },
-                   [](const WifiStateChangedEvent& e) {
-                       return std::string("WifiStateChangedEvent{c=") +
-                              (e.isConnected ? "true, b=" : "false, b=") + std::to_string(e.bars) +
-                              "}";
-                   },
-                   [](const VolumeChangedEvent& e) {
-                       return std::string("VolumeChangedEvent{v=") + std::to_string(e.volume) + "}";
-                   },
-                   [](const auto&) { return std::string{"<unknown event>"}; }},
+        Overloaded{
+            [](const ButtonPressedEvent& e) {
+                return "ButtonPressedEvent{b=" + dump(e.button) + "}";
+            },
+            [](const ButtonLongPressedEvent& e) {
+                return "ButtonLongPressedEvent{b=" + dump(e.button) + "}";
+            },
+            [](const PlaybackStatusChangedEvent& e) {
+                return "PlaybackStatusChangedEvent{s=" + dump(e.status) + "}";
+            },
+            [](const TempHumidUpdateEvent& e) {
+                return "TempHumidUpdateEvent{t=" + std::to_string(e.temperature) +
+                       ", h=" + std::to_string(e.humidity) + "}";
+            },
+            [](const LightLevelUpdateEvent& e) {
+                return std::string("LightLevelUpdateEvent{lux=") + std::to_string(e.lux) + "}";
+            },
+            [](const BatteryLevelUpdateEvent& e) {
+                return std::string("BatteryLevelUpdateEvent{mv=") + std::to_string(e.millivolts) +
+                       ", p=" + std::to_string(e.percent) + "}";
+            },
+            [](const SystemInitedEvent&) { return std::string("SystemInitedEvent{}"); },
+            [](const CurrentStationChangedEvent&) {
+                return std::string{"CurrentStationChangedEvent{}"};
+            },
+            [](const WifiStateChangedEvent& e) {
+                return std::string("WifiStateChangedEvent{c=") +
+                       (e.isConnected ? "true, b=" : "false, b=") + std::to_string(e.bars) + "}";
+            },
+            [](const VolumeChangedEvent& e) {
+                return std::string("VolumeChangedEvent{v=") + std::to_string(e.volume) + "}";
+            },
+            [](const SwitchToWifiProvScreenEvent&) {
+                return std::string("SwitchToWifiProvScreenEvent{}");
+            },
+            [](const SwitchToSyncInProgressScreenEvent&) {
+                return std::string("SwitchToSyncInProgressScreenEvent{}");
+            },
+            [](const SwitchToMainScreenEvent&) { return std::string("SwitchToMainScreenEvent{}"); },
+            [](const WifiCredsReceivedEvent& e) { return std::string("WifiCredsReceivedEvent{}"); },
+            [](const auto&) { return std::string{"<unknown event>"}; }},
         ev);
 }
 

@@ -19,23 +19,41 @@ box "ESP-IDF" #LightGray
 participant "ESP-IDF I2C driver" as IDF
 end box
 
-== Current station Changed ==
 UITASK -> UISVC ++: onEvent(event)
 note right
 All of these events will update predefined specific area on the screen.
 
 CurrentStationChangedEvent{} - Main Text area - from (x=28, y=16) to the end of the screen
 TempHumidUpdateEvent{} - Status Text area - from (x=0, y=0) to the Volume Icon area
+VolumeChangedEvent{} - Volume Icon area - from (x=80, y=0) to (x=96, y=0)
+BatteryLevelUpdateEvent{} - Battery Level Icon area - from (x=96, y=0) to (x=112, y=0)
 WifiStateChangedEvent{} - Wifi Icon area - from (x=112, y=0) to the end
 PlaybackStatusChangedEvent{} - Main Icon area - from (x=0, y=16) to the Main Text area
-VolumeChangedEvent{} - Volume Icon area - from (x=80, y=0) to (x=96, y=0)
+
+SwitchToMainScreenEvent {} - Full screen
+SwitchToWifiProvScreenEvent {} - Full screen
+SwitchToSyncInProgressScreenEvent {} - Full screen
 end note
 
-alt event == CurrentStationChangedEvent{}
-UISVC -> REPO ++: currentStation()
-return station
+alt if event is "SwitchTo..."
+    UISVC -> UISVC: switche mode
+else
+    UISVC -> UISVC: save data from the event and set a dirty flag
 end
-UISVC -> UISVC: prepare data (either get icon bytes\n or get glyph for each letter)
+
+alt if event is "SwitchTo..."
+    UISVC -> UISVC: update full screen
+else
+    alt mMode != UiMode::Main
+        UISVC -> UISVC: partial update based on the dirty flag
+        alt event == CurrentStationChangedEvent{}
+            UISVC -> REPO ++: currentStation()
+            return station
+        end
+    end 
+end
+
+UISVC -> UISVC: prepare data (either get icon bytes\n or get glyph for each letter) \n and set a dirty flag
 UISVC -> DISP ++: showWindow(col0, col1, page0, page1, mTxBuf.data(), mTxBuf.size())
 
 loop (writtenBytes < len)

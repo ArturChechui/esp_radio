@@ -2,10 +2,12 @@
 
 #include <esp_log.h>
 
+#include "IEventQueue.hpp"
 #include "IPlayerService.hpp"
 #include "IStationRepository.hpp"
+#include "Overloaded.hpp"
 
-namespace commands {
+namespace core::commands {
 namespace {
 constexpr const char* Tag = "PlayStopSkipCmd";
 
@@ -16,35 +18,32 @@ static bool isPlayingOrBuffering(common::PlaybackStatus s) {
 
 PlayStopSkipCommand::PlayStopSkipCommand(services::IPlayerService& playerService,
                                          services::IStationRepository& stationRepo,
+                                         common::IEventQueue& uiEventQueue,
                                          const common::Button btn)
     : mPlayerService(playerService),
       mStationRepo(stationRepo),
+      mUiEventQueue(uiEventQueue),
       mButton(btn),
+      mRequestedAction(Action::Play),
       mStarted(false),
       mFinished(false) {}
 
-bool PlayStopSkipCommand::handle(const common::AppEvent& e) {
+void PlayStopSkipCommand::handle(const common::AppEvent& e) {
     if (mFinished) {
-        return false;
+        return;
     }
 
-    // First call that triggers the action
     if (!mStarted) {
         mStarted = true;
         startAction();
-        // command continues until we observe status change
-        return true;
+        return;
     }
 
-    // TODO: use Overloaded here as well?
-    // Finish conditions
-    if (std::holds_alternative<common::PlaybackStatusChangedEvent>(e)) {
-        const auto ev = std::get<common::PlaybackStatusChangedEvent>(e);
-        return onPlaybackStatus(ev.status);  // returns handled
-    }
-
-    // Ignore other events while in-flight (or handle extra button presses if you want)
-    return false;
+    std::visit(common::Overloaded{[this](const common::PlaybackStatusChangedEvent& p) {
+                                      onPlaybackStatus(p.status);
+                                  },
+                                  [](const auto&) {}},
+               e);
 }
 
 void PlayStopSkipCommand::startAction() {
@@ -55,10 +54,12 @@ void PlayStopSkipCommand::startAction() {
             if (isPlayingOrBuffering(st)) {
                 ESP_LOGI(Tag, "Toggle -> stop");
                 (void)mPlayerService.stop();
+                mRequestedAction = Action::Stop;
             } else {
                 const auto& station = mStationRepo.currentStation();
                 ESP_LOGI(Tag, "Toggle -> play %s", station.name.c_str());
                 (void)mPlayerService.playStation(station.url);
+                mRequestedAction = Action::Play;
             }
             break;
         }
@@ -71,6 +72,8 @@ void PlayStopSkipCommand::startAction() {
             const auto& station = mStationRepo.nextStation();
             ESP_LOGI(Tag, "Skip -> play %s", station.name.c_str());
             (void)mPlayerService.playStation(station.url);
+            mUiEventQueue.post(common::CurrentStationChangedEvent{});
+            mRequestedAction = Action::SkipNext;
             break;
         }
         case common::Button::Previous: {
@@ -82,46 +85,48 @@ void PlayStopSkipCommand::startAction() {
             const auto& station = mStationRepo.prevStation();
             ESP_LOGI(Tag, "Skip -> play %s", station.name.c_str());
             (void)mPlayerService.playStation(station.url);
+            mUiEventQueue.post(common::CurrentStationChangedEvent{});
+            mRequestedAction = Action::SkipPrevious;
             break;
         }
     }
 }
 
-bool PlayStopSkipCommand::onPlaybackStatus(common::PlaybackStatus s) {
+void PlayStopSkipCommand::onPlaybackStatus(common::PlaybackStatus s) {
     // finish on error to avoid "stuck" command
     if (s == common::PlaybackStatus::Error) {
         ESP_LOGW(Tag, "Finished on Error");
         mFinished = true;
-        return true;
+        return;
     }
 
-    switch (mButton) {
-        case common::Button::PlayStop: {
-            // TODO: We can’t know if user intended play or stop after toggle for now,
-            // so accept either "started" or "stopped" end states.
-            // but we know what we requested, we should save what we sent and expect result
-            if (s == common::PlaybackStatus::Playing || s == common::PlaybackStatus::Buffering ||
-                s == common::PlaybackStatus::Stopped) {
-                mFinished = true;
-                ESP_LOGI(Tag, "Finished");
-            }
-            break;
-        }
-        case common::Button::Next:
-        case common::Button::Previous: {
+    switch (mRequestedAction) {
+        case Action::SkipNext:
+        case Action::SkipPrevious:
+        case Action::Play: {
             if (s == common::PlaybackStatus::Playing || s == common::PlaybackStatus::Buffering) {
                 mFinished = true;
                 ESP_LOGI(Tag, "Finished");
             }
             break;
         }
+        case Action::Stop: {
+            if (s == common::PlaybackStatus::Stopped) {
+                mFinished = true;
+                ESP_LOGI(Tag, "Finished");
+            }
+            break;
+        }
+        default: {
+            break;
+        }
     }
 
-    return true;  // handled this status event
+    return;  // handled this status event
 }
 
 bool PlayStopSkipCommand::isFinished() {
     return mFinished;
 }
 
-}  // namespace commands
+}  // namespace core::commands

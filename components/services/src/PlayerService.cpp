@@ -48,7 +48,11 @@ constexpr size_t InputScratchBytes = 4096U;  // Scratch buffer for wrap-boundary
 constexpr int32_t InitVolQ15 = 3277;         // Volume in Q15 fixed point (0..32768). 0.10 ~= 3277
 
 constexpr size_t ResyncThresholdBytes = 2048U;  // if more, try to resync MP3 frame
-constexpr size_t MaxNoDataReads = 100U;  // after this many zero-byte reads, consider stream ended
+constexpr uint32_t StreamReadRetrySleepMs = 100U;
+constexpr uint32_t StreamOpenRetrySleepMs = 500U;
+constexpr uint32_t ReconnectAfterReadStallMs = 10000U;
+constexpr uint32_t BufferingPollSleepMs = 20U;
+constexpr size_t ResumeBufferBytes = 2U * PrebufferBytes;
 
 constexpr int32_t Q15One = 0x7FFF;  // 32767
 }  // namespace
@@ -67,7 +71,7 @@ PlayerService::PlayerService(adapters::II2sBus& i2sBus, adapters::IHttpClient& h
       mTaskRunner(runner),
       mStats(stats),
       mStreamOpenSignal(std::move(semaphore)),
-      mNoDataCount(0U),
+      mReadStallMs(0U),
       mPlayingNotified(false),
       mIsPlaying(false),
       mHttpTaskHandle(),
@@ -89,7 +93,7 @@ PlayerService::~PlayerService() {
         mStreamOpenSignal->signal();
     }
     mStreamOpen.store(false);
-    mNoDataCount = 0U;
+    mReadStallMs = 0U;
     mPlayingNotified = false;
     mCurrentUrl.clear();
     mStatus = common::PlaybackStatus::Idle;
@@ -102,13 +106,6 @@ PlayerService::~PlayerService() {
         (void)mTaskRunner.stop(mPlayerTaskHandle, TimeoutToExitTasks);
         mPlayerTaskHandle.reset();
     }
-}
-
-bool PlayerService::init() {
-    ESP_LOGI(Tag, "Initializing PlayerService");
-    // TBD
-    ESP_LOGI(Tag, "PlayerService initialized successfully");
-    return true;
 }
 
 bool PlayerService::playStation(const std::string& url) {
@@ -129,7 +126,7 @@ bool PlayerService::playStation(const std::string& url) {
     mStreamOpenSignal->reset();
     mIsPlaying.store(true);
     mRingBuffer->reset();
-    mNoDataCount = 0U;
+    mReadStallMs = 0U;
     mPlayingNotified = false;
 
     onPlaybackStatusChanged(common::PlaybackStatus::Buffering);
@@ -185,7 +182,7 @@ bool PlayerService::stop() {
     mStreamOpenSignal->signal();
     mStreamOpen.store(false);
     mPlayingNotified = false;
-    mNoDataCount = 0U;
+    mReadStallMs = 0U;
 
     (void)mTaskRunner.stop(mHttpTaskHandle, TimeoutToExitTasks);
     (void)mTaskRunner.stop(mPlayerTaskHandle, TimeoutToExitTasks);
@@ -255,7 +252,7 @@ common::StepResult PlayerService::producerStep(common::IStopToken& token) {
 void PlayerService::shutdownStream() {
     mHttpClient.closeStream();
 
-    mNoDataCount = 0U;
+    mReadStallMs = 0U;
     mStreamOpen.store(false, std::memory_order_release);
     mStreamOpenSignal->signal();
 
@@ -273,15 +270,13 @@ std::optional<common::StepResult> PlayerService::ensureStreamOpen() {
     }
 
     if (!mHttpClient.openStream(mCurrentUrl, adapters::IHttpClient::DefaultStreamTimeoutMs)) {
-        ESP_LOGE(Tag, "HTTP openStream failed. Exiting producer step");
-        onPlaybackStatusChanged(common::PlaybackStatus::Error);
-
-        shutdownStream();
-
-        return common::StepResult{.action = common::StepAction::Error};
+        ESP_LOGW(Tag, "HTTP openStream failed, retrying");
+        mStreamOpen.store(false, std::memory_order_release);
+        return common::StepResult{.action = common::StepAction::Sleep,
+                                  .sleepMs = StreamOpenRetrySleepMs};
     }
 
-    mNoDataCount = 0U;
+    mReadStallMs = 0U;
     mStreamOpen.store(true, std::memory_order_release);
     mStreamOpenSignal->signal();
 
@@ -318,25 +313,28 @@ common::StepResult PlayerService::produceOnce(common::IStopToken& token) {
 
     if (bytesRead > 0) {
         mRingBuffer->commitWrite(static_cast<size_t>(bytesRead));
-        mNoDataCount = 0U;
+        mReadStallMs = 0U;
         return {.action = common::StepAction::Continue};
     }
 
-    if (bytesRead == 0) {
-        if (++mNoDataCount > MaxNoDataReads) {
-            ESP_LOGW(Tag, "HTTP: no data for too long, stopping stream");
-            shutdownStream();
-            // !!!!!!!!!!!!!!!!!!! Reopen so it works better
-            return {.action = common::StepAction::Error};
-        }
-        const uint32_t backoffMs = std::min<uint32_t>(30000U, 10U * mNoDataCount);
-        return {.action = common::StepAction::Sleep, .sleepMs = backoffMs};
+    if (bytesRead < 0) {
+        ESP_LOGW(Tag, "HTTP read error: %d", bytesRead);
     }
 
-    ESP_LOGW(Tag, "HTTP read error: %d", bytesRead);
-    shutdownStream();
-    // TODO: try to reopen the stream and read again when error?
-    return {.action = common::StepAction::Error};
+    mReadStallMs =
+        std::min<uint32_t>(ReconnectAfterReadStallMs, mReadStallMs + StreamReadRetrySleepMs);
+    if (mReadStallMs >= ReconnectAfterReadStallMs) {
+        ESP_LOGW(Tag, "HTTP stream stalled for %u ms, reopening", (unsigned)mReadStallMs);
+
+        mHttpClient.closeStream();
+        mReadStallMs = 0U;
+        mStreamOpen.store(false, std::memory_order_release);
+        mStreamOpenSignal->reset();
+
+        return {.action = common::StepAction::Sleep, .sleepMs = StreamOpenRetrySleepMs};
+    }
+
+    return {.action = common::StepAction::Sleep, .sleepMs = StreamReadRetrySleepMs};
 }
 
 common::StepResult PlayerService::consumerStepFn(void* arg, common::IStopToken& token) {
@@ -354,17 +352,22 @@ common::StepResult PlayerService::consumerStep(common::IStopToken& token) {
         return {.action = common::StepAction::Done};
     }
 
-    if (!mStreamOpen.load(std::memory_order_acquire)) {
-        (void)mStreamOpenSignal->wait(200U);
-        return {.action = common::StepAction::Continue};
+    const size_t availableBytes = mRingBuffer->available();
+    if (!mStreamOpen.load(std::memory_order_acquire) && (availableBytes == 0UL)) {
+        // TODO: do I need to wait here?
+        (void)mStreamOpenSignal->wait(130U);
+        return {.action = common::StepAction::Sleep, .sleepMs = 50U};
     }
 
-    if (mRingBuffer->available() < PrebufferBytes) {
+    const size_t requiredBufferBytes =
+        (mStatus == common::PlaybackStatus::Playing) ? PrebufferBytes : ResumeBufferBytes;
+    if (availableBytes < requiredBufferBytes) {
         onPlaybackStatusChanged(common::PlaybackStatus::Buffering);
-        (void)mRingBuffer->waitForData(AvailDataTimeoutMs);
-        // TODO: instead of a big sleep, wait for a specific about of data here, like
-        // 2xPrebufferBytes so that it doesn't have glitches when 1 frame is downloaded and it goes
-        return {.action = common::StepAction::Sleep, .sleepMs = 2000U};
+        if (mRingBuffer->waitForData(AvailDataTimeoutMs)) {
+            return {.action = common::StepAction::Sleep, .sleepMs = 10U};
+        }
+
+        return {.action = common::StepAction::Sleep, .sleepMs = BufferingPollSleepMs};
     }
 
     return consumeOnce(token);

@@ -21,6 +21,7 @@ constexpr uint8_t TaskPriority = 6U;
 constexpr const char* Tag = "EventTask";
 }  // namespace
 
+// TODO: change the AppEvent approach?
 EventTask::EventTask(const char* taskName, ITaskRunner& taskRunner)
     : mTaskParams(),
       mTaskHandle(),
@@ -55,14 +56,11 @@ EventTask::~EventTask() {
     }
 }
 
-bool EventTask::init(IEventHandler& handler) {
+bool EventTask::init() {
     if (mEventQueue != nullptr) {
         ESP_LOGW(Tag, "[%s] Already initialized", mTaskParams.name);
         return false;
     }
-
-    mHandler = &handler;
-    mIsRunning = true;
 
     mEventQueue = xQueueCreate(QueueSize, sizeof(AppEvent*));
     if (!mEventQueue) {
@@ -72,9 +70,22 @@ bool EventTask::init(IEventHandler& handler) {
     ESP_LOGI(Tag, "[%s] Created queue (length=%u, itemSize=%u)", mTaskParams.name, QueueSize,
              sizeof(AppEvent*));
 
+    ESP_LOGI(Tag, "[%s] EventTask initialized", mTaskParams.name);
+    return true;
+}
+
+bool EventTask::run(IEventHandler& handler) {
+    mHandler = &handler;
+    mIsRunning = true;
+
     mTaskHandle = mTaskRunner.start(mTaskParams, StackSize, &EventTask::processStepFn, this);
     if (!mTaskHandle.isValid()) {
         ESP_LOGE(Tag, "[%s] Failed to create a task", mTaskParams.name);
+        AppEvent* eventPtr = nullptr;
+        while (xQueueReceive(mEventQueue, &eventPtr, 0) == pdTRUE) {
+            delete eventPtr;
+            eventPtr = nullptr;
+        }
         vQueueDelete(mEventQueue);
         mEventQueue = nullptr;
         return false;
@@ -82,7 +93,6 @@ bool EventTask::init(IEventHandler& handler) {
     ESP_LOGI(Tag, "[%s] Created task (core=%u, prio=%u, stackSize=%u)", mTaskParams.name,
              mTaskParams.core, mTaskParams.priority, StackSize);
 
-    ESP_LOGI(Tag, "[%s] EventTask initialized", mTaskParams.name);
     return true;
 }
 

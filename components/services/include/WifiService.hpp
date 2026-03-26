@@ -1,41 +1,53 @@
 #pragma once
 
-#include <functional>
-#include <memory>
 #include <string>
 
-#include "IEventQueue.hpp"
-#include "IStopToken.hpp"
-#include "IWifiClient.hpp"
+#include "IWifiService.hpp"
 #include "Types.hpp"
+
+namespace adapters {
+class IPersistentStorage;
+class IWifiClient;
+class IProvisioningPortal;
+}  // namespace adapters
 
 namespace common {
 class ITaskRunner;
+class IEventQueue;
 }  // namespace common
 
 namespace services {
-class WifiService {
+class WifiService final : public IWifiService {
    public:
-    explicit WifiService(std::shared_ptr<adapters::IWifiClient> adapter,
-                         common::ITaskRunner& taskRunner);
+    explicit WifiService(adapters::IWifiClient& wifiClient,
+                         adapters::IProvisioningPortal& provisioningPortal,
+                         common::ITaskRunner& taskRunner, common::IEventQueue& coreEventQueue,
+                         adapters::IPersistentStorage& persistentStorage);
+    ~WifiService() override = default;
 
-    bool connect(const std::string& ssid, const std::string& password,
-                 common::IEventQueue& coreEventQueue, uint32_t timeoutMs = 30000);
-    bool isConnected() const;
-    std::string getStatus() const;
-    void disconnect();
+    bool init() override;
+    bool connect(const uint32_t timeoutMs) override;
+    bool isConnected() const override;
+    std::string getStatus() const override;
+    void disconnect() override;
+    bool startProvisioningPortal() override;
 
    private:
     static common::StepResult signalStepFn(void* arg, common::IStopToken& token);
     common::StepResult signalStep(common::IStopToken& token);
+    void onWifiStateChanged(const common::WifiState& data);
+    void onProvisioningCredentials(const common::WifiCredentials& data);
 
-    void onWifiStateChanged(const common::WifiData& data);
+    adapters::IWifiClient& mWifiAdapter;
+    adapters::IProvisioningPortal& mProvisioningPortal;
+    common::ITaskRunner& mTaskRunner;
+    common::IEventQueue& mCoreEventQueue;
+    adapters::IPersistentStorage& mPersistentStorage;
 
-    std::shared_ptr<adapters::IWifiClient> mWifiAdapter;
-    common::IEventQueue* mCoreEventQueue;
     uint8_t mLastBars;
     common::TaskHandle mSignalTaskHandle;
-    common::ITaskRunner& mTaskRunner;
+    common::WifiCredentials mWifiCreds;
+    bool mProvisioningRunning;
 };
 
 }  // namespace services

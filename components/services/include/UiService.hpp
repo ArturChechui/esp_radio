@@ -10,6 +10,7 @@
 #include "Types.hpp"
 
 namespace services {
+enum class UiMode { Booting, Main, WifiProv, SyncInProgress };
 
 class UiService : public common::IEventHandler {
    public:
@@ -26,7 +27,9 @@ class UiService : public common::IEventHandler {
 
    private:
     // no I2C, only draws into mFramebuffer
-    void renderFullToFramebuffer();
+    void showFullMainScreen();
+    void showWifiProvisioningScreen();
+    void showSyncInProgressScreen();
 
     // Partial updates
     void updateStatusText(const bool doFlush = true);
@@ -57,6 +60,13 @@ class UiService : public common::IEventHandler {
     common::Icon mVolume;
 
     bool mFullFlushPending;
+    UiMode mMode;
+    bool mStationDirty;
+    bool mStatusDirty;
+    bool mWifiDirty;
+    bool mBatteryDirty;
+    bool mPlaybackDirty;
+    bool mVolumeDirty;
 };
 
 }  // namespace services

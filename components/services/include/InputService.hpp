@@ -3,10 +3,12 @@
 #include <array>
 #include <cstdint>
 
+#include "IInputService.hpp"
 #include "Types.hpp"
 
 namespace adapters {
 class IGpioInput;
+class IPersistentStorage;
 }  // namespace adapters
 
 namespace common {
@@ -18,15 +20,16 @@ class IClock;
 }  // namespace common
 
 namespace services {
-class InputService {
+class InputService : public IInputService {
    public:
     explicit InputService(adapters::IGpioInput& gpioInput, common::IEventQueue& coreEventQueue,
                           common::IQueue<uint32_t>& queue, common::ITaskRunner& runner,
-                          common::IClock& clock);
-    ~InputService() = default;
+                          common::IClock& clock, adapters::IPersistentStorage& persistentStorage);
+    ~InputService() override = default;
 
-    bool init();
-    void deinit();
+    bool init() override;
+    void deinit() override;
+    void setMode(const bool night) override;
 
    private:
     static common::StepResult processStepFn(void* arg, common::IStopToken& token);
@@ -43,12 +46,14 @@ class InputService {
     common::ITaskRunner& mTaskRunner;
     common::TaskHandle mTaskHandle;
     common::IClock& mClock;
+    adapters::IPersistentStorage& mPersistentStorage;
     std::array<uint64_t, 3> mLastPressMs;
 
     uint8_t mEncPrevQuadratureState;
     int mEncQuarterAccumulator;
     bool mEncInvert;
-    int mVolume;
+    uint32_t mVolume;
+    uint32_t mMaxVolume;
 };
 
 }  // namespace services

@@ -6,6 +6,7 @@
 #include "MockClock.hpp"
 #include "MockEventQueue.hpp"
 #include "MockGpioInput.hpp"
+#include "MockPersistentStorage.hpp"
 #include "MockQueue.hpp"
 #include "MockTaskRunner.hpp"
 #include "Types.hpp"
@@ -16,12 +17,15 @@ class InputServiceTest : public ::testing::Test {
    protected:
     void SetUp() override;
     void TearDown() override;
+    void initSuccess();
 
     std::unique_ptr<StrictMock<common::MockClock>> mockClock;
     std::unique_ptr<StrictMock<common::MockEventQueue>> mockEventQueue;
     std::unique_ptr<StrictMock<common::MockQueue<uint32_t>>> mockQueue;
     std::unique_ptr<StrictMock<common::MockTaskRunner>> mockTaskRunner;
     std::unique_ptr<StrictMock<adapters::MockGpioInput>> mockGpioInput;
+    std::unique_ptr<StrictMock<adapters::MockPersistentStorage>> mockPersistentStorage;
+
     std::unique_ptr<services::InputService> inputService;
 
     common::StepFn stepFn = nullptr;

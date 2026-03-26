@@ -3,6 +3,7 @@ sdkconfig
 sdkconfig.old
 sdkconfig.defaults.local
 dependencies.lock
+managed_components
 
 # Prerequisites
 *.d

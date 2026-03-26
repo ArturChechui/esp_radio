@@ -1,5 +1,6 @@
 #include "Display.hpp"
 
+#include <algorithm>
 #include <array>
 #include <cstring>
 
@@ -15,26 +16,32 @@ constexpr const char* Tag = "Display";
 constexpr uint8_t ControlByteCommand = 0x00;
 constexpr uint8_t ControlByteData = 0x40;
 constexpr size_t ChunkBytes = 16;  // TODO: try 32/64.
+constexpr uint8_t DisplayWidth = 128U;
+constexpr uint8_t DisplayPages = 8U;
 
-// SSD1306 init sequence (128x64). Addressing mode: Horizontal (0x20, 0x00).
-constexpr std::array<uint8_t, 25> InitCmd = {
+// SH1106 init sequence (128x64).
+constexpr std::array<uint8_t, 23> InitCmd = {
     0xAE,        // Display OFF
     0xD5, 0x80,  // Clock
     0xA8, 0x3F,  // MUX
     0xD3, 0x00,  // Offset
     0x40,        // Start line
-    0x8D, 0x14,  // Charge pump enable
-    0x20, 0x00,  // Horizontal addressing
+    0xAD, 0x8B,  // DCDC ON
     0xA1,        // Segment remap
     0xC8,        // COM scan remap
     0xDA, 0x12,  // COM pins
     0x81, 0x7F,  // Contrast
-    0xD9, 0xF1,  // Pre-charge
+    0xD9, 0x22,  // Pre-charge
     0xDB, 0x20,  // VCOMH
     0xA4,        // Resume RAM
     0xA6,        // Normal display
     0xAF         // Display ON
 };
+
+constexpr uint8_t Sh1106PageCmdBase = 0xB0U;
+constexpr uint8_t Sh1106UpperColCmdBase = 0x10U;
+constexpr uint8_t Sh1106LowerColCmdBase = 0x00U;
+constexpr uint8_t Sh1106MaxColumn = 131U;
 
 static size_t expectedWindowLen(const uint8_t col0, const uint8_t col1, const uint8_t page0,
                                 const uint8_t page1) {
@@ -42,6 +49,16 @@ static size_t expectedWindowLen(const uint8_t col0, const uint8_t col1, const ui
     const size_t w = static_cast<size_t>(col1 - col0 + 1UL);
     const size_t p = static_cast<size_t>(page1 - page0 + 1UL);
     return (w * p);
+}
+
+static bool toSh1106Column(const uint8_t logicalColumn, uint8_t& outPhysicalColumn) {
+    const uint16_t physical = static_cast<uint16_t>(logicalColumn) + common::OLED_COLUMN_OFFSET;
+    if (physical > Sh1106MaxColumn) {
+        return false;
+    }
+
+    outPhysicalColumn = static_cast<uint8_t>(physical);
+    return true;
 }
 
 }  // namespace
@@ -65,7 +82,8 @@ bool Display::init() {
 
 bool Display::showFramebuffer(const uint8_t* framebuffer, const size_t len) {
     // Full screen: cols 0..127, pages 0..7
-    return showWindow(0U, 127U, 0U, 7U, framebuffer, len);
+    return showWindow(0U, static_cast<uint8_t>(DisplayWidth - 1U), 0U,
+                      static_cast<uint8_t>(DisplayPages - 1U), framebuffer, len);
 }
 
 bool Display::showWindow(const uint8_t col0, const uint8_t col1, const uint8_t page0,
@@ -77,6 +95,10 @@ bool Display::showWindow(const uint8_t col0, const uint8_t col1, const uint8_t p
         ESP_LOGW(Tag, "Invalid window (col %u..%u, page %u..%u)", col0, col1, page0, page1);
         return false;
     }
+    if (col1 >= DisplayWidth || page1 >= DisplayPages) {
+        ESP_LOGW(Tag, "Window out of bounds (col %u..%u, page %u..%u)", col0, col1, page0, page1);
+        return false;
+    }
 
     const size_t expLen = expectedWindowLen(col0, col1, page0, page1);
     if (len != expLen) {
@@ -86,20 +108,41 @@ bool Display::showWindow(const uint8_t col0, const uint8_t col1, const uint8_t p
         return false;
     }
 
-    const uint8_t colCmd[3] = {0x21, col0, col1};
-    // Set page address range
-    const uint8_t pageCmd[3] = {0x22, page0, page1};
-
-    if (!writeCommand(colCmd, sizeof(colCmd))) {
-        ESP_LOGW(Tag, "Failed to set column range");
+    // TODO: improve adaptation to SH1106
+    uint8_t physicalCol0 = 0U;
+    if (!toSh1106Column(col0, physicalCol0)) {
+        ESP_LOGW(Tag, "Invalid mapped SH1106 column for col0=%u", col0);
         return false;
     }
-    if (!writeCommand(pageCmd, sizeof(pageCmd))) {
-        ESP_LOGW(Tag, "Failed to set page range");
+    uint8_t physicalCol1 = 0U;
+    if (!toSh1106Column(col1, physicalCol1)) {
+        ESP_LOGW(Tag, "Invalid mapped SH1106 column for col1=%u", col1);
         return false;
     }
+    (void)physicalCol1;
 
-    return writeData(data, len);
+    const size_t width = static_cast<size_t>(col1 - col0 + 1U);
+    const uint8_t* pageData = data;
+    for (uint8_t page = page0; page <= page1; ++page) {
+        const uint8_t pageCmd[3] = {
+            static_cast<uint8_t>(Sh1106PageCmdBase + page),
+            static_cast<uint8_t>(Sh1106UpperColCmdBase | ((physicalCol0 >> 4U) & 0x0FU)),
+            static_cast<uint8_t>(Sh1106LowerColCmdBase | (physicalCol0 & 0x0FU)),
+        };
+
+        if (!writeCommand(pageCmd, sizeof(pageCmd))) {
+            ESP_LOGW(Tag, "Failed to set page/column start (page=%u)", page);
+            return false;
+        }
+        if (!writeData(pageData, width)) {
+            ESP_LOGW(Tag, "Failed to write page data (page=%u)", page);
+            return false;
+        }
+
+        pageData += width;
+    }
+
+    return true;
 }
 
 bool Display::writeCommand(const uint8_t* cmd, const size_t len) {

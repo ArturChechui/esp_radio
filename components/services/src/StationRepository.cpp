@@ -1,44 +1,78 @@
 #include "StationRepository.hpp"
 
 #include <algorithm>
+#include <optional>
+#include <utility>
 
 // IDF
 #include <esp_log.h>
 
+#include "IFileSystem.hpp"
+#include "IJsonParser.hpp"
+#include "IPersistentStorage.hpp"
 #include "LockGuard.hpp"
 
 namespace services {
-static const char* Tag = "StationRepository";
+namespace {
+constexpr const char* Tag = "StationRepository";
+constexpr const char* CurrStationIdxStorageKey = "station_idx";
+constexpr const char* StationJsonPath = "stations.json";
+}  // namespace
 
-StationRepository::StationRepository()
-    : mStations(), mInitialized(false), mCurrentStationIdx(0U), mMutex() {
+StationRepository::StationRepository(adapters::IPersistentStorage& persistentStorage,
+                                     adapters::IFileSystem& fileSystem, common::IJsonParser& parser)
+    : mPersistentStorage(persistentStorage),
+      mFileSystem(fileSystem),
+      mParser(parser),
+      mStations(),
+      mInitialized(false),
+      mCurrentStationIdx(0U),
+      mMutex() {
     ESP_LOGI(Tag, "StationRepository created");
 }
 
 bool StationRepository::init() {
     common::LockGuard guard(mMutex);
-
     if (mInitialized) {
-        ESP_LOGW(Tag, "Already initialized, ignoring");
         return true;
     }
 
-    // TODO: Load from LittleFS stations.json
-    // For now, hardcoded stations for FR-01
-    mStations = {{"hitfm_1", "Hit FM", "https://online.hitfm.ua/HitFM"},
-                 {"hitfmhd_2", "HitHD", "https://online.hitfm.ua/HitFM_HD"},
-                 {"kissfm_3", "KissFM", "http://online.kissfm.ua/KissFM"},
-                 {"kissfmhd_4", "KissHD", "https://online.kissfm.ua/KissFM_HD"},
-                 {"luxfmhd_5", "LuxHD", "http://icecast.luxnet.ua/luxlviv_hd"},
-                 {"relax_6", "Relax", "https://online.radiorelax.ua/RadioRelax_Ukr"},
-                 {"pyatnica_7", "Friday", "https://cast.mediaonline.net.ua/radiopyatnica"},
-                 {"nasheradio_8", "Nashe", "http://online.nasheradio.ua/NasheRadio"}};
-
-    // mCurrentStationIdx() -- read from persistance?
-
-    ESP_LOGI(Tag, "Loaded %d stations", static_cast<int>(mStations.size()));
+    if (refreshStationsFromFile()) {
+        // if successfully read the stations, get the index
+        if (!mPersistentStorage.getU32(CurrStationIdxStorageKey, mCurrentStationIdx) ||
+            mCurrentStationIdx >= mStations.size()) {
+            mCurrentStationIdx = 0U;
+            (void)mPersistentStorage.setU32(CurrStationIdxStorageKey, mCurrentStationIdx);
+        }
+    }
 
     mInitialized = true;
+    return true;
+}
+
+bool StationRepository::load() {
+    common::LockGuard guard(mMutex);
+    if (!mInitialized) {
+        return false;
+    }
+
+    std::string playingId = mStations.empty() ? "" : mStations[mCurrentStationIdx].id;
+
+    if (!refreshStationsFromFile()) {
+        return false;
+    }
+
+    auto it = std::find_if(mStations.begin(), mStations.end(), [&playingId](const auto& s) {
+        return !playingId.empty() && (s.id == playingId);
+    });
+    if (it != mStations.end()) {
+        mCurrentStationIdx = static_cast<uint32_t>(std::distance(mStations.begin(), it));
+    } else {
+        ESP_LOGI(Tag, "Active station lost in sync, resetting to 0");
+        mCurrentStationIdx = 0U;
+    }
+    (void)mPersistentStorage.setU32(CurrStationIdxStorageKey, mCurrentStationIdx);
+
     return true;
 }
 
@@ -70,6 +104,10 @@ const common::StationData& StationRepository::nextStation() {
     ESP_LOGI(Tag, "nextStation: name=%s, idx=%u", mStations[mCurrentStationIdx].name.c_str(),
              static_cast<unsigned>(mCurrentStationIdx));
 
+    if (!mPersistentStorage.setU32(CurrStationIdxStorageKey, mCurrentStationIdx)) {
+        ESP_LOGW(Tag, "Failed to save current station index to persistent storage");
+    }
+
     return mStations[mCurrentStationIdx];
 }
 
@@ -91,6 +129,10 @@ const common::StationData& StationRepository::prevStation() {
     mCurrentStationIdx = (mCurrentStationIdx + n - 1U) % n;  // wrap backwards
     ESP_LOGI(Tag, "prevStation: name=%s, idx=%u", mStations[mCurrentStationIdx].name.c_str(),
              static_cast<unsigned>(mCurrentStationIdx));
+
+    if (!mPersistentStorage.setU32(CurrStationIdxStorageKey, mCurrentStationIdx)) {
+        ESP_LOGW(Tag, "Failed to save current station index to persistent storage");
+    }
 
     return mStations[mCurrentStationIdx];
 }
@@ -114,6 +156,23 @@ const common::StationData& StationRepository::currentStation() const {
              static_cast<unsigned>(idx));
 
     return mStations[idx];
+}
+
+bool StationRepository::refreshStationsFromFile() {
+    std::string data;
+    if (!mFileSystem.readFile(StationJsonPath, data) || data.empty()) {
+        ESP_LOGE(Tag, "Failed to read %s", StationJsonPath);
+        return false;
+    }
+
+    std::vector<common::StationData> nextStations;
+    if (!mParser.parseStations(data, nextStations) || nextStations.empty()) {
+        ESP_LOGE(Tag, "Failed to parse stations");
+        return false;
+    }
+
+    mStations = std::move(nextStations);
+    return true;
 }
 
 }  // namespace services
