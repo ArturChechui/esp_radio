@@ -9,106 +9,149 @@ skinparam packageStyle rectangle
 hide empty members
 hide empty methods
 hide empty fields
-skinparam nodesep 20
-skinparam ranksep 30
+skinparam nodesep 25
+skinparam ranksep 35
 
-interface ILogger {
-    +D(tag: string, msg: string): void
-    +I(tag: string, msg: string): void
-    +W(tag: string, msg: string): void
-    +E(tag: string, msg: string): void
-}
-
-interface ISettingsStore {
-    +GetString(key: string): string
-    +SetString(key: string, v: string): bool
-    +GetU32(key: string): uint32
-    +SetU32(key: string, v: uint32): bool
-}
-
-interface IFileStore {
-    +ReadText(path: string): string
-    +WriteTextAtomic(path: string, tmpPath: string, data: string): bool
-    +Rename(from: string, to: string): bool
-    +Remove(path: string): bool
-    +Exists(path: string): bool
-}
-
-interface IHttpClient {
-    +Get(url: string, etag: string = ""): HttpResponse
-    +Download(url: string): ByteArray
-}
-
-interface IJsonCodec {
-    +ParseStations(json: string): StationsModel
-    +SerializeStations(model: StationsModel): string
-    +ValidateStations(json: string): bool
+interface IAdcReader {
+    +init(): bool
+    +setupChannel(gpioNum: const uint32_t): bool
+    +readRawBurst(gpioNum: const uint32_t, buffer: int*, count: const size_t): bool
 }
 
 interface IDisplay {
-    +ShowBoot(): void
-    +ShowStatus(s: UiStatus): void
-    +ShowStations(m: StationsModel, selected: int): void
+    +init(): bool
+    +showFramebuffer(data: const uint8_t*, len: const size_t): bool
+    +showWindow(col0: const uint8_t, col1: const uint8_t, page0: const uint8_t, page1: const uint8_t, data: const uint8_t*, len: const size_t): bool
 }
 
-interface IInputDriver {
-    +Init(): void
-    +PollOrISR(): void
+interface IFileSystem {
+    +init(): bool
+    +deinit(): void
+    +writeFile(relativePath: const std::string&, data: const std::string&): bool
+    +readFile(relativePath: const std::string&, outData: std::string&): bool
+    +exists(relativePath: const std::string&): bool
+    +removeFile(relativePath: const std::string&): bool
+    +renameFile(fromRelativePath: const std::string&, toRelativePath: const std::string&): bool
+    +getUsage(outTotalBytes: size_t&, outUsedBytes: size_t&): bool
+    +basePath(): std::string
 }
 
-interface IPlayer {
-    +Play(url: string): void
-    +Stop(): void
-    +IsStable(): bool
+interface IGpioInput {
+    +init(): bool
+    +deinit(): void
+    +getLevel(gpioNum: const uint32_t): int
 }
 
-interface IWifi {
-    +Connect(): void
-    +Disconnect(): void
-    +IsConnected(): bool
+interface IHttpClient {
+    +openStream(url: const std::string&, DefaultStreamTimeoutMs: const uint32_t& timeoutMs =): bool
+    +readStream(buffer: uint8_t*, size: const size_t&): int
+    +closeStream(): void
+    +download(url: const std::string&, result: std::string&, DefaultDownloadTimeoutMs: const uint32_t& timeoutMs =): bool
+    +isStreamOpen(): bool
+    +getUrl(): const std::string&
+    +getStatusCode(): int
 }
 
-interface ISensors {
-    +Start(): void
-    +GetTemperatureC(): float
+interface II2cBus {
+    +init(): bool
+    +writeBytes(deviceAddr: const uint8_t, data: const uint8_t*, len: const size_t, timeoutMs: const uint32_t): bool
+    +readBytes(deviceAddr: const uint8_t, data: uint8_t*, len: const size_t, timeoutMs: const uint32_t): bool
 }
 
-class EspLogLogger
-class NvsSettingsStore
-class LittleFsFileStore
-class EspIdfHttpClient
-class CJsonCodec
-class Display
-class GpioInputDriver
-class EspAdfPlayer
-class EspIdfWifi
-class Aht20Sensors
+interface II2sBus {
+    +init(): bool
+    +deinit(): void
+    +write(data: const int16_t*, size: const size_t&, timeoutMs: const uint32_t&): size_t
+    +reconfigureClock(sampleRate: const uint32_t&): bool
+    +getSampleRate(): uint32_t
+}
+
+interface IMp3Decoder {
+    +decode(data: const uint8_t*, len: size_t, pcmOut: int16_t*, pcmSamplesCap: size_t): common::Mp3FrameInfo
+    +reset(): void
+}
+
+interface IPersistentStorage {
+    +init(): bool
+    +setString(key: const std::string&, value: const std::string&): bool
+    +getString(key: const std::string&, outVal: std::string&): bool
+    +setU32(key: const std::string&, value: const uint32_t): bool
+    +getU32(key: const std::string&, out: uint32_t&): bool
+    +erase(key: const std::string&): bool
+}
+
+interface IProvisioningPortal {
+    +start(cfg: const common::ProvisioningPortalConfig&, onSubmit: common::CredentialsCallback): bool
+    +stop(): void
+    +isRunning(): bool
+    +getApIp(): std::string
+}
+
+interface IWifiClient {
+    +init(): bool
+    +deinit(): void
+    +connect(creds: const common::WifiCredentials&): bool
+    +waitForConnection(30000: uint32_t timeoutMs =): bool
+    +disconnect(3000: uint32_t timeoutMs =): bool
+    +startAccessPoint(cfg: const common::ProvisioningPortalConfig&): bool
+    +stopAccessPoint(): bool
+    +getApIp(): std::string
+    +isConnected(): bool
+    +getStatus(): std::string
+    +setStateCallback(callback: common::WifiStateCallback): void
+    +tryGetRssiDbm(): std::optional<int8_t>
+
+}
+
+class Queue
+
+class AdcReader
+class Display {
+    -mI2cBus: II2cBus&
+}
+class FileSystem
+class GpioInput {
+    -mQueue: common::Queue<uint32_t>&
+}
+class HttpClient
+class I2cBus
+class I2sBus
+class Mp3Decoder
+class PersistentStorage
+class ProvisioningPortal {
+    -mWifiClient: IWifiClient&
+}
+class WifiClient
 
 package "External" {
   class "ESP-IDF" as ESPIDF
-  class "ESP-ADF" as ESPADF
 }
 
-EspLogLogger .down.|> ILogger
-NvsSettingsStore .up.|> ISettingsStore
-LittleFsFileStore .up.|> IFileStore
-EspIdfHttpClient .up.|> IHttpClient
-CJsonCodec .down.|> IJsonCodec
-Display .up.|> IDisplay
-GpioInputDriver .down.|> IInputDriver
-EspAdfPlayer .down.|> IPlayer
-EspIdfWifi .down.|> IWifi
-Aht20Sensors .down.|> ISensors
-
-CJsonCodec -up-> ESPIDF
-EspIdfWifi -up-> ESPIDF
-NvsSettingsStore -down-> ESPIDF
-LittleFsFileStore -down-> ESPIDF
-EspIdfHttpClient -down-> ESPIDF
-GpioInputDriver -up-> ESPIDF
+AdcReader -down-> ESPIDF
 Display -down-> ESPIDF
-EspLogLogger -up-> ESPIDF
-Aht20Sensors -up-> ESPIDF
-EspAdfPlayer -up-> ESPADF
+FileSystem -down-> ESPIDF
+GpioInput -down-> ESPIDF
+HttpClient -down-> ESPIDF
+I2cBus -down-> ESPIDF
+I2sBus -up-> ESPIDF
+Mp3Decoder -up-> ESPIDF
+PersistentStorage -up-> ESPIDF
+ProvisioningPortal -up-> ESPIDF
+WifiClient -up-> ESPIDF
+
+AdcReader .down.|> IAdcReader
+Display .up.|> IDisplay
+Display --> I2cBus
+FileSystem .up.|> IFileSystem
+GpioInput .down.|> IGpioInput
+GpioInput -up-> Queue
+HttpClient .up.|> IHttpClient
+I2cBus .left.|> II2cBus
+I2sBus .right.|> II2sBus
+Mp3Decoder .down.|> IMp3Decoder
+PersistentStorage .up.|> IPersistentStorage
+ProvisioningPortal .left.|> IProvisioningPortal
+ProvisioningPortal --> IWifiClient
+WifiClient .left.|> IWifiClient
 
 @enduml

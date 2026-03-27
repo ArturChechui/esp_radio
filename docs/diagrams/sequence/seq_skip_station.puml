@@ -63,6 +63,9 @@ deactivate CTX
 
 == Skip (Next/Prev) ==
 CORETASK  -> CTRL ++: onEvent(ButtonPressedEvent{.button=Next (or Previous)})
+note left
+see details in seq_press_button.puml
+end note
 CTRL -> CMD ++: create
 CTRL -> CMD : handle(event)
 CMD -> PLSVC ++: get current status

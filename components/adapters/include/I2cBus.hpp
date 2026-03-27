@@ -24,7 +24,6 @@ class I2cBus final : public II2cBus {
    private:
     i2c_master_dev_handle_t getOrCreateDeviceHandle(const uint8_t deviceAddr);
 
-   private:
     i2c_master_bus_handle_t mBusHandle;
     uint32_t mFreqHz;
 

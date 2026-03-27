@@ -10,7 +10,6 @@ skinparam ranksep 70
 component "ESP Radio Application" as FW #Application
 
 component "FreeRTOS" as RTOS
-component "ESP-ADF" as ADF
 component "ESP-IDF Platform" as IDF
 component "NVS" as NVS
 component "LittleFS" as LFS
@@ -21,10 +20,9 @@ FW -(0- IDF #line:Blue;text:Blue : ""GPIO API""
 FW -(0- LFS #line:DarkBlue;text:DarkBlue : ""FS API""
 FW -(0- NVS #line:Purple;text:Purple : ""NVS API""
 FW -(0- IDF #line:Brown;text:Brown : ""Networking API""
+FW -(0- IDF #line:YellowGreen;text:YellowGreen : ""ADC API""
 FW -(0- RTOS #line:DarkGoldenRod;text:DarkGoldenRod : ""RTOS API""
-FW -(0- ADF #line:DarkCyan;text:DarkCyan : ""Audio API""
 
-ADF ..> IDF : uses
 RTOS <.. IDF : includes
 NVS <.. IDF : includes
 LFS <.. IDF : includes

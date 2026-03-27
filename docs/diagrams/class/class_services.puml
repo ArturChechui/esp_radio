@@ -13,129 +13,275 @@ skinparam nodesep 25
 skinparam ranksep 20
 
 together {
-    interface IEventSink {
-        +Post(e: AppEvent): void
+    interface IInputService {
+        +init(): bool
+        +deinit(): void
+        +setMode(night: const bool): void
     }
 
-    interface ILogger {
-        +D(tag: string, msg: string): void
-        +I(tag: string, msg: string): void
-        +W(tag: string, msg: string): void
-        +E(tag: string, msg: string): void
+    interface IPlayerService {
+        +playStation(url: const std::string&): bool
+        +stop(): bool
+        +getStatus(): common::PlaybackStatus 
+        +getCurrentUrl(): std::string
+        +getVolumeQ15(): int32_t
+        +setVolume(vol: const uint8_t): void
     }
 
-    interface IFileStore {
-        +ReadText(path: string): string
-        +WriteTextAtomic(path: string, tmpPath: string, data: string): bool
-        +Rename(from: string, to: string): bool
-        +Remove(path: string): bool
-        +Exists(path: string): bool
+    interface ISensorService {
+        +init(): bool
+        +deinit(): void
+        +setPlaybackActive(active: const bool): void
     }
 
-    interface IJsonCodec {
-        +ParseStations(json: string): StationsModel
-        +SerializeStations(model: StationsModel): string
-        +ValidateStations(json: string): bool
+    interface IStationRepository {
+        +init(): bool
+        +load(): bool
+        +getStations(): const std::vector<common::StationData> &
+        +nextStation(): const common::StationData &
+        +prevStation(): const common::StationData 
+        +currentStation(): const common::StationData &
+    }
+
+    interface IWifiService {
+        +init(): bool
+        +connect(timeoutMs: const uint32_t): bool
+        +isConnected(): bool
+        +disconnect(): void
+        +startProvisioningPortal(): bool
+    }
+
+    interface IEventQueue {
+        +post(e: AppEvent): void
+    }
+
+    interface IPersistentStorage {
+        +init(): bool
+        +setString(key: const std::string&, value: const std::string&): bool
+        +setString(key: const std::string&, outVal: std::string&): bool
+        +setU32(key: const std::string&, value: const uint32_t): bool
+        +getU32(key: const std::string&, out: uint32_t&): bool
+        +erase(key: const std::string&): bool
+    }
+
+    interface IFileSystem {
+        +init(): bool
+        +deinit(): void
+        +writeFile(relativePath: const std::string&, data: const std::string&): bool
+        +readFile(relativePath: const std::string&, outData: std::string&): bool
+        +exists(relativePath: const std::string&): bool
+        +removeFile(relativePath: const std::string&): bool
+        +renameFile(fromRelativePath: const std::string&, toRelativePath: const std::string&): bool
+        +getUsage(outTotalBytes: size_t&, outUsedBytes: size_t&): bool
+        +basePath() const: std::string
+    }
+
+    interface IJsonParser {
+        +parseStations(serialized: const std::string&, outStations: std::vector<common::StationData>&): bool
+        +parseManifest(serialized: const std::string&, outManifest: common::ManifestData&): bool
     }
 
     interface IDisplay {
-        +ShowBoot(): void
-        +ShowStatus(s: UiStatus): void
-        +ShowStations(m: StationsModel, selected: int): void
+        +init(): bool
+        +showFramebuffer(data: const uint8_t*, len: const size_t): bool
+        +showWindow(col0: const uint8_t, col1: const uint8_t, page0: const uint8_t, page1: const uint8_t, data: const uint8_t*, len: const size_t): bool
     }
 
-    interface IInputDriver {
-        +Init(): void
-        +PollOrISR(): void
+    interface IWifiClient {
+        +init(): bool
+        +deinit(): void
+        +connect(creds: const common::WifiCredentials&): bool
+        +waitForConnection(timeoutMs: uint32_t): bool
+        +disconnect(timeoutMs: uint32_t): bool
+        +startAccessPoint(cfg: const common::ProvisioningPortalConfig&): bool
+        +stopAccessPoint(): bool
+        +getApIp(): std::string
+        +isConnected(): bool
+        +getStatus(): std::string
+        +setStateCallback(callback: common::WifiStateCallback): void
+        +tryGetRssiDbm(): std::optional<int8_t>
     }
 
-    interface IPlayer {
-        +Play(url: string): void
-        +Stop(): void
-        +IsStable(): bool
+    interface IProvisioningPortal {
+        +start(cfg: const common::ProvisioningPortalConfig&, onSubmit: common::CredentialsCallback): bool
+        +stop(): void
+        +isRunning(): bool
+        +getApIp(): std::string
     }
 
-    interface IWifi {
-        +Connect(): void
-        +Disconnect(): void
-        +IsConnected(): bool
+    interface ITaskRunner {
+        +start(params: const TaskParams&, stackWords:  uint32_t, fn: StepFn, user: void*): TaskHandle
+        +stop(h: const TaskHandle&,waitMs:  uint32_t): StopResult
     }
 
-    interface ISensors {
-        +Start(): void
-        +GetTemperatureC(): float
+    interface II2cBus {
+        +init(): bool
+        +writeBytes(deviceAddr: const uint8_t, data: const uint8_t*, len: const size_t, timeoutMs: const uint32_t): bool
+        +readBytes(deviceAddr: const uint8_t, data: uint8_t*, len: const size_t, timeoutMs: const uint32_t): bool
+    }
+
+    interface IAdcReader {
+        +init(): bool
+        +setupChannel(gpioNum: const uint32_t): bool
+        +readRawBurst(gpioNum: const uint32_t, buffer: int*, count: const size_t): bool
+    }
+
+    interface IClock {
+        +sleepMs(uint32_t: ms: const): void
+        +nowMs(): uint64_t
+    }
+    
+    interface IHttpClient {
+        +openStream(url: const std::string&, DefaultStreamTimeoutMs: const uint32_t& timeoutMs =): bool
+        +readStream(buffer: uint8_t*, size: const size_t&): int
+        +closeStream(): void
+        +download(url: const std::string&, result: std::string&, DefaultDownloadTimeoutMs: const uint32_t& timeoutMs =): bool
+        +isStreamOpen(): bool
+        +getUrl(): const std::string&
+        +getStatusCode(): int
+    }
+
+    interface IMp3Decoder {
+        +decode(data: const uint8_t*, len: size_t, pcmOut: int16_t*, pcmSamplesCap: size_t): common::Mp3FrameInfo
+        +reset(): void
+    }
+
+    interface IRingBuffer {
+        +write(data: const uint8_t*, len: const size_t, timeoutMs: const uint32_t): size_t
+        +read(data: uint8_t*, len: const size_t, timeoutMs: const uint32_t): size_t
+        +claimReadSpans(maxBytes: const size_t): ReadSpans
+        +commitRead(bytes: size_t): void
+        +claimWriteSpans(maxBytes: const size_t): WriteSpans
+        +commitWrite(bytes: size_t): void
+        +waitForData(timeoutMs: const uint32_t): bool
+        +waitForSpace(timeoutMs: const uint32_t): bool
+        +available(): size_t
+        +space(): size_t
+        +getFillLevels(): FillLevels
+        +capacity(): size_t
+        +abort(): void
+        +reset(): void
+    }
+
+    interface IAudioBufferStats {
+        +setPeriodMs(periodMs: uint32_t): void
+        +shouldLog(): bool
+        +observeRing(avail: size_t, space: size_t): void
+        +onFrameDecoded(): void
+        +onDecodeFrameBytesZero(): void
+        +onInvalidFrameInfo(): void
+        +onZeroSampleFrame(): void
+        +onResyncDrop(): void
+        +onI2sWrite(writtenBytes: size_t, timeoutOrZero: bool, partialWrite: bool): void
+        +snapshotAndReset(): Snapshot
+        +onHttpRead(r: int): void
+    }
+
+    interface IGpioInput {
+        +init(): bool
+        +deinit(): void
+        +getLevel(gpioNum: const uint32_t): int
+    }
+
+    interface IQueue<T> {
+        +push(item: const T&, timeoutTicks: const uint32_t): bool
+        +get(out: T&): bool
+        +tryGet(out: T&): bool
+    }
+    
+    interface II2sBus {
+        +init(): bool
+        +deinit(): void
+        +write(data: const int16_t*, size: const size_t&, timeoutMs: const uint32_t&): size_t
+        +reconfigureClock(sampleRate: const uint32_t&): bool
+        +getSampleRate(): uint32_t
     }
 }
 
 class UiService {
-    -display: IDisplay
-    -logger: ILogger
-    +Render(model: AppModel): void
+    -mDisplay: adapters::IDisplay&
+    -mStationRepo: IStationRepository&
 }
 
 class InputService {
-    -driver: IInputDriver
-    -sink: IEventSink
-    -logger: ILogger
-    +Init(): void
-    +OnButtonPlay(): void
-    +OnButtonStop(): void
-    +OnEncoder(delta: int): void
+    -mGpioInput: adapters::IGpioInput& 
+    -mCoreEventQueue: common::IEventQueue&
+    -mQueue: common::IQueue<uint32_t>&
+    -mTaskRunner: common::ITaskRunner&
+    -mClock: common::IClock&
+    -mPersistentStorage: adapters::IPersistentStorage& 
 }
 
 class PlayerService {
-    -player: IPlayer
-    -sink: IEventSink
-    -logger: ILogger
-    +Play(url: string): void
-    +Stop(): void
-    +OnAdfEvent(ev: AdfEvent): void
-    +IsStable(): bool
+    -mCoreEventQueue: common::IEventQueue&
+    -mI2sBus: adapters::II2sBus&
+    -mHttpClient: adapters::IHttpClient&
+    -mMp3Decoder: adapters::IMp3Decoder&
+    -mTaskRunner: common::ITaskRunner&
+    -mStats: common::IAudioBufferStats&
+    -mRingBuffer: std::unique_ptr<common::IRingBuffer>
 }
 
 class WifiService {
-    -wifi: IWifi
-    -sink: IEventSink
-    -logger: ILogger
-    +Connect(): void
-    +OnWifiEvent(ev: WifiEvent): void
-    +IsConnected(): bool
+    -mWifiAdapter: adapters::IWifiClient&
+    -mProvisioningPortal: adapters::IProvisioningPortal&
+    -mTaskRunner: common::ITaskRunner&
+    -mCoreEventQueue: common::IEventQueue&
+    -mPersistentStorage: adapters::IPersistentStorage&
 }
 
 class SensorService {
-    -sensors: ISensors
-    -sink: IEventSink
-    -logger: ILogger
-    +Start(): void
-    +OnTimerTick(): void
+    -mI2cBus: adapters::II2cBus&
+    -mAdcReader: adapters::IAdcReader&
+    -mCoreEventQueue: common::IEventQueue&
+    -mTaskRunner: common::ITaskRunner&
+    -mClock: common::IClock&
 }
 
 class StationRepository {
-    -files: IFileStore
-    -json: IJsonCodec
-    -logger: ILogger
-    +Load(): StationsModel
-    +SaveAtomic(m: StationsModel): bool
+    -mPersistentStorage: adapters::IPersistentStorage &
+    -mFileSystem: adapters::IFileSystem &
+    -mParser: common::IJsonParser &
 }
 
-UiService --> IDisplay
-InputService --> IInputDriver
-PlayerService --> IPlayer
-WifiService --> IWifi
-SensorService --> ISensors
-StationRepository --> IFileStore
-StationRepository --> IJsonCodec
+StationRepository .up.|> IStationRepository
+SensorService .up.|> ISensorService
+WifiService .up.|> IWifiService
+PlayerService .up.|> IPlayerService
+InputService .up.|> IInputService
 
-UiService -up-> ILogger
-InputService --> ILogger
-PlayerService --> ILogger
-WifiService -up-> ILogger
-SensorService --> ILogger
-StationRepository --> ILogger
+InputService -left-> IGpioInput
+InputService --> IEventQueue
+InputService -up-> IQueue
+InputService --> ITaskRunner
+InputService --> IClock
+InputService --> IPersistentStorage
 
-InputService -up-> IEventSink
-PlayerService -up-> IEventSink
-WifiService -up-> IEventSink
-SensorService -up-> IEventSink
+UiService -up-> IDisplay
+UiService --> IStationRepository
+
+PlayerService --> IEventQueue
+PlayerService --> II2sBus
+PlayerService --> IHttpClient
+PlayerService -left-> IMp3Decoder
+PlayerService --> ITaskRunner
+PlayerService --> IAudioBufferStats
+PlayerService -up-> IRingBuffer
+
+WifiService -up-> IWifiClient
+WifiService -up-> IProvisioningPortal
+WifiService --> ITaskRunner
+WifiService --> IEventQueue
+WifiService --> IPersistentStorage
+
+SensorService --> II2cBus
+SensorService --> IAdcReader
+SensorService --> IEventQueue
+SensorService --> ITaskRunner
+SensorService --> IClock
+
+StationRepository --> IPersistentStorage
+StationRepository -up-> IFileSystem
+StationRepository -left-> IJsonParser
 
 @enduml

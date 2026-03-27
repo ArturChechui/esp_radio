@@ -1,4 +1,4 @@
-# ESP32 Internet Radio – Requirements v0.1
+# ESP32 Internet Radio – Requirements
 
 ## 0. Summary
 
@@ -8,7 +8,9 @@ An ESP32-S3 based internet radio device that:
 - Shows a station list on a 0.96" OLED (I2C) and indicates the currently active station.
 - Uses buttons for selection + play/stop and a rotary encoder for volume.
 - Displays temperature & humidity in a corner of the screen (AHT20).
-- Maintains a local station list and can download updates in the background (reboot to apply).
+- Reads ambient light and applies day/night input mode behavior.
+- Monitors battery level and shows battery status in the UI.
+- Maintains a local station list and supports on-demand sync from GitHub.
 
 ## 1. Goals & Non-Goals
 
@@ -17,22 +19,25 @@ An ESP32-S3 based internet radio device that:
 - Reliable playback of AAC/MP3 radio URLs.
 - Predictable UI behavior: selection is separate from activation.
 - Testable core logic (state machine, station selection, persistence rules).
-- Non-blocking background station-list update.
+- Safe station-list synchronization with manifest check and file swap.
+- Integrated light, clap, and battery sensing modules.
 
 ### Non-Goals
 
 - Metadata (ICY title/artist), album art, track history.
-- Voice/clap control.
-- Battery power / power management.
-- Web UI / BLE UI for station management (beyond background download).
-- Audius / Spotify integration (possible future versions).
+- Web UI / BLE UI for station management (beyond on-device sync).
+- Audius / Spotify integration.
 
-## 2. Hardware Assumptions (V1)
+## 2. Hardware Configuration
 
 - MCU: ESP32-S3 SuperMini
-- Display: SSD1306 128x64 OLED via I2C
+- Display: 1.3" SH1106 128x64 OLED via I2C
 - Temp/Hum: AHT20 (I2C)
-- Audio: 2x MAX98357 (I2S DAC/amp) + 2x 8Ohms 3W speakers
+- Light sensor: BH1750 (I2C)
+- Sound sensor: GY-MAX4466 (ADC)
+- Audio modules: 2x MAX98357 (I2S DAC/amp)
+- Speakers: 2x AIYIMA 2" 4 Ohms 3W
+- Battery: 3x 18650 Li-ion, 3000 mAh each
 - Inputs:
   - Buttons: Next, Previous, Play/Stop
   - Rotary encoder EC11 for Volume
@@ -148,7 +153,7 @@ Acceptance:
 - If `stations.json` exists and is valid, device loads it and displays stations in the UI.
 - If `stations.json` is missing or invalid, device displays "No stations available" and playback cannot be started.
 - If `stations.json` becomes valid on the next boot, station list is shown and playback becomes available.
-- After loading, the in-RAM list remains unchanged even if `stations.json` changes on flash (updates require reboot to apply).
+- After loading, the in-RAM list remains unchanged until an explicit sync is completed (FR-11).
 
 JSON schema:
 
@@ -195,66 +200,38 @@ Notes:
 
 - "Eventually" for autoplay means: once Wi-Fi is connected; exact timing is network-dependent.
 
-### FR-11 Background station list update (GitHub)
+### FR-11 Station list synchronization (GitHub, on-demand)
 
-- Device shall support downloading an updated station list from a remote URL and storing it as `stations.json` in LittleFS.
-- The in-RAM station list for the current session shall not change; updates are applied on next reboot.
+- A long press on `Play/Stop` (3 seconds) shall start station synchronization.
+- While sync is active, UI shall switch to a dedicated sync screen and all user inputs shall be ignored.
+- Sync flow:
+  - Download remote `manifest.json`.
+  - Compare local and remote manifest `version`.
+  - If versions differ, download remote `stations.json`.
+  - Validate downloaded station JSON using the same schema/rules as FR-09.
+  - Stage to temporary files and replace live files.
+  - Reload station repository in the running session (no reboot required).
+- If manifest is unchanged, sync exits without replacing files.
 
-Start condition:
+Failure handling:
 
-- Updater starts only when:
-  - Wi-Fi is `Connected`, and
-  - playback is stable (player state is `Playing` continuously for 10 seconds).
-
-Update mechanism:
-
-- Updater shall first fetch `stations.manifest.json` (small file) containing:
-  - `{ "version": <int>, "sha256": "<hex>", "size": <int> }`
-- If manifest indicates change vs the last applied manifest, download `stations.json` to a temporary file.
-- Validate the downloaded JSON (same rules as FR-09).
-- If valid, replace local `stations.json` atomically (temp -> rename).
-- Notify UI: "Station list updated. Reboot to apply."
-
-Retry/backoff:
-
-- On network/HTTP failure, retry with exponential backoff:
-  - 60s -> 2m -> 4m -> 8m -> 16m -> 30m (cap).
-
-Invalid remote list
-
-- If downloaded `stations.json` is invalid, keep existing local file unchanged and continue retries with the defined backoff.
-- If only invalid results occur during all the retries, then:
-  - show one UI message: "Remote list invalid (paused)"
-  - stop updater until reboot.
-
-No update available
-
-- If no updates are found during all the retries, then:
-  - show one UI message: "List up-to-date (paused)"
-  - stop updater until reboot.
-
-Update success
-
-- If an update is successfully downloaded + validated + stored, then:
-  - show one UI message: "Station list updated. Reboot to apply."
-  - stop updater until reboot.
+- On Wi-Fi/HTTP failure, parse error, validation failure, or swap failure:
+  - keep current files unchanged
+  - exit sync
+  - return UI to main screen
 
 Acceptance:
 
-- Updater starts only when Wi-Fi is `Connected` and playback is stable (`Playing` for 10s).
-- If manifest is unchanged, `stations.json` is not downloaded.
-- If manifest changed and downloaded JSON is valid, local `stations.json` is replaced atomically and UI shows once: "Station list updated. Reboot to apply."
-- If updater runs all the attemps without a successful update:
-  - invalid JSON only -> show once: "Remote list invalid (paused)"
-  - no updates found -> show once: "List up-to-date (paused)"
-- Retry/backoff follows 60s -> 2m -> 4m -> 8m -> 16m -> 30m (cap).
-- Current session station list does not change until reboot.
+- Long press (`>=3s`) on `Play/Stop` triggers sync mode.
+- During sync, button/encoder input does not start/stop playback and does not change station/volume.
+- If manifest version is unchanged, `stations.json` is not downloaded.
+- If manifest version changed and downloaded JSON is valid, `stations.json` and `manifest.json` are swapped and station list reloads immediately.
+- On any sync error, app returns to main screen and previously valid files remain active.
 
 Notes:
 
-- Manifest comparison can be by `version` (primary) and/or `sha256` (integrity).
-- HTTP implementation uses ESP-IDF `esp_http_client`.
-- URLs are hosted on GitHub (raw) or any static host.
+- Manifest comparison uses `version` as the primary key.
+- URLs are hosted on GitHub raw content.
 
 ### FR-12 Logging (local)
 
@@ -267,6 +244,19 @@ Acceptance:
 - Serial logs contain boot message, Wi-Fi state changes, play/stop actions, and updater final outcome.
 - Default build logs at INFO level; a debug build can enable more verbose logs.
 - On failures (invalid station list, playback error), an ERROR log entry is produced.
+
+### FR-13 Light, clap and power modules
+
+- Device shall read ambient light periodically and expose a `LightLevelUpdate` event.
+- Device shall read battery voltage and estimated percentage periodically and expose a `BatteryLevelUpdate` event.
+- UI shall show battery state icon (low/mid/full).
+- Device shall run clap detection logic from the microphone input.
+
+Acceptance:
+
+- Light sensor values are produced periodically and can drive day/night input behavior.
+- Battery voltage/percent values are produced periodically and battery icon updates accordingly.
+- Clap detector runs continuously when playback is inactive and terminates upon a successful trigger.
 
 ## 4. Non-Functional Requirements (NFR)
 
@@ -282,16 +272,13 @@ Host unit tests:
 - Station selection rules
 - Player state machine transitions
 - Persistence rules (autoplay + last_station_id + volume debounce)
-- Updater decision logic (manifest comparison, backoff schedule, "pause all the attempts" rules)
+- Station sync decision logic (manifest comparison, validation, swap, reload)
 - JSON validation
+- Light, battery, and clap processing logic
 
 Target/integration tests:
 
-- AHT20 read sanity
+- Temp, Light, Battery read sanity
+- Clap module trigger
 - LittleFS read/write
 - Basic playback smoke on ESP32-S3
-
-## 6. V2/V3 candidates
-
-- V2: metadata, better UI layouts, battery, clap/voice control.
-- V3: Audius station/track browsing (if desired), Wi-Fi provisioning via BLE or captive portal.

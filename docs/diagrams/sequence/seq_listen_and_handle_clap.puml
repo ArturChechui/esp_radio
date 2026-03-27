@@ -1,0 +1,49 @@
+@startuml seq_listen_clap.puml
+title ESP32 Internet Radio - Sequence Diagram (Handle Clap)
+
+box "Core" #LightBlue
+participant "Core EventTask\n(IEventQueue)" as CET
+end box
+
+box "Services" #LightGreen
+participant "SensorService" as SS
+end box
+
+box "Common" #LightGray
+participant "TaskRunner" as TR
+end box
+
+box "Adapters" #LightYellow
+participant "AdcReader\n(IAdcReader)" as ADC
+end box
+
+box "ESP-IDF" #LightGray
+participant "ESP-IDF" as IDF
+end box
+
+== Init ==
+SS -> TR ++: start task that triggers measurements
+return res
+SS -> TR ++: start task that listens and handles clap
+return res
+
+== Listen and Handle Clap == 
+SS ->  ADC ++: readRawBurst(common::MicAdcGpio, rawBuffer, ClapBurstSamples)
+activate SS
+loop (size_t i = 0; i < ClapBurstSamples; ++i)
+    ADC -> IDF ++: adc_oneshot_read(mUnitHandle, it->second.channel, &buffer[i]);
+    return res
+end
+return res
+
+SS -> SS: parse raw data and \ncheck if thresholds are exceeded to post event
+
+alt thresholds are exceeded
+SS -> CET ++: post(ButtonPressedEvent{PlayStop})
+note left
+    See seq_play_station.puml for details
+end note
+return res
+end
+
+@enduml

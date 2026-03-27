@@ -1,5 +1,6 @@
 idf_component_register(
   SRCS
+  "src/AdcReader.cpp"
   "src/Display.cpp"
   "src/I2cBus.cpp"
   "src/I2sBus.cpp"
@@ -7,6 +8,9 @@ idf_component_register(
   "src/WifiClient.cpp"
   "src/HttpClient.cpp"
   "src/Mp3Decoder.cpp"
+  "src/PersistentStorage.cpp"
+  "src/ProvisioningPortal.cpp"
+  "src/FileSystem.cpp"
   "lib/minimp3/minimp3_impl.c"
   INCLUDE_DIRS
   "include"
@@ -16,8 +20,16 @@ idf_component_register(
   driver
   log
   freertos
+  esp_adc
   esp_http_client
+  esp_http_server
   esp_wifi
+  esp_netif
+  esp_event
   nvs_flash
   PRIV_REQUIRES
-  mbedtls)
+  mbedtls
+  littlefs)
+
+littlefs_create_partition_image(storage ${CMAKE_SOURCE_DIR}/resources/json
+                                FLASH_IN_PROJECT)

@@ -13,135 +13,123 @@ skinparam nodesep 25
 skinparam ranksep 30
 
 class AppContext {
-    +controllerTask: ControllerTask
-    +updaterTask: UpdaterTask
-    +uiTask: EventTask
-    +uiService: UiService
-    +inputService: InputService
-    +playerService: PlayerService
-    +wifiService: WifiService
-    +sensorService: SensorService
-    +stationRepository: StationRepository
-    +espLogLogger: EspLogLogger
-    +nvsSettingsStore: NvsSettingsStore
-    +littleFsFileStore: LittleFsFileStore
-    +espIdfHttpClient: EspIdfHttpClient
-    +cJsonCodec: CJsonCodec
-    +oledSsd1306Display: Display
-    +gpioInputDriver: GpioInputDriver
-    +espAdfPlayer: EspAdfPlayer
-    +espIdfWifi: EspIdfWifi
-    +aht20Sensors: Aht20Sensors
+    -mPersistentStorage: std::unique_ptr<adapters::PersistentStorage>
+    -mWifiAdapter: std::unique_ptr<adapters::WifiClient>
+    -mProvisioningPortal: std::unique_ptr<adapters::ProvisioningPortal>
+    -mI2cBus: std::unique_ptr<adapters::I2cBus>
+    -mI2sBus: std::unique_ptr<adapters::I2sBus>
+    -mDisplay: std::unique_ptr<adapters::Display>
+    -mGpioInput: std::unique_ptr<adapters::GpioInput>
+    -mAdcReader: std::unique_ptr<adapters::AdcReader>
+    -mStreamHttpClient: std::unique_ptr<adapters::HttpClient>
+    -mJsonHttpClient: std::unique_ptr<adapters::HttpClient>
+    -mMp3Decoder: std::unique_ptr<adapters::Mp3Decoder>
+    -mFileSystem: std::unique_ptr<adapters::FileSystem>
+    -mTaskRunner: std::unique_ptr<common::TaskRunner>
+    -mStats: std::unique_ptr<common::AudioBufferStats>
+    -mQueue: std::unique_ptr<common::Queue<uint32_t>>
+    -mClock: std::unique_ptr<common::Clock>
+    -mUiEventTask: std::unique_ptr<common::EventTask>
+    -mCoreEventTask: std::unique_ptr<common::EventTask>
+    -mJsonParser: std::unique_ptr<common::JsonParser>
+    -mWifiService: std::unique_ptr<services::WifiService>
+    -mInputService: std::unique_ptr<services::InputService>
+    -mPlayerService: std::unique_ptr<services::PlayerService>
+    -mStationRepository: std::unique_ptr<services::StationRepository>
+    -mUiService: std::unique_ptr<services::UiService>
+    -mSensorService: std::unique_ptr<services::SensorService>
+    -mAppController: std::unique_ptr<AppController>
 }
 
 class AppController {
-    -ctx: AppContext
-    -activeCmd: IAppCommand
-    -model: AppModel
-    +OnEvent(e: AppEvent): void
-    -StartCommand(cmd: IAppCommand): void
-    -ForwardToActiveCmd(e: AppEvent): void
+    -mWifiService: services::IWifiService&
+    -mPlayerService: services::IPlayerService&
+    -mStationRepository: services::IStationRepository&
+    -mSensorService: services::ISensorService&
+    -mInputService: services::IInputService&
+    -mHttpClient: adapters::IHttpClient&
+    -mFileSystem: adapters::IFileSystem&
+    -mJsonParser: common::IJsonParser&
+    -mUiEventQueue: common::IEventQueue&
+    -mCurrentCmd: std::unique_ptr<commands::ICommand> 
 }
 
-class ControllerTask {
-    -queue: QueueHandle_t
-    -controller: AppController
-    -logger: ILogger
-    +Start(): void
-    +Post(e: AppEvent): void
-    -RunLoop(): void
+interface IEventHandler {
+    +onEvent(event: const AppEvent&): void
 }
 
-class UpdaterTask {
-    -queue: QueueHandle_t 
-    -ctx: AppContext
-    +Start(): void
-    +Post(e: UpdaterEvent): void
-    -RunLoop(): void
-}
+interface IEventQueue
+interface IWifiService
+interface IPlayerService
+interface IStationRepository
+interface ISensorService
+interface IInputService
+interface IHttpClient
+interface IFileSystem
+interface IJsonParser
+interface IEventQueue
+interface ICommand
 
-class EventTask {
-    -queue: QueueHandle_t 
-    -uiService: UiService
-    -logger: ILogger
-    +Start(): void
-    +Post(e: UiEvent): void
-    -RunLoop(): void
-}
-
-interface IEventSink {
-    +Post(e: AppEvent): void
-}
-
-interface IUpdaterSink {
-    +Post(e: UpdaterEvent): void
-}
-
-interface IUiEventSink {
-    +Post(e: UiEvent): void
-}
-
-interface IAppCommand
-interface IUpdaterCommand
-interface ILogger
-
-class UiService
+class PersistentStorage
+class WifiClient
+class ProvisioningPortal
+class I2cBus
+class I2sBus
+class Display
+class GpioInput
+class AdcReader
+class HttpClient
+class Mp3Decoder
+class FileSystem
+class TaskRunner
+class AudioBufferStats
+class Queue<uint32_t>
+class Clock
+class EventTask
+class JsonParser
+class WifiService
 class InputService
 class PlayerService
-class WifiService
-class SensorService
 class StationRepository
+class UiService
+class SensorService
+class AppController
 
-class EspLogLogger
-class NvsSettingsStore
-class LittleFsFileStore
-class EspIdfHttpClient
-class CJsonCodec
-class Display
-class GpioInputDriver
-class EspAdfPlayer
-class EspIdfWifi
-class Aht20Sensors
-
-AppContext *-up- ControllerTask
-AppContext *-up- UpdaterTask
+AppContext *-up- PersistentStorage
+AppContext *-up- WifiClient
+AppContext *-up- ProvisioningPortal
+AppContext *-up- I2cBus
+AppContext *-up- I2sBus
+AppContext *-up- Display
+AppContext *-up- GpioInput
+AppContext *-up- AdcReader
+AppContext *-up- HttpClient
+AppContext *-up- Mp3Decoder
+AppContext *-up- FileSystem
+AppContext *-up- TaskRunner
+AppContext *-up- AudioBufferStats
+AppContext *-up- Queue
+AppContext *-up- Clock
 AppContext *-up- EventTask
+AppContext *-up- JsonParser
+AppContext *-up- WifiService
+AppContext *-up- InputService
+AppContext *-up- PlayerService
+AppContext *-up- StationRepository
+AppContext *-up- UiService
+AppContext *-up- SensorService
+AppContext *-down- AppController
 
-AppContext *-- UiService
-AppContext *-- InputService
-AppContext *-- PlayerService
-AppContext *-- WifiService
-AppContext *-- SensorService
-AppContext *-- StationRepository
-
-AppContext *-- EspLogLogger
-AppContext *-- NvsSettingsStore
-AppContext *-- LittleFsFileStore
-AppContext *-- EspIdfHttpClient
-AppContext *-- CJsonCodec
-AppContext *-- Display
-AppContext *-- GpioInputDriver
-AppContext *-- EspAdfPlayer
-AppContext *-- EspIdfWifi
-AppContext *-- Aht20Sensors
-AppContext *-up- AppController
-
-ControllerTask .up.|> IEventSink
-ControllerTask -left-> AppController
-ControllerTask -up-> ILogger
-
-UpdaterTask ..|> IUpdaterSink
-UpdaterTask *-- IUpdaterCommand
-UpdaterTask --> AppContext
-
-EventTask ..|> IUiEventSink
-EventTask --> UiService
-EventTask -up-> ILogger
-
-AppController --> IUpdaterSink
-AppController --> IUiEventSink
-AppController *-- IAppCommand
-AppController --> AppContext
-AppController -up-> ILogger
+AppController .left.|> IEventHandler
+AppController --> IWifiService
+AppController --> IPlayerService
+AppController --> IStationRepository
+AppController --> ISensorService
+AppController --> IInputService
+AppController --> IHttpClient
+AppController --> IFileSystem
+AppController --> IJsonParser
+AppController --> IEventQueue
+AppController *-right- ICommand
 
 @enduml

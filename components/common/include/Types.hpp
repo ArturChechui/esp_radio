@@ -40,6 +40,14 @@ enum class Icon : uint8_t {
 };
 
 // Structures
+struct MicFeatures {
+    int32_t energy = 0;
+    int32_t p2p = 0;
+    int32_t peakDiff = 0;
+    int32_t minRaw = 0;
+    int32_t maxRaw = 0;
+};
+
 struct Rect {
     uint8_t x;
     uint8_t y;
@@ -52,6 +60,10 @@ struct StationData {
     std::string id;
     std::string name;
     std::string url;
+};
+
+struct ManifestData {
+    std::string version;
 };
 
 struct GpioInputData {
@@ -92,9 +104,21 @@ struct Mp3FrameInfo {
     int samplesPerCh = 0;  // >0 when decoded
 };
 
-struct WifiData {
+struct WifiState {
     bool isConnected;
     int8_t rssi;
+};
+
+struct WifiCredentials {
+    std::string ssid;
+    std::string password;
+};
+
+struct ProvisioningPortalConfig {
+    std::string apSsid;
+    std::string apPassword;
+    uint8_t channel;
+    uint8_t maxConnections;
 };
 
 struct IStopToken;
@@ -102,6 +126,8 @@ struct IStopToken;
 // Callback types
 using PlaybackStatusCallback = std::function<void(const PlaybackStatus&)>;
 using GpioInputDataCallback = std::function<void(const GpioInputData&)>;
-using WifiStateCallback = std::function<void(const WifiData&)>;
+using WifiStateCallback = std::function<void(const WifiState&)>;
 using StepFn = StepResult (*)(void* user, IStopToken& token);
+using CredentialsCallback = std::function<void(const WifiCredentials&)>;
+
 }  // namespace common

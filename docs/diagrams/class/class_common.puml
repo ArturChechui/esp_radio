@@ -1,0 +1,56 @@
+@startuml class_common.puml
+title ESP32 Internet Radio - Class Diagram (Common)
+
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+hide empty members
+hide empty methods
+hide empty fields
+skinparam nodesep 25
+skinparam ranksep 30
+
+interface ITaskRunner {
+    +start(params: const TaskParams&, stackWords: uint32_t, fn: StepFn, user: void*): TaskHandle
+    +stop(h: const TaskHandle&, waitMs: uint32_t): StopResult
+}
+
+class TaskRunner {
+}
+
+interface IEventQueue {
+    +post(event: const AppEvent&): void
+}
+
+interface IEventHandler {
+    +onEvent(event: const AppEvent&): void
+}
+
+class EventTask {
+    +init(): bool
+    +run(handler: IEventHandler&): bool
+    -mHandler: IEventHandler*
+    -mTaskRunner: ITaskRunner& 
+}
+
+interface IQueue {
+    +push(item: const T&, timeoutTicks: const uint32_t): bool
+    +get(out: T&): bool
+    +tryGet(out: T&): bool
+}
+
+class Queue {
+    +pushFromIsr(item: const T&): bool
+}
+
+EventTask .up.|> IEventQueue
+EventTask --> IEventHandler
+EventTask -left-> ITaskRunner
+
+TaskRunner .up.|> ITaskRunner
+
+Queue .up.|> IQueue
+
+@enduml

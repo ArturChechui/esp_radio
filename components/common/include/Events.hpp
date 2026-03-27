@@ -11,6 +11,10 @@ struct ButtonPressedEvent {
     Button button;
 };
 
+struct ButtonLongPressedEvent {
+    Button button;
+};
+
 struct PlaybackStatusChangedEvent {
     PlaybackStatus status;
 };
@@ -20,9 +24,16 @@ struct TempHumidUpdateEvent {
     uint8_t humidity;
 };
 
-struct SystemReadyEvent {
-    bool showSplashScreen;
+struct LightLevelUpdateEvent {
+    uint16_t lux;
 };
+
+struct BatteryLevelUpdateEvent {
+    uint16_t millivolts;
+    uint8_t percent;
+};
+
+struct SystemInitedEvent {};
 
 struct CurrentStationChangedEvent {};
 
@@ -35,8 +46,16 @@ struct VolumeChangedEvent {
     uint8_t volume;
 };
 
-using AppEvent = std::variant<ButtonPressedEvent, PlaybackStatusChangedEvent, TempHumidUpdateEvent,
-                              SystemReadyEvent, CurrentStationChangedEvent, WifiStateChangedEvent,
-                              VolumeChangedEvent>;
+struct SwitchToMainScreenEvent {};
+struct SwitchToWifiProvScreenEvent {};
+struct SwitchToSyncInProgressScreenEvent {};
+struct WifiCredsReceivedEvent {};
+
+using AppEvent =
+    std::variant<ButtonPressedEvent, ButtonLongPressedEvent, PlaybackStatusChangedEvent,
+                 TempHumidUpdateEvent, LightLevelUpdateEvent, BatteryLevelUpdateEvent,
+                 SystemInitedEvent, CurrentStationChangedEvent, WifiStateChangedEvent,
+                 VolumeChangedEvent, SwitchToMainScreenEvent, SwitchToWifiProvScreenEvent,
+                 SwitchToSyncInProgressScreenEvent, WifiCredsReceivedEvent>;
 
 }  // namespace common

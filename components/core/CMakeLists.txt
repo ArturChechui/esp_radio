@@ -2,11 +2,14 @@ idf_component_register(
   SRCS
   "src/AppController.cpp"
   "src/AppContext.cpp"
+  "commands/src/PlayStopSkipCommand.cpp"
+  "commands/src/ConnectWifiCommand.cpp"
+  "commands/src/SyncStationsCommand.cpp"
   INCLUDE_DIRS
   "include"
+  "commands/include"
   REQUIRES
   common
-  commands
   adapters
   services
   log)

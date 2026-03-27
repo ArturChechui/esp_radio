@@ -20,6 +20,9 @@ end box
 
 == Stop ==
 CORETASK  -> CTRL ++: onEvent(ButtonPressedEvent{.button=PlayStop})
+note left
+see details in seq_press_button.puml
+end note
 CTRL -> CMD ++: create
 CTRL -> CMD : handle(event)
 CMD -> PLSVC ++: get current status

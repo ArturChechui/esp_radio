@@ -1,5 +1,5 @@
-@startuml seq_change_temp_hum.puml
-title ESP32 Internet Radio - Sequence Diagram (Change of Temperature and Humidity)
+@startuml seq_update_temp_hum.puml
+title ESP32 Internet Radio - Sequence Diagram (Update Temperature and Humidity)
 
 box "Core" #LightBlue
 participant "Core EventTask\n(IEventQueue)" as CET
@@ -14,6 +14,7 @@ end box
 
 box "Common" #LightGray
 participant "TaskRunner" as TR
+participant "StopToken" as ST
 end box
 
 box "Adapters" #LightYellow
@@ -27,7 +28,7 @@ end box
 == Init ==
 I2C -> IDF ++: initialize and create bus handle
 return res
-SS -> TR ++: start task that triggers measurement
+SS -> TR ++: start task that triggers measurements
 return res
 
 == Measurement ==
@@ -36,19 +37,25 @@ SS ->  I2C ++: writeBytes(addr, resetCmd.data(), resetCmd.size(), 100)
 I2C -> IDF ++: i2c_master_transmit(dev, data, len, ticks)
 return res
 return res
+SS -> ST ++: sleepMs(20)
+return bool - if stoped
 SS ->  I2C ++: writeBytes(addr, initCmd.data(), initCmd.size(), 100)
 I2C -> IDF ++: i2c_master_transmit(dev, data, len, ticks)
 return res
 return res
+SS -> ST ++: sleepMs(10)
+return bool - if stoped
 SS ->  I2C ++: writeBytes(addr, triggerCmd.data(), triggerCmd.size(), 100)
 I2C -> IDF ++: i2c_master_transmit(dev, data, len, ticks)
 return res
 return res
+SS -> ST ++: sleepMs(80)
+return bool - if stoped
 SS ->  I2C ++: readBytes(addr, data.data(), data.size(), 100)
 I2C -> IDF ++: i2c_master_receive(dev, data, len, ticks)
 return res
 return res
-SS -> SS: parse data
+SS -> SS: parse raw data
 SS -> CET ++: post(TempHumidUpdateEvent{})
 return res
 

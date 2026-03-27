@@ -8,8 +8,10 @@ idf_component_register(
   "src/TaskRunner.cpp"
   "src/EventTask.cpp"
   "src/Clock.cpp"
+  "src/JsonParser.cpp"
   INCLUDE_DIRS
   include
   REQUIRES
   driver
-  freertos)
+  freertos
+  json)

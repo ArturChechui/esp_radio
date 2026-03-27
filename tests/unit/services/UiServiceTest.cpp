@@ -105,27 +105,38 @@ void UiServiceTest::initSuccess() {
     EXPECT_TRUE(uiService->init());
 }
 
+void UiServiceTest::switchToMainScreenSuccess() {
+    EXPECT_CALL(*mockDisplay, showFramebuffer(_, _)).WillOnce(Return(true));
+    common::SwitchToMainScreenEvent e{};
+    uiService->onEvent(e);
+}
+
+void UiServiceTest::switchToWifiProvScreenSuccess() {
+    EXPECT_CALL(*mockDisplay, showFramebuffer(_, _)).WillOnce(Return(true));
+    common::SwitchToWifiProvScreenEvent e{};
+    uiService->onEvent(e);
+}
+
+void UiServiceTest::switchToSyncInProgressScreenSuccess() {
+    EXPECT_CALL(*mockDisplay, showFramebuffer(_, _)).WillOnce(Return(true));
+    common::SwitchToSyncInProgressScreenEvent e{};
+    uiService->onEvent(e);
+}
+
 TEST_F(UiServiceTest, tc01_init_success) {
     initSuccess();
 }
 
-TEST_F(UiServiceTest, tc02_init_fail_wifiEvent_fullFlush) {
+TEST_F(UiServiceTest, tc02_init_fail) {
     static const common::StationData station{"id", "AB", "url"};
     EXPECT_CALL(*mockRepo, currentStation()).WillRepeatedly(ReturnRef(station));
-
     EXPECT_CALL(*mockDisplay, showFramebuffer(_, _)).WillOnce(Return(false));
     EXPECT_FALSE(uiService->init());
-
-    EXPECT_CALL(*mockDisplay, showFramebuffer(_, _)).WillOnce(Return(true));
-
-    common::WifiStateChangedEvent e{};
-    e.isConnected = true;
-    e.bars = 3;
-    uiService->onEvent(e);
 }
 
 TEST_F(UiServiceTest, tc03_stationEvent_partialFlush) {
     initSuccess();
+    switchToMainScreenSuccess();
 
     static const common::StationData station{"id", "AB", "url"};
     EXPECT_CALL(*mockRepo, currentStation()).WillOnce(ReturnRef(station));
@@ -161,6 +172,7 @@ TEST_F(UiServiceTest, tc03_stationEvent_partialFlush) {
 
 TEST_F(UiServiceTest, tc04_wifiEvent_partialFlush) {
     initSuccess();
+    switchToMainScreenSuccess();
 
     const auto win = rectToWindow(kStatusWifiRect);
 
@@ -182,6 +194,7 @@ TEST_F(UiServiceTest, tc04_wifiEvent_partialFlush) {
 
 TEST_F(UiServiceTest, tc05_wifiEvent_noFlush) {
     initSuccess();
+    switchToMainScreenSuccess();
 
     common::WifiStateChangedEvent e{};
     e.isConnected = false;
@@ -191,6 +204,8 @@ TEST_F(UiServiceTest, tc05_wifiEvent_noFlush) {
 
 TEST_F(UiServiceTest, tc06_tempEvent_partialFlush) {
     initSuccess();
+    switchToMainScreenSuccess();
+
     const auto win = rectToWindow(kStatusTextRect);
 
     EXPECT_CALL(*mockDisplay, showWindow(win.col0, win.col1, win.page0, win.page1, _, _))
@@ -211,6 +226,8 @@ TEST_F(UiServiceTest, tc06_tempEvent_partialFlush) {
 
 TEST_F(UiServiceTest, tc07_playbackEvent_partialFlush) {
     initSuccess();
+    switchToMainScreenSuccess();
+
     const auto win = rectToWindow(kMainIconRect);
 
     EXPECT_CALL(*mockDisplay, showWindow(win.col0, win.col1, win.page0, win.page1, _, _))
@@ -230,18 +247,17 @@ TEST_F(UiServiceTest, tc07_playbackEvent_partialFlush) {
 
 TEST_F(UiServiceTest, tc08_wifiEvent_partialFlush_fail_tempEvent_fullFlush) {
     initSuccess();
+    switchToMainScreenSuccess();
 
     const auto win = rectToWindow(kStatusWifiRect);
     EXPECT_CALL(*mockDisplay, showWindow(win.col0, win.col1, win.page0, win.page1, _, _))
         .WillOnce(Return(false));
-
     common::WifiStateChangedEvent e{};
     e.isConnected = true;
     e.bars = 2;
     uiService->onEvent(e);
 
     EXPECT_CALL(*mockDisplay, showFramebuffer(_, _)).WillOnce(Return(true));
-
     common::TempHumidUpdateEvent t{};
     t.temperature = 20;
     t.humidity = 50;
@@ -250,6 +266,7 @@ TEST_F(UiServiceTest, tc08_wifiEvent_partialFlush_fail_tempEvent_fullFlush) {
 
 TEST_F(UiServiceTest, tc09_volEvent_partialFlush) {
     initSuccess();
+    switchToMainScreenSuccess();
 
     const auto win = rectToWindow(kStatusVolRect);
 
@@ -266,4 +283,126 @@ TEST_F(UiServiceTest, tc09_volEvent_partialFlush) {
     common::VolumeChangedEvent e{};
     e.volume = 70;
     uiService->onEvent(e);
+}
+
+TEST_F(UiServiceTest, tc10_switchToWifiProv_switchToMain_volEvent) {
+    initSuccess();
+    switchToWifiProvScreenSuccess();
+    switchToMainScreenSuccess();
+
+    const auto win = rectToWindow(kStatusVolRect);
+
+    EXPECT_CALL(*mockDisplay, showWindow(win.col0, win.col1, win.page0, win.page1, _, _))
+        .WillOnce([&](const uint8_t col0, const uint8_t col1, const uint8_t page0,
+                      const uint8_t page1, const uint8_t* data, const size_t len) {
+            EXPECT_EQ(len, win.len);
+            const auto expected =
+                packFromFramebuffer(uiService->getFramebuffer(), col0, col1, page0, page1);
+            EXPECT_EQ(0, std::memcmp(data, expected.data(), len));
+            return true;
+        });
+
+    common::VolumeChangedEvent e{};
+    e.volume = 70;
+    uiService->onEvent(e);
+}
+
+TEST_F(UiServiceTest,
+       tc11_switchToWifiProv_events_switchToMain_sameEvents_noFlush_wifiEvent_partialFlush) {
+    initSuccess();
+    switchToWifiProvScreenSuccess();
+
+    common::VolumeChangedEvent v{};
+    v.volume = 70;
+    uiService->onEvent(v);
+    common::TempHumidUpdateEvent t{};
+    t.temperature = 20;
+    t.humidity = 50;
+    uiService->onEvent(t);
+    common::WifiStateChangedEvent w{};
+    w.isConnected = true;
+    w.bars = 2;
+    uiService->onEvent(w);
+    common::PlaybackStatusChangedEvent p{};
+    p.status = common::PlaybackStatus::Playing;
+    uiService->onEvent(p);
+    common::CurrentStationChangedEvent s{};
+    uiService->onEvent(s);
+
+    switchToMainScreenSuccess();
+
+    common::VolumeChangedEvent v2{};
+    v2.volume = 70;
+    uiService->onEvent(v2);
+    common::TempHumidUpdateEvent t2{};
+    t2.temperature = 20;
+    t2.humidity = 50;
+    uiService->onEvent(t2);
+    common::WifiStateChangedEvent w2{};
+    w2.isConnected = true;
+    w2.bars = 2;
+    uiService->onEvent(w2);
+    common::PlaybackStatusChangedEvent p2{};
+    p2.status = common::PlaybackStatus::Playing;
+    uiService->onEvent(p2);
+
+    const auto win = rectToWindow(kStatusWifiRect);
+    EXPECT_CALL(*mockDisplay, showWindow(win.col0, win.col1, win.page0, win.page1, _, _))
+        .WillOnce([&](const uint8_t col0, const uint8_t col1, const uint8_t page0,
+                      const uint8_t page1, const uint8_t* data, const size_t len) {
+            EXPECT_EQ(len, win.len);
+            const auto expected =
+                packFromFramebuffer(uiService->getFramebuffer(), col0, col1, page0, page1);
+            EXPECT_EQ(0, std::memcmp(data, expected.data(), len));
+            return true;
+        });
+    common::WifiStateChangedEvent w3{};
+    w3.isConnected = true;
+    w3.bars = 4;
+    uiService->onEvent(w3);
+}
+
+TEST_F(UiServiceTest, tc12_batteryEvent_partialFlush) {
+    initSuccess();
+    switchToMainScreenSuccess();
+
+    const auto win = rectToWindow(kStatusBatRect);
+
+    EXPECT_CALL(*mockDisplay, showWindow(win.col0, win.col1, win.page0, win.page1, _, _))
+        .WillOnce([&](const uint8_t col0, const uint8_t col1, const uint8_t page0,
+                      const uint8_t page1, const uint8_t* data, const size_t len) {
+            EXPECT_EQ(len, win.len);
+            const auto expected =
+                packFromFramebuffer(uiService->getFramebuffer(), col0, col1, page0, page1);
+            EXPECT_EQ(0, std::memcmp(data, expected.data(), len));
+            return true;
+        });
+
+    common::BatteryLevelUpdateEvent e{};
+    e.millivolts = 3720;
+    e.percent = 18;
+    uiService->onEvent(e);
+}
+
+TEST_F(UiServiceTest, tc13_switchToSyncInProgress_success) {
+    initSuccess();
+    switchToSyncInProgressScreenSuccess();
+}
+
+TEST_F(UiServiceTest, tc14_syncInProgress_noPartialUpdates) {
+    initSuccess();
+    switchToSyncInProgressScreenSuccess();
+
+    common::VolumeChangedEvent v{};
+    v.volume = 70;
+    uiService->onEvent(v);
+
+    common::WifiStateChangedEvent w{};
+    w.isConnected = true;
+    w.bars = 3;
+    uiService->onEvent(w);
+
+    common::PlaybackStatusChangedEvent p{};
+    p.status = common::PlaybackStatus::Playing;
+    uiService->onEvent(p);
 }

@@ -35,7 +35,6 @@ class PlayerService : public IPlayerService {
                            std::unique_ptr<common::ISignal> semaphore);
     ~PlayerService() override;
 
-    bool init() override;
     bool playStation(const std::string& url) override;
     bool stop() override;
     common::PlaybackStatus getStatus() const override;
@@ -76,7 +75,7 @@ class PlayerService : public IPlayerService {
     common::IAudioBufferStats& mStats;
     std::unique_ptr<common::ISignal> mStreamOpenSignal;
 
-    uint8_t mNoDataCount;
+    uint32_t mReadStallMs;
     bool mPlayingNotified;
     std::atomic<bool> mStreamOpen;
     std::atomic<bool> mIsPlaying;
