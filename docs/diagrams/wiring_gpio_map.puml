@@ -21,7 +21,7 @@ together {
 
 component "Decoupling\n100µF electrolytic || 0.1µF ceramic" as DEC_M
 
-component "R1 100K to GP3 ||\nR2 100K to GND ||\n0.1µF ceramic to GND" as DIV_B
+component "R1 100K to POS ||\nR2 100K to GND ||\n0.1µF ceramic to GND" as DIV_B
 component "R1 100K to GND ||\nR2 220K to 3.3V ||\n0.1µF ceramic to GND" as DIV_R_AMP
 
 component "ESP32-S3 SuperMini" as ESP #DDDDDD {

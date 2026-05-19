@@ -1,0 +1,7 @@
+<map id="components/adapters/include/IPersistentStorage.hpp" name="components/adapters/include/IPersistentStorage.hpp">
+<area shape="rect" id="Node000001" title="Interface definition for non&#45;volatile key&#45;value storage." alt="" coords="5,5,229,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="41,93,108,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="109,47,90,83,85,80,105,44"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="132,93,191,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="130,44,150,80,146,83,126,47"/>
+</map>

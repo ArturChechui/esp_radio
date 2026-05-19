@@ -6,7 +6,7 @@
 #include "Types.hpp"
 
 namespace adapters {
-Mp3Decoder::Mp3Decoder() {
+Mp3Decoder::Mp3Decoder() : mDec() {
     reset();
 }
 

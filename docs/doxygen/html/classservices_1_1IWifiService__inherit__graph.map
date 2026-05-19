@@ -1,0 +1,5 @@
+<map id="services::IWifiService" name="services::IWifiService">
+<area shape="rect" id="Node000001" title="Abstract interface for a high&#45;level Wi&#45;Fi management service." alt="" coords="5,5,167,31"/>
+<area shape="rect" id="Node000002" href="$classservices_1_1WifiService.html" title="Concrete implementation of Wi&#45;Fi management logic." alt="" coords="7,79,165,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="89,44,89,79,83,79,83,44"/>
+</map>

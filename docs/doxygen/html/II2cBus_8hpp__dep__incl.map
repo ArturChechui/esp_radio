@@ -1,0 +1,20 @@
+<map id="components/adapters/include/II2cBus.hpp" name="components/adapters/include/II2cBus.hpp">
+<area shape="rect" id="Node000001" title="Interface definition for I2C bus master operations." alt="" coords="297,5,460,45"/>
+<area shape="rect" id="Node000002" href="$Display_8hpp.html" title="Implementation of the IDisplay interface for I2C&#45;based displays." alt="" coords="111,93,273,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="327,53,234,96,232,91,324,49"/>
+<area shape="rect" id="Node000007" href="$I2cBus_8hpp.html" title="Implementation of the II2cBus interface for ESP32 I2C master communication." alt="" coords="297,93,460,133"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="381,59,381,93,376,93,376,59"/>
+<area shape="rect" id="Node000009" href="$SensorService_8cpp.html" title=" " alt="" coords="484,93,652,133"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="434,49,528,91,525,96,431,53"/>
+<area shape="rect" id="Node000003" href="$Display_8cpp.html" title=" " alt="" coords="5,181,168,221"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="160,144,112,183,108,179,157,140"/>
+<area shape="rect" id="Node000004" href="$AppContext_8hpp.html" title="Central registry and lifecycle manager for the application." alt="" coords="193,181,378,221"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="225,141,266,179,263,183,221,145"/>
+<area shape="rect" id="Node000005" href="$AppContext_8cpp.html" title=" " alt="" coords="117,269,275,309"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="257,233,218,271,214,267,254,229"/>
+<area shape="rect" id="Node000006" href="$app__main_8cpp.html" title=" " alt="" coords="299,277,450,302"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="317,229,364,274,360,278,313,233"/>
+<area shape="poly" id="edge8_Node000007_Node000004" title=" " alt="" coords="350,145,308,183,304,179,346,141"/>
+<area shape="rect" id="Node000008" href="$I2cBus_8cpp.html" title=" " alt="" coords="403,181,565,221"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="414,140,462,179,459,183,411,144"/>
+</map>

@@ -1,48 +1,67 @@
+/**
+ * @file II2sBus.hpp
+ * @brief Interface definition for I2S bus operations for audio output.
+ *
+ * This file defines the abstract interface for an I2S bus, providing
+ * standardized methods for audio data transmission and clock management.
+ */
+
 #pragma once
 
 #include <cstddef>
 #include <cstdint>
 
+/**
+ * @namespace adapters
+ * @brief Contains hardware abstraction layer implementation and interface classes.
+ */
 namespace adapters {
 
 /**
- * @brief I2S bus abstraction for audio output
+ * @class II2sBus
+ * @brief Abstract interface for an I2S bus controller.
  *
- * Encapsulates I2S hardware initialization, clock configuration, and data writing.
+ * This interface encapsulates the hardware-specific details of I2S initialization,
+ * clock configuration, and PCM data writing, allowing the system to output audio
+ * regardless of the specific DAC or MCU peripheral being used.
  */
 class II2sBus {
    public:
+    /**
+     * @brief Virtual destructor for proper cleanup of derived classes.
+     */
     virtual ~II2sBus() = default;
 
     /**
-     * @brief Initialize I2S bus
-     * @return true if successful
+     * @brief Initializes the I2S bus and associated hardware.
+     * @return true if the I2S peripheral was successfully initialized, false otherwise.
      */
     virtual bool init() = 0;
 
     /**
-     * @brief Deinitialize I2S bus and free resources
+     * @brief Deinitializes the I2S bus and releases hardware resources.
      */
     virtual void deinit() = 0;
 
     /**
-     * @brief Write PCM data to I2S output
-     * @param data Pointer to PCM samples (int16_t, interleaved)
-     * @param size Number of bytes to write
-     * @param timeoutMs Timeout in milliseconds
-     * @return Number of bytes actually written
+     * @brief Writes PCM audio data to the I2S output.
+     * * @param data Pointer to the buffer containing 16-bit PCM samples (typically interleaved).
+     * @param size The number of bytes to transmit.
+     * @param timeoutMs The maximum time to wait for the write operation to complete.
+     * @return The number of bytes actually written to the output buffer/DMA.
      */
     virtual size_t write(const int16_t* data, const size_t& size, const uint32_t& timeoutMs) = 0;
 
     /**
-     * @brief Reconfigure I2S clock for a different sample rate
-     * @param sampleRate Sample rate in Hz (e.g., 44100, 48000)
-     * @return true if successful
+     * @brief Reconfigures the I2S clock to support a different audio sample rate.
+     * @param sampleRate The target sample rate in Hz (e.g., 44100, 48000).
+     * @return true if the clock was successfully reconfigured, false otherwise.
      */
     virtual bool reconfigureClock(const uint32_t& sampleRate) = 0;
 
     /**
-     * @brief Get current I2S sample rate
+     * @brief Retrieves the currently configured sample rate of the bus.
+     * @return The sample rate in Hz.
      */
     virtual uint32_t getSampleRate() const = 0;
 };

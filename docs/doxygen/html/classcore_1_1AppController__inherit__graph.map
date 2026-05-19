@@ -1,0 +1,5 @@
+<map id="core::AppController" name="core::AppController">
+<area shape="rect" id="Node000001" title="Central controller that manages the application state and event flow." alt="" coords="21,79,168,104"/>
+<area shape="rect" id="Node000002" href="$classcommon_1_1IEventHandler.html" title="Abstract interface for processing application events." alt="" coords="5,5,184,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="97,44,97,79,92,79,92,44"/>
+</map>

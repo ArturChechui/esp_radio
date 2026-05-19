@@ -49,46 +49,30 @@ void PlayStopSkipCommand::handle(const common::AppEvent& e) {
 void PlayStopSkipCommand::startAction() {
     const auto st = mPlayerService.getStatus();
 
-    switch (mButton) {
-        case common::Button::PlayStop: {
-            if (isPlayingOrBuffering(st)) {
-                ESP_LOGI(Tag, "Toggle -> stop");
-                (void)mPlayerService.stop();
-                mRequestedAction = Action::Stop;
-            } else {
-                const auto& station = mStationRepo.currentStation();
-                ESP_LOGI(Tag, "Toggle -> play %s", station.name.c_str());
-                (void)mPlayerService.playStation(station.url);
-                mRequestedAction = Action::Play;
-            }
-            break;
-        }
-        case common::Button::Next: {
-            if (isPlayingOrBuffering(st)) {
-                ESP_LOGI(Tag, "Skip -> stop");
-                (void)mPlayerService.stop();
-            }
-
-            const auto& station = mStationRepo.nextStation();
-            ESP_LOGI(Tag, "Skip -> play %s", station.name.c_str());
+    if (mButton == common::Button::PlayStop) {
+        if (isPlayingOrBuffering(st)) {
+            ESP_LOGI(Tag, "Stopping playback");
+            (void)mPlayerService.stop();
+            mRequestedAction = Action::Stop;
+        } else {
+            const auto& station = mStationRepo.currentStation();
+            ESP_LOGI(Tag, "Playing %s", station.name.c_str());
             (void)mPlayerService.playStation(station.url);
-            mUiEventQueue.post(common::CurrentStationChangedEvent{});
-            mRequestedAction = Action::SkipNext;
-            break;
+            mRequestedAction = Action::Play;
         }
-        case common::Button::Previous: {
-            if (isPlayingOrBuffering(st)) {
-                ESP_LOGI(Tag, "Skip -> stop");
-                (void)mPlayerService.stop();
-            }
+    } else {
+        if (isPlayingOrBuffering(st)) {
+            ESP_LOGI(Tag, "Stopping before skip");
+            (void)mPlayerService.stop();
+        }
 
-            const auto& station = mStationRepo.prevStation();
-            ESP_LOGI(Tag, "Skip -> play %s", station.name.c_str());
-            (void)mPlayerService.playStation(station.url);
-            mUiEventQueue.post(common::CurrentStationChangedEvent{});
-            mRequestedAction = Action::SkipPrevious;
-            break;
-        }
+        const auto& station = (mButton == common::Button::Next) ? mStationRepo.nextStation()
+                                                                : mStationRepo.prevStation();
+        ESP_LOGI(Tag, "Station after skip: %s", station.name.c_str());
+        mUiEventQueue.post(common::CurrentStationChangedEvent{});
+
+        mFinished = true;
+        ESP_LOGI(Tag, "Finished");
     }
 }
 
@@ -101,8 +85,6 @@ void PlayStopSkipCommand::onPlaybackStatus(common::PlaybackStatus s) {
     }
 
     switch (mRequestedAction) {
-        case Action::SkipNext:
-        case Action::SkipPrevious:
         case Action::Play: {
             if (s == common::PlaybackStatus::Playing || s == common::PlaybackStatus::Buffering) {
                 mFinished = true;

@@ -71,14 +71,6 @@ CTRL -> CMD : handle(event)
 CMD -> PLSVC ++: get current status
 return status
 
-alt button == Next
-    CMD -> REPO ++: nextStation
-    return stationData
-else button == Previous
-    CMD -> REPO ++: prevStation
-    return stationData
-end
-
 alt status == Playing || status == Buffering
     CMD -> PLSVC: stop()
     note right
@@ -86,11 +78,13 @@ alt status == Playing || status == Buffering
     end note
 end
 
-CMD -> PLSVC: playStation(stationData.url)
-note right
-see details in seq_play_station.puml
-end note
-
+alt button == Next
+    CMD -> REPO ++: nextStation
+    return stationData
+else button == Previous
+    CMD -> REPO ++: prevStation
+    return stationData
+end
 
 @enduml
     

@@ -1,0 +1,30 @@
+<map id="components/common/include/ISignal.hpp" name="components/common/include/ISignal.hpp">
+<area shape="rect" id="Node000001" title="Interface for a thread synchronization signal." alt="" coords="521,5,735,45"/>
+<area shape="rect" id="Node000002" href="$Signal_8hpp.html" title="Concrete implementation of the ISignal interface using FreeRTOS semaphores." alt="" coords="343,93,558,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="578,54,491,96,488,91,576,49"/>
+<area shape="rect" id="Node000012" href="$PlayerService_8hpp.html" title="Implementation of the IPlayerService interface for audio streaming." alt="" coords="721,93,916,133"/>
+<area shape="poly" id="edge13_Node000001_Node000012" title=" " alt="" coords="683,49,778,91,776,96,681,53"/>
+<area shape="rect" id="Node000003" href="$RingBuffer_8hpp.html" title="Concrete implementation of a thread&#45;safe circular buffer." alt="" coords="27,181,242,221"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="369,140,205,184,203,179,367,134"/>
+<area shape="rect" id="Node000005" href="$AppContext_8cpp.html" title=" " alt="" coords="201,357,359,397"/>
+<area shape="poly" id="edge12_Node000002_Node000005" title=" " alt="" coords="386,142,357,160,333,183,307,227,292,276,285,322,283,357,277,357,280,321,287,275,303,225,329,180,354,156,383,137"/>
+<area shape="rect" id="Node000006" href="$TaskRunner_8hpp.html" title="Concrete implementation of the ITaskRunner interface." alt="" coords="343,181,558,221"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="453,147,453,181,448,181,448,147"/>
+<area shape="rect" id="Node000011" href="$Signal_8cpp.html" title=" " alt="" coords="583,181,769,221"/>
+<area shape="poly" id="edge11_Node000002_Node000011" title=" " alt="" coords="514,136,628,179,626,184,512,141"/>
+<area shape="rect" id="Node000004" href="$RingBuffer_8cpp.html" title=" " alt="" coords="5,269,192,309"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="124,235,109,270,104,268,119,233"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="168,229,206,268,242,314,270,356,266,359,238,317,202,271,164,232"/>
+<area shape="rect" id="Node000007" href="$StopToken_8cpp.html" title=" " alt="" coords="317,269,504,309"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="439,235,422,270,417,268,434,233"/>
+<area shape="rect" id="Node000008" href="$TaskRunner_8cpp.html" title=" " alt="" coords="528,269,715,309"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="502,225,585,267,583,272,499,230"/>
+<area shape="rect" id="Node000009" href="$AppContext_8hpp.html" title="Central registry and lifecycle manager for the application." alt="" coords="739,269,925,309"/>
+<area shape="poly" id="edge8_Node000006_Node000009" title=" " alt="" coords="548,222,749,267,748,272,547,227"/>
+<area shape="poly" id="edge9_Node000009_Node000005" title=" " alt="" coords="726,312,359,368,358,362,725,307"/>
+<area shape="rect" id="Node000010" href="$app__main_8cpp.html" title=" " alt="" coords="757,365,907,390"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="835,323,835,364,829,364,829,323"/>
+<area shape="poly" id="edge14_Node000012_Node000009" title=" " alt="" coords="824,147,833,269,828,269,819,147"/>
+<area shape="rect" id="Node000013" href="$PlayerService_8cpp.html" title=" " alt="" coords="856,181,1021,221"/>
+<area shape="poly" id="edge15_Node000012_Node000013" title=" " alt="" coords="858,139,914,179,911,183,855,144"/>
+</map>

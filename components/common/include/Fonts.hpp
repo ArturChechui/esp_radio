@@ -1,3 +1,12 @@
+/**
+ * @file Fonts.hpp
+ * @brief Bitmap definitions for fonts and system icons.
+ *
+ * This file contains the raw pixel data and mapping tables for the
+ * display's graphical components, including status fonts and various
+ * icons for Wi-Fi, battery, and playback control.
+ */
+
 #pragma once
 
 #include <array>
@@ -6,34 +15,62 @@
 #include "Types.hpp"
 
 namespace common {
+/**
+ * @namespace common::fonts
+ * @brief Contains bitmap data and dimension constants for the UI.
+ */
 namespace fonts {
-static constexpr uint8_t StatusW = 10;
-static constexpr uint8_t StatusH = 16;
-static constexpr uint8_t StatusPages = StatusH / 8;
-static constexpr uint16_t StatusBytes = StatusW * StatusPages;
+/** @name Status Font Dimensions
+ * Constants for the small font used in the status bar.
+ * @{ */
+static constexpr uint8_t StatusW = 10;              /**< Width of a status font glyph. */
+static constexpr uint8_t StatusH = 16;              /**< Height of a status font glyph. */
+static constexpr uint8_t StatusPages = StatusH / 8; /**< Height in 8-bit display pages. */
+static constexpr uint16_t StatusBytes = StatusW * StatusPages; /**< Total bytes per glyph. */
+/** @} */
 
-static constexpr uint8_t MainW = 16;
-static constexpr uint8_t MainH = 48;
-static constexpr uint8_t MainPages = MainH / 8;
-static constexpr uint16_t MainBytes = MainW * MainPages;
+/** @name Main Font Dimensions
+ * Constants for the large font used for primary display information.
+ * @{ */
+static constexpr uint8_t MainW = 16;                     /**< Width of a main font glyph. */
+static constexpr uint8_t MainH = 48;                     /**< Height of a main font glyph. */
+static constexpr uint8_t MainPages = MainH / 8;          /**< Height in 8-bit display pages. */
+static constexpr uint16_t MainBytes = MainW * MainPages; /**< Total bytes per glyph. */
+/** @} */
 
-static constexpr uint8_t Icon16W = 16;
-static constexpr uint8_t Icon16H = 16;
-static constexpr uint8_t Icon16Pages = Icon16H / 8;
-static constexpr uint16_t Icon16Bytes = Icon16W * Icon16Pages;
-static constexpr uint8_t Icon48W = 24;
-static constexpr uint8_t Icon48H = 48;
-static constexpr uint8_t Icon48Pages = Icon48H / 8;
-static constexpr uint16_t Icon48Bytes = Icon48W * Icon48Pages;
+/** @name Icon Dimensions
+ * Constants for the standard 16px and 48px icons.
+ * @{ */
+static constexpr uint8_t Icon16W = 16;                         /**< Width of a standard icon. */
+static constexpr uint8_t Icon16H = 16;                         /**< Height of a standard icon. */
+static constexpr uint8_t Icon16Pages = Icon16H / 8;            /**< Page height for 16px icons. */
+static constexpr uint16_t Icon16Bytes = Icon16W * Icon16Pages; /**< Total bytes for 16px icon. */
 
+static constexpr uint8_t Icon48W = 24;              /**< Width of a large status icon. */
+static constexpr uint8_t Icon48H = 48;              /**< Height of a large status icon. */
+static constexpr uint8_t Icon48Pages = Icon48H / 8; /**< Page height for 48px icons. */
+static constexpr uint16_t Icon48Bytes = Icon48W * Icon48Pages; /**< Total bytes for 48px icon. */
+/** @} */
+
+/** @brief Total size of a full-screen 128x64 buffer in bytes (page-oriented). */
 static constexpr uint16_t FullScreenBytes = 128 * 8;
 
+/** @brief Size of the standard ASCII Table */
 static constexpr uint8_t StandardASCIITableSize = 128U;
+
+/** @brief Value of invalid index */
 static constexpr uint8_t InvalidIdx = 0xFF;
+
+/** @brief Number of specific glyphs supported by the status font. */
 static constexpr uint8_t StatusFontGlyphCount = 13U;  // "0123456789C %"
-static constexpr uint8_t MainFontGlyphCount = 28U;    // "A-Z? "
+/** @brief Number of specific glyphs supported by the main font. */
+static constexpr uint8_t MainFontGlyphCount = 28U;  // "A-Z? "
 
 // STATUS FONT (10x16)
+/**
+ * @brief Mapping table to find status font glyphs by their ASCII value.
+ * * This array maps characters to their indices within the StatusGlyphsData array.
+ */
 static constexpr std::array<uint8_t, StandardASCIITableSize> StatusCharToIdx = [] {
     std::array<uint8_t, StandardASCIITableSize> m{};
     for (auto &v : m) {
@@ -55,6 +92,10 @@ static constexpr std::array<uint8_t, StandardASCIITableSize> StatusCharToIdx = [
     return m;
 }();
 
+/**
+ * @brief Raw bitmap data for the status font glyphs.
+ * Each glyph is stored in a page-oriented format (10x16 pixels).
+ */
 static constexpr std::array<std::array<uint8_t, StatusBytes>, StatusFontGlyphCount>
     StatusGlyphsData = {{{{
                              0x00, 0x00, 0xF8, 0xFC, 0x0E, 0x0E, 0xFC, 0xF8, 0x00, 0x00,
@@ -110,6 +151,10 @@ static constexpr std::array<std::array<uint8_t, StatusBytes>, StatusFontGlyphCou
                          }}}};
 
 // MAIN FONT (16x48)
+/**
+ * @brief Mapping table to find main font glyphs by their ASCII value.
+ * * This array maps common characters (A-Z, etc.) to their indices within the MainGlyphsData array.
+ */
 static constexpr std::array<uint8_t, StandardASCIITableSize> MainCharToIdx = [] {
     std::array<uint8_t, StandardASCIITableSize> m{};
     for (auto &v : m) {
@@ -146,6 +191,10 @@ static constexpr std::array<uint8_t, StandardASCIITableSize> MainCharToIdx = [] 
     return m;
 }();
 
+/**
+ * @brief Raw bitmap data for the main font glyphs.
+ * Each glyph is stored in a page-oriented format (16x48 pixels).
+ */
 static constexpr std::array<std::array<uint8_t, MainBytes>, MainFontGlyphCount> MainGlyphsData = {
     {{{
          0x00, 0x00, 0x00, 0x00, 0xC0, 0xF0, 0xF0, 0x70, 0x70, 0xF0, 0xF0, 0xC0, 0x00, 0x00,
@@ -401,6 +450,9 @@ static constexpr std::array<std::array<uint8_t, MainBytes>, MainFontGlyphCount> 
      }}}};
 
 // ICONS 16x16 (WiFi/Battery)
+/** @name 16x16 System Icons
+ * Bitmaps for Wi-Fi, Battery, and Volume indicators.
+ * @{ */
 static constexpr std::array<uint8_t, Icon16Bytes> Icon16WifiOff = {{
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x70, 0x70, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -455,8 +507,12 @@ static constexpr std::array<uint8_t, Icon16Bytes> Icon16Volume5 = {{
     0xC0, 0x40, 0xE0, 0x30, 0x18, 0xFC, 0x00, 0xC0, 0x00, 0xE0, 0x00, 0xF0, 0x00, 0xF8, 0x00, 0xFC,
     0x03, 0x02, 0x07, 0x0C, 0x18, 0x3F, 0x00, 0x03, 0x00, 0x07, 0x00, 0x0F, 0x00, 0x1F, 0x00, 0x3F,
 }};
+/** @} */
 
 // ICONS 24x48 (Playback)
+/** @name 48px System Icons
+ * Large bitmaps for primary playback states.
+ * @{ */
 static constexpr std::array<uint8_t, Icon48Bytes> Icon48Play = {{
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -490,7 +546,17 @@ static constexpr std::array<uint8_t, Icon48Bytes> Icon48Buffering = {{
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 }};
+/** @} */
 
+/** @name Full-Screen Mode Bitmaps
+ * These arrays contain 128x64 pixel bitmaps (1024 bytes each) used as
+ * background screens for different system states.
+ * @{ */
+
+/**
+ * @brief Background bitmap for the Wi-Fi provisioning (Captive Portal) mode.
+ * Contains instructions and the local Access Point name (e.g., "ESP32-Radio").
+ */
 static constexpr std::array<uint8_t, FullScreenBytes> WifiProvisioningScreen = {{
     0x3C, 0x7E, 0xC3, 0x81, 0x81, 0xC3, 0x42, 0x00, 0x78, 0xFC, 0x84, 0x84, 0xFC, 0x78, 0x00, 0xFC,
     0xFC, 0x04, 0x04, 0xFC, 0xF8, 0x00, 0xFC, 0xFC, 0x04, 0x04, 0xFC, 0xF8, 0x00, 0x78, 0xFC, 0x94,
@@ -558,6 +624,10 @@ static constexpr std::array<uint8_t, FullScreenBytes> WifiProvisioningScreen = {
     0xF9, 0xF9, 0xFE, 0xFE, 0x01, 0x01, 0x01, 0xFE, 0xFE, 0x1F, 0x1F, 0xE1, 0xE1, 0xFF, 0xFF, 0xFF,
 }};
 
+/**
+ * @brief Background bitmap for the initial system startup screen.
+ * Displays the product logo and "Loading..." message.
+ */
 static constexpr std::array<uint8_t, FullScreenBytes> BootingScreen = {{
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -625,6 +695,10 @@ static constexpr std::array<uint8_t, FullScreenBytes> BootingScreen = {{
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 }};
 
+/**
+ * @brief Background bitmap displayed during the radio station database sync.
+ * Includes a progress-themed background for the synchronization process.
+ */
 static constexpr std::array<uint8_t, FullScreenBytes> SyncInProgressScreen = {{
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -692,6 +766,13 @@ static constexpr std::array<uint8_t, FullScreenBytes> SyncInProgressScreen = {{
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 }};
 
+/** @} */
+
+/**
+ * @brief Retrieves the bitmap for a character in the status font.
+ * @param c The ASCII character to look up.
+ * @return Pointer to the start of the glyph's bitmap data, or nullptr if not supported.
+ */
 inline const uint8_t *statusGlyph(const char c) {
     const uint8_t uc = static_cast<uint8_t>(c);
     if (uc >= StandardASCIITableSize) {
@@ -702,6 +783,11 @@ inline const uint8_t *statusGlyph(const char c) {
     return (idx == InvalidIdx) ? nullptr : StatusGlyphsData[idx].data();
 }
 
+/**
+ * @brief Retrieves the bitmap for a character in the main font.
+ * @param c The ASCII character to look up.
+ * @return Pointer to the start of the glyph's bitmap data, or nullptr if not supported.
+ */
 inline const uint8_t *mainGlyph(const char c) {
     const uint8_t uc = static_cast<uint8_t>(c);
     if (uc >= StandardASCIITableSize) {
@@ -712,18 +798,42 @@ inline const uint8_t *mainGlyph(const char c) {
     return (idx == InvalidIdx) ? nullptr : MainGlyphsData[idx].data();
 }
 
+/**
+ * @brief Retrieves the raw bitmap data for the Wi-Fi provisioning background.
+ * * This screen contains the graphical layout and instructions displayed
+ * when the device is in Access Point mode for configuration.
+ * * @return A pointer to the start of the 128x64 pixel bitmap data.
+ */
 inline const uint8_t *wifiProvisioningScreen() {
     return WifiProvisioningScreen.data();
 }
 
+/**
+ * @brief Retrieves the raw bitmap data for the booting background screen.
+ *
+ * This screen is displayed during the initial system startup and hardware initialization.
+ *
+ * @return A pointer to the start of the 128x64 pixel bitmap data.
+ */
 inline const uint8_t *bootingScreen() {
     return BootingScreen.data();
 }
 
+/**
+ * @brief Retrieves the raw bitmap data for the synchronization progress screen.
+ *
+ * This screen is displayed while the radio is fetching or updating its station database.
+ *
+ * @return A pointer to the start of the 128x64 pixel bitmap data.
+ */
 inline const uint8_t *syncInProgressScreen() {
     return SyncInProgressScreen.data();
 }
 
+/**
+ * @brief Maps an Icon enum to its 16x16 bitmap data.
+ * @param icon The icon to retrieve.
+ */
 inline const uint8_t *icon16(const common::Icon icon) {
     switch (icon) {
         case common::Icon::WifiOff:
@@ -760,6 +870,10 @@ inline const uint8_t *icon16(const common::Icon icon) {
     }
 }
 
+/**
+ * @brief Maps an Icon enum to its 24x48 bitmap data.
+ * @param icon The icon to retrieve.
+ */
 inline const uint8_t *icon48(const common::Icon icon) {
     switch (icon) {
         case common::Icon::Play:

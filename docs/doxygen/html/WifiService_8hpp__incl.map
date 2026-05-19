@@ -1,0 +1,20 @@
+<map id="components/services/include/WifiService.hpp" name="components/services/include/WifiService.hpp">
+<area shape="rect" id="Node000001" title="Implementation of the IWifiService interface for Wi&#45;Fi management." alt="" coords="13,5,192,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,167,64,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="72,48,48,68,29,94,24,124,29,153,23,154,19,124,24,92,44,64,69,43"/>
+<area shape="rect" id="Node000003" href="$IWifiService_8hpp.html" title="Interface definition for the Wi&#45;Fi management service." alt="" coords="39,93,166,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="105,46,105,79,100,79,100,46"/>
+<area shape="rect" id="Node000005" href="$Types_8hpp.html" title="Global type definitions, enumerations, and data structures." alt="" coords="190,93,277,119"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="136,43,204,84,201,88,133,48"/>
+<area shape="poly" id="edge4_Node000003_Node000002" title=" " alt="" coords="93,121,57,158,53,155,90,117"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="88,167,155,192"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="108,118,117,153,112,154,103,120"/>
+<area shape="poly" id="edge10_Node000005_Node000002" title=" " alt="" coords="202,121,78,165,77,160,201,116"/>
+<area shape="poly" id="edge8_Node000005_Node000004" title=" " alt="" coords="217,121,153,161,150,157,214,116"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="179,167,250,192"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="233,120,224,154,219,153,228,118"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="275,167,331,192"/>
+<area shape="poly" id="edge7_Node000005_Node000007" title=" " alt="" coords="247,117,284,155,280,159,243,121"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="355,167,442,192"/>
+<area shape="poly" id="edge9_Node000005_Node000008" title=" " alt="" coords="261,116,360,159,358,164,259,121"/>
+</map>

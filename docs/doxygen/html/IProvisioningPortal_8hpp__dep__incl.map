@@ -1,0 +1,15 @@
+<map id="components/adapters/include/IProvisioningPortal.hpp" name="components/adapters/include/IProvisioningPortal.hpp">
+<area shape="rect" id="Node000001" title="Interface definition for a Wi&#45;Fi provisioning portal." alt="" coords="203,5,429,45"/>
+<area shape="rect" id="Node000002" href="$ProvisioningPortal_8hpp.html" title="Implementation of the IProvisioningPortal interface for Wi&#45;Fi configuration." alt="" coords="98,93,321,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="283,56,235,95,231,91,280,52"/>
+<area shape="rect" id="Node000007" href="$WifiService_8cpp.html" title=" " alt="" coords="344,93,504,133"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="352,52,402,91,398,95,349,56"/>
+<area shape="rect" id="Node000003" href="$ProvisioningPortal_8cpp.html" title=" " alt="" coords="5,181,200,221"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="177,144,128,183,125,179,173,140"/>
+<area shape="rect" id="Node000004" href="$AppContext_8hpp.html" title="Central registry and lifecycle manager for the application." alt="" coords="225,181,410,221"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="246,140,295,179,292,183,242,144"/>
+<area shape="rect" id="Node000005" href="$AppContext_8cpp.html" title=" " alt="" coords="149,269,307,309"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="289,233,250,271,246,267,286,229"/>
+<area shape="rect" id="Node000006" href="$app__main_8cpp.html" title=" " alt="" coords="331,277,482,302"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="349,229,396,274,392,278,345,233"/>
+</map>

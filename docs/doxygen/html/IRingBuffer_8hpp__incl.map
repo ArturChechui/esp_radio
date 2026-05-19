@@ -1,0 +1,7 @@
+<map id="components/common/include/IRingBuffer.hpp" name="components/common/include/IRingBuffer.hpp">
+<area shape="rect" id="Node000001" title="Interface for a thread&#45;safe circular buffer." alt="" coords="5,5,220,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="31,93,101,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="104,47,82,83,78,80,99,44"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="126,93,193,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="126,44,148,80,143,83,122,47"/>
+</map>

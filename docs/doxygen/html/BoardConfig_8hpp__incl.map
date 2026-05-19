@@ -1,0 +1,7 @@
+<map id="components/common/include/BoardConfig.hpp" name="components/common/include/BoardConfig.hpp">
+<area shape="rect" id="Node000001" title="Centralized hardware pin and peripheral configuration." alt="" coords="5,5,220,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="42,93,98,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="105,47,85,83,80,80,100,44"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="122,93,189,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="125,44,145,80,140,83,121,47"/>
+</map>

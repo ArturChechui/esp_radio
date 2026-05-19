@@ -1,0 +1,16 @@
+<map id="components/common/include/ITaskRunner.hpp" name="components/common/include/ITaskRunner.hpp">
+<area shape="rect" id="Node000001" title="Interface for managing background tasks and thread lifecycles." alt="" coords="22,5,237,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,167,72,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="120,47,55,156,50,153,116,44"/>
+<area shape="rect" id="Node000003" href="$Types_8hpp.html" title="Global type definitions, enumerations, and data structures." alt="" coords="133,93,219,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="143,44,164,80,160,83,138,47"/>
+<area shape="poly" id="edge5_Node000003_Node000002" title=" " alt="" coords="155,121,74,163,72,158,153,116"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="97,167,167,192"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="171,120,149,156,144,154,166,118"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="192,167,248,192"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="186,118,208,154,203,156,181,120"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="273,167,359,192"/>
+<area shape="poly" id="edge6_Node000003_Node000006" title=" " alt="" coords="200,116,282,158,280,163,197,121"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="384,167,443,192"/>
+<area shape="poly" id="edge7_Node000003_Node000007" title=" " alt="" coords="215,116,372,163,370,168,213,121"/>
+</map>

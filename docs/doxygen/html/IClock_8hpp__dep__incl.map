@@ -1,0 +1,17 @@
+<map id="components/common/include/IClock.hpp" name="components/common/include/IClock.hpp">
+<area shape="rect" id="Node000001" title="Interface for system clock and timing services." alt="" coords="309,5,523,45"/>
+<area shape="rect" id="Node000002" href="$Clock_8hpp.html" title="Concrete implementation of the IClock interface." alt="" coords="97,93,311,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="358,53,251,96,249,91,356,48"/>
+<area shape="rect" id="Node000007" href="$InputService_8cpp.html" title=" " alt="" coords="336,93,496,133"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="419,59,419,93,413,93,413,59"/>
+<area shape="rect" id="Node000008" href="$SensorService_8cpp.html" title=" " alt="" coords="520,93,688,133"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="471,49,564,91,562,96,468,53"/>
+<area shape="rect" id="Node000003" href="$Clock_8cpp.html" title=" " alt="" coords="5,181,192,221"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="172,144,124,183,120,179,169,140"/>
+<area shape="rect" id="Node000004" href="$AppContext_8hpp.html" title="Central registry and lifecycle manager for the application." alt="" coords="217,181,402,221"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="239,140,288,179,284,183,236,144"/>
+<area shape="rect" id="Node000005" href="$AppContext_8cpp.html" title=" " alt="" coords="141,269,299,309"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="281,233,242,271,238,267,278,229"/>
+<area shape="rect" id="Node000006" href="$app__main_8cpp.html" title=" " alt="" coords="323,277,474,302"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="341,229,388,274,384,278,337,233"/>
+</map>

@@ -1,0 +1,19 @@
+<map id="components/common/include/StopToken.hpp" name="components/common/include/StopToken.hpp">
+<area shape="rect" id="Node000001" title="Concrete implementation of the IStopToken interface." alt="" coords="5,5,220,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="26,167,93,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="84,48,61,68,43,94,40,109,40,124,49,153,44,155,35,125,34,108,38,92,57,65,81,44"/>
+<area shape="rect" id="Node000003" href="$IStopToken_8hpp.html" title="Interface for task cancellation and interruptible sleeps." alt="" coords="53,93,173,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="115,46,115,79,110,79,110,46"/>
+<area shape="rect" id="Node000004" href="$Types_8hpp.html" title="Global type definitions, enumerations, and data structures." alt="" coords="197,93,284,119"/>
+<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="145,43,212,84,209,88,142,48"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="106,121,78,157,74,154,102,117"/>
+<area shape="poly" id="edge7_Node000004_Node000002" title=" " alt="" coords="213,121,103,164,101,159,211,116"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="117,167,188,192"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="228,121,179,160,176,156,225,117"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="213,167,269,192"/>
+<area shape="poly" id="edge6_Node000004_Node000006" title=" " alt="" coords="243,119,243,153,238,153,238,119"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="293,167,380,192"/>
+<area shape="poly" id="edge8_Node000004_Node000007" title=" " alt="" coords="258,117,311,156,308,160,255,121"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="405,167,463,192"/>
+<area shape="poly" id="edge9_Node000004_Node000008" title=" " alt="" coords="273,116,393,160,391,165,271,121"/>
+</map>

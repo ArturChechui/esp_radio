@@ -1,0 +1,5 @@
+<map id="common::Clock" name="common::Clock">
+<area shape="rect" id="Node000001" title="System clock implementation for time tracking and thread sleeping." alt="" coords="7,79,130,104"/>
+<area shape="rect" id="Node000002" href="$classcommon_1_1IClock.html" title="Abstract interface for time&#45;keeping and execution delays." alt="" coords="5,5,132,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="71,44,71,79,66,79,66,44"/>
+</map>

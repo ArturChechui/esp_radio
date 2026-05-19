@@ -31,7 +31,8 @@ together {
     interface ISensorService {
         +init(): bool
         +deinit(): void
-        +setPlaybackActive(active: const bool): void
+        +startClapDetection(shouldStart: const bool): void
+        +toggleClapFeature(): bool
     }
 
     interface IStationRepository {

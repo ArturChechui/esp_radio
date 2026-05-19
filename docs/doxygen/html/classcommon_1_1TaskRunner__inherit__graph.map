@@ -1,0 +1,5 @@
+<map id="common::TaskRunner" name="common::TaskRunner">
+<area shape="rect" id="Node000001" title="A task manager providing lifecycle control and static allocation." alt="" coords="7,79,170,104"/>
+<area shape="rect" id="Node000002" href="$classcommon_1_1ITaskRunner.html" title="Abstract interface for a task execution service." alt="" coords="5,5,172,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="91,44,91,79,86,79,86,44"/>
+</map>

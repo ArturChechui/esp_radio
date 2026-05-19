@@ -12,6 +12,7 @@
 #include "IClock.hpp"
 #include "IEventQueue.hpp"
 #include "II2cBus.hpp"
+#include "IPersistentStorage.hpp"
 #include "IPlayerService.hpp"
 #include "IStopToken.hpp"
 #include "ITaskRunner.hpp"
@@ -27,11 +28,6 @@ constexpr uint16_t TaskCore = 0U;
 constexpr uint8_t Aht20Addr = 0x38;
 constexpr uint8_t BusyBit = 0x80;
 constexpr uint8_t CalibrationEnableBit = 0x08;
-
-constexpr uint32_t SensorLoopSleepMs = 20U;
-constexpr uint32_t TempHumidPeriodMs = 30000U;
-constexpr uint32_t LightPeriodMs = 30000U;
-constexpr uint32_t BatteryPeriodMs = 30000U;
 
 constexpr uint8_t Bh1750OneTimeHighResMode = 0x20;
 constexpr uint32_t Bh1750MeasureWaitMs = 180U;
@@ -51,28 +47,27 @@ constexpr uint32_t ClapArmDelayAfterPlaybackMs = 700U;
 constexpr uint32_t ClapDiagLogPeriodMs = 300U;
 constexpr uint32_t ClapTraceLogPeriodMs = 1500U;
 constexpr int32_t NoiseEmaAlphaDiv = 32;
+
+constexpr uint32_t FeatureDisabled = 0U;
+constexpr uint32_t FeatureEnabled = 1U;
+constexpr const char* ClapFeatureStorageKey = "micfeature";
 }  // namespace
 
 SensorService::SensorService(adapters::II2cBus& i2cBus, adapters::IAdcReader& adcReader,
                              common::IEventQueue& coreEventQueue, common::ITaskRunner& runner,
-                             common::IClock& clock)
+                             common::IClock& clock, adapters::IPersistentStorage& persistentStorage)
     : mI2cBus(i2cBus),
       mAdcReader(adcReader),
       mCoreEventQueue(coreEventQueue),
       mTaskRunner(runner),
       mClock(clock),
+      mPersistentStorage(persistentStorage),
       mSensorTaskHandle(),
       mMicTaskHandle(),
       mIsAht20Inited(false),
-      mTempHumidElapsedMs(TempHumidPeriodMs),
-      mLightElapsedMs(0U),
-      mBatteryElapsedMs(0U),
-      mClapCooldownMs(0U),
-      mMicBaselineMv(-1),
       mMicNoiseMv(0),
-      mMicAboveThresholdCount(0U),
-      mWasPlaybackActive(false),
-      mPlaybackActive(false) {}
+      mClapFeatureEnabled(false),
+      mShouldStartClapDet(false) {}
 
 SensorService::~SensorService() {
     deinit();
@@ -97,17 +92,27 @@ bool SensorService::init() {
         return false;
     }
 
-    mMicTaskHandle = mTaskRunner.start(
-        common::TaskParams{.name = "MicTask", .priority = TaskPriority, .core = TaskCore},
-        TaskStackWords, &SensorService::listenStepFn, this);
-    if (!mMicTaskHandle.isValid()) {
-        ESP_LOGE(Tag, "Failed to create MicTask");
-
-        (void)mTaskRunner.stop(mSensorTaskHandle, 7000);
-        mSensorTaskHandle.reset();
-
-        return false;
+    uint32_t res = FeatureDisabled;
+    if (!mPersistentStorage.getU32(ClapFeatureStorageKey, res)) {
+        ESP_LOGW(Tag, "Failed to load ClapFeatureStorageKey, using default: disabled");
+        res = FeatureDisabled;
     }
+    mClapFeatureEnabled = (res != FeatureDisabled);
+
+    if (mClapFeatureEnabled) {
+        mMicTaskHandle = mTaskRunner.start(
+            common::TaskParams{.name = "MicTask", .priority = TaskPriority, .core = TaskCore},
+            TaskStackWords, &SensorService::listenStepFn, this);
+        if (!mMicTaskHandle.isValid()) {
+            ESP_LOGE(Tag, "Failed to create MicTask");
+
+            (void)mTaskRunner.stop(mSensorTaskHandle, 7000);
+            mSensorTaskHandle.reset();
+
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -123,31 +128,48 @@ void SensorService::deinit() {
     }
 }
 
-void SensorService::setPlaybackActive(const bool active) {
-    if (active) {
-        if (!mMicTaskHandle.isValid()) {
-            return;  // Already stopped
-        }
+void SensorService::startClapDetection(const bool shouldStart) {
+    mShouldStartClapDet = shouldStart;
 
-        ESP_LOGI(Tag, "Playback started: Stopping clap detection...");
-        (void)mTaskRunner.stop(mMicTaskHandle, 2000);
-        mMicTaskHandle.reset();
-        mMicNoiseMv = 0;
-        mMicAboveThresholdCount = 0U;
-    } else {
+    if (mClapFeatureEnabled && mShouldStartClapDet) {
         if (mMicTaskHandle.isValid()) {
             return;  // Already listening
         }
 
-        ESP_LOGI(Tag, "Playback stopped: Starting clap detection in 1 second...");
-        mClock.sleepMs(1000);
+        ESP_LOGI(Tag, "startClapDetection: Starting clap detection in 100 ms...");
+        mClock.sleepMs(100);
         mMicTaskHandle = mTaskRunner.start(
             common::TaskParams{.name = "MicTask", .priority = TaskPriority, .core = TaskCore},
             TaskStackWords, &SensorService::listenStepFn, this);
         if (!mMicTaskHandle.isValid()) {
             ESP_LOGE(Tag, "Failed to create MicTask");
         }
+    } else {
+        if (!mMicTaskHandle.isValid()) {
+            return;  // Already stopped
+        }
+
+        ESP_LOGI(Tag, "startClapDetection: Stopping clap detection...");
+        (void)mTaskRunner.stop(mMicTaskHandle, 2000);
+        mMicTaskHandle.reset();
+        mMicNoiseMv = 0;
     }
+}
+
+bool SensorService::toggleClapFeature() {
+    mClapFeatureEnabled = !mClapFeatureEnabled;
+
+    const auto val = mClapFeatureEnabled ? FeatureEnabled : FeatureDisabled;
+    if (!mPersistentStorage.setU32(ClapFeatureStorageKey, val)) {
+        ESP_LOGW(Tag, "Failed to set ClapFeatureStorageKey");
+    }
+
+    // when the feature is disabled, we need to stop the clap detection right away.
+    // when the feature is enabled and the playback is stopped, we should start it.
+    // So we retry the last known value of the client's intent.
+    startClapDetection(mShouldStartClapDet);
+
+    return mClapFeatureEnabled;
 }
 
 common::StepResult SensorService::listenStepFn(void* arg, common::IStopToken& token) {
@@ -160,7 +182,7 @@ common::StepResult SensorService::listenStepFn(void* arg, common::IStopToken& to
 }
 
 common::StepResult SensorService::listenStep(common::IStopToken& token) {
-    if (token.stopRequested()) {
+    if (!mClapFeatureEnabled || token.stopRequested()) {
         return {.action = common::StepAction::Done};
     }
 
@@ -188,7 +210,11 @@ common::StepResult SensorService::listenStep(common::IStopToken& token) {
                  static_cast<int>(feat.peakDiff));
         (void)mCoreEventQueue.post(common::ButtonPressedEvent{common::Button::PlayStop});
 
-        return {.action = common::StepAction::Done};
+        // Workaround: Since at the very start MicTask gets an invalid clap and exits (even though
+        // it is ignored since Wifi cmd is active), we need to keep it active. 3s is enough to send
+        // a play request and receive "Buffering" where MicTask ends (usually it ends withing
+        // 100-200ms)
+        return {.action = common::StepAction::Sleep, .sleepMs = 3000};
     }
 
     if (mMicNoiseMv <= 0) {
@@ -278,7 +304,6 @@ common::StepResult SensorService::readStep(common::IStopToken& token) {
         ESP_LOGI(Tag, "Light value: %u lux", static_cast<unsigned>(lux));
         mCoreEventQueue.post(common::LightLevelUpdateEvent{.lux = lux});
     }
-    mLightElapsedMs = 0U;
 
     // Battery
     uint16_t batteryMv = 0;
@@ -291,7 +316,6 @@ common::StepResult SensorService::readStep(common::IStopToken& token) {
             .percent = batteryPct,
         });
     }
-    mBatteryElapsedMs = 0U;
 
     return {.action = common::StepAction::Sleep, .sleepMs = 30000};
 }

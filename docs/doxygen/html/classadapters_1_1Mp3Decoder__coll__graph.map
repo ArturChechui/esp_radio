@@ -1,0 +1,5 @@
+<map id="adapters::Mp3Decoder" name="adapters::Mp3Decoder">
+<area shape="rect" id="Node000001" title="Concrete MP3 decoder implementation using the minimp3 library." alt="" coords="7,79,177,104"/>
+<area shape="rect" id="Node000002" href="$classadapters_1_1IMp3Decoder.html" title="Abstract interface for an MP3 decoder." alt="" coords="5,5,179,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="95,44,95,79,89,79,89,44"/>
+</map>

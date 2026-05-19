@@ -1,0 +1,12 @@
+<map id="components/common/src/LockGuard.cpp" name="components/common/src/LockGuard.cpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="19,5,206,45"/>
+<area shape="rect" id="Node000002" href="$LockGuard_8hpp.html" title="RAII wrapper for automatic mutex locking and unlocking." alt="" coords="5,93,124,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="103,47,81,83,77,80,99,44"/>
+<area shape="rect" id="Node000003" href="$Mutex_8hpp.html" title="Portable wrapper for a mutual exclusion (mutex) primitive." alt="" coords="67,167,158,192"/>
+<area shape="poly" id="edge5_Node000001_Node000003" title=" " alt="" coords="125,45,136,79,139,99,138,119,127,155,122,153,133,118,134,99,131,80,120,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="75,118,100,154,95,157,70,121"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="31,240,98,265"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="107,194,82,230,78,227,103,191"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="122,240,199,265"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="123,191,148,227,143,230,118,194"/>
+</map>

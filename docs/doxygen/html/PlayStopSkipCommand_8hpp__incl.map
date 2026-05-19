@@ -1,0 +1,30 @@
+<map id="components/core/commands/include/PlayStopSkipCommand.hpp" name="components/core/commands/include/PlayStopSkipCommand.hpp">
+<area shape="rect" id="Node000001" title="Command for handling playback controls (Play, Stop, Skip)." alt="" coords="149,5,407,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="115,93,190,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="249,48,184,88,181,84,246,43"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="446,313,505,339"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="376,43,417,62,452,92,468,116,480,143,490,201,489,256,483,300,478,299,484,255,485,201,474,145,464,119,448,95,414,67,374,48"/>
+<area shape="rect" id="Node000004" href="$Events_8hpp.html" title="Definition of application&#45;level events and the core event variant." alt="" coords="323,167,417,192"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="283,45,290,80,306,117,323,139,343,156,339,160,319,142,301,120,285,82,277,46"/>
+<area shape="rect" id="Node000007" href="$Types_8hpp.html" title="Global type definitions, enumerations, and data structures." alt="" coords="181,240,268,265"/>
+<area shape="poly" id="edge17_Node000001_Node000007" title=" " alt="" coords="276,46,233,227,228,226,271,45"/>
+<area shape="rect" id="Node000011" href="$ICommand_8hpp.html" title="Interface definition for the Command design pattern." alt="" coords="316,93,437,119"/>
+<area shape="poly" id="edge13_Node000001_Node000011" title=" " alt="" coords="304,43,353,82,350,87,300,48"/>
+<area shape="poly" id="edge5_Node000004_Node000003" title=" " alt="" coords="384,191,425,238,465,300,460,303,421,242,380,194"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="293,313,359,339"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="362,194,347,215,334,241,328,271,327,300,322,299,323,270,329,239,342,212,358,191"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="344,240,412,265"/>
+<area shape="poly" id="edge6_Node000004_Node000006" title=" " alt="" coords="374,192,378,226,373,227,369,193"/>
+<area shape="poly" id="edge7_Node000004_Node000007" title=" " alt="" coords="348,194,262,236,259,232,345,190"/>
+<area shape="poly" id="edge12_Node000007_Node000003" title=" " alt="" coords="266,263,433,310,432,315,264,268"/>
+<area shape="poly" id="edge10_Node000007_Node000005" title=" " alt="" coords="242,263,300,303,297,307,239,268"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="5,313,76,339"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="196,268,85,311,83,306,194,263"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="101,313,157,339"/>
+<area shape="poly" id="edge9_Node000007_Node000009" title=" " alt="" coords="211,268,157,307,154,303,208,263"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="181,313,268,339"/>
+<area shape="poly" id="edge11_Node000007_Node000010" title=" " alt="" coords="227,266,227,300,222,300,222,266"/>
+<area shape="poly" id="edge14_Node000011_Node000003" title=" " alt="" coords="392,117,413,138,432,165,448,200,460,237,474,299,469,301,455,238,443,202,428,168,409,142,388,121"/>
+<area shape="poly" id="edge15_Node000011_Node000004" title=" " alt="" coords="378,119,375,153,370,153,373,119"/>
+<area shape="poly" id="edge16_Node000011_Node000007" title=" " alt="" coords="365,121,312,169,247,232,244,228,308,165,361,117"/>
+</map>

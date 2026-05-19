@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['taskhandle_0',['TaskHandle',['../structcommon_1_1TaskHandle.html',1,'common']]],
+  ['taskparams_1',['TaskParams',['../structcommon_1_1TaskParams.html',1,'common']]],
+  ['taskrunner_2',['taskrunner',['../classcommon_1_1TaskRunner.html',1,'common::TaskRunner'],['../classcommon_1_1StopToken.html#a1956d94b45592a4096a335641aab65f8',1,'common::StopToken::TaskRunner'],['../classcommon_1_1TaskRunner.html#a0db4e4a03537e829581442c7b9fbafea',1,'common::TaskRunner::TaskRunner()'],['../classcommon_1_1TaskRunner.html#ae49a6963c2a5d7a14145548d6eb65b78',1,'common::TaskRunner::TaskRunner(const TaskRunner &amp;)=delete']]],
+  ['taskrunner_2ecpp_3',['TaskRunner.cpp',['../TaskRunner_8cpp.html',1,'']]],
+  ['taskrunner_2ehpp_4',['TaskRunner.hpp',['../TaskRunner_8hpp.html',1,'']]],
+  ['technical_20overview_5',['Technical Overview',['../index.html#autotoc_md8',1,'']]],
+  ['temperature_6',['temperature',['../structcommon_1_1TempHumidUpdateEvent.html#a5ba5f07204fc42b36a6a1cad0a5c4334',1,'common::TempHumidUpdateEvent']]],
+  ['temphumidupdateevent_7',['TempHumidUpdateEvent',['../structcommon_1_1TempHumidUpdateEvent.html',1,'common']]],
+  ['the_20build_8',['Evolution of the Build',['../index.html#autotoc_md3',1,'']]],
+  ['the_20journey_20the_20why_9',['The Journey &amp; The &quot;Why&quot;',['../index.html#autotoc_md1',1,'']]],
+  ['theory_20vs_20practice_10',['Theory vs. Practice',['../index.html#autotoc_md14',1,'']]],
+  ['timeout_11',['Timeout',['../namespacecommon.html#ae01c7d789809ee25c2b6931c871f8502ac85a251cc457840f1e032f1b733e9398',1,'common']]],
+  ['timestampms_12',['timestampMs',['../structcommon_1_1GpioInputData.html#add62530eeb5d273291a568a92f3bb9ff',1,'common::GpioInputData']]],
+  ['to_20one_13',['ESP32 Internet Radio: From Zero to One',['../index.html',1,'']]],
+  ['toggleclapfeature_14',['toggleclapfeature',['../classservices_1_1SensorService.html#a0e1c2e88e258ea5fe1af60c0ffbb1be5',1,'services::SensorService::toggleClapFeature()'],['../classservices_1_1ISensorService.html#a118049c2f3e30a6c1e49e041a3ee8bcb',1,'services::ISensorService::toggleClapFeature()']]],
+  ['total_15',['total',['../structcommon_1_1IRingBuffer_1_1ReadSpans.html#a951fb843e5cdcaafda343788f59cd1ce',1,'common::IRingBuffer::ReadSpans::total()'],['../structcommon_1_1IRingBuffer_1_1WriteSpans.html#a849c4fe2a929511a4def19cd03fe5a8f',1,'common::IRingBuffer::WriteSpans::total()']]],
+  ['toticks_16',['toTicks',['../namespacecommon.html#ae15effc1b514ba562c2129fa3facac1c',1,'common']]],
+  ['tryget_17',['tryget',['../classcommon_1_1IQueue.html#a08103bd5d41ec0e127db1aa2ba9d3f31',1,'common::IQueue::tryGet()'],['../classcommon_1_1Queue.html#abde8e8a480b63facbc5f961cefdc1219',1,'common::Queue::tryGet()']]],
+  ['trygetrssidbm_18',['trygetrssidbm',['../classadapters_1_1IWifiClient.html#a057143f4013b34125594bbdda3d0f9ac',1,'adapters::IWifiClient::tryGetRssiDbm()'],['../classadapters_1_1WifiClient.html#aaa7580fb8ccc8c931bb98c093f355d9f',1,'adapters::WifiClient::tryGetRssiDbm()']]],
+  ['trylock_19',['tryLock',['../classcommon_1_1Mutex.html#ad72bd0fad8d2e0a4e6ad4a20bbdb2969',1,'common::Mutex']]],
+  ['type_20',['type',['../structcommon_1_1GpioInputData.html#a0a7380888795705985a2881eeb62d740',1,'common::GpioInputData']]],
+  ['types_2ehpp_21',['Types.hpp',['../Types_8hpp.html',1,'']]]
+];

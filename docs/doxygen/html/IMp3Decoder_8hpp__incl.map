@@ -1,0 +1,7 @@
+<map id="components/adapters/include/IMp3Decoder.hpp" name="components/adapters/include/IMp3Decoder.hpp">
+<area shape="rect" id="Node000001" title="Interface definition for MP3 audio decoding." alt="" coords="5,5,196,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="19,93,89,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="92,47,70,83,66,80,87,44"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="114,93,181,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="114,44,136,80,131,83,110,47"/>
+</map>

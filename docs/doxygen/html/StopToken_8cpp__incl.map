@@ -1,0 +1,47 @@
+<map id="components/common/src/StopToken.cpp" name="components/common/src/StopToken.cpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="203,5,390,45"/>
+<area shape="rect" id="Node000002" href="$StopToken_8hpp.html" title="Concrete implementation of the IStopToken interface." alt="" coords="239,167,355,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="299,46,299,153,294,153,294,46"/>
+<area shape="rect" id="Node000005" href="$Types_8hpp.html" title="Global type definitions, enumerations, and data structures." alt="" coords="157,240,244,265"/>
+<area shape="poly" id="edge27_Node000001_Node000005" title=" " alt="" coords="281,47,242,99,222,132,207,167,202,197,201,226,196,226,196,197,202,166,217,130,237,96,277,44"/>
+<area shape="rect" id="Node000010" href="$TaskRunner_8hpp.html" title="Concrete implementation of the ITaskRunner interface." alt="" coords="556,93,680,119"/>
+<area shape="poly" id="edge11_Node000001_Node000010" title=" " alt="" coords="374,43,558,87,557,93,373,48"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="421,313,487,339"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="297,192,297,227,301,247,309,264,330,284,355,298,408,316,406,321,353,303,327,288,305,267,296,248,291,228,292,192"/>
+<area shape="rect" id="Node000004" href="$IStopToken_8hpp.html" title="Interface for task cancellation and interruptible sleeps." alt="" coords="319,240,439,265"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="312,190,357,229,354,233,308,194"/>
+<area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="283,194,229,234,226,229,280,190"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="393,263,434,302,430,306,389,267"/>
+<area shape="poly" id="edge8_Node000005_Node000003" title=" " alt="" coords="242,263,408,309,406,314,241,268"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="5,313,76,339"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="176,268,80,310,78,305,174,263"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="101,313,157,339"/>
+<area shape="poly" id="edge7_Node000005_Node000007" title=" " alt="" coords="191,268,152,306,148,302,187,264"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="181,313,268,339"/>
+<area shape="poly" id="edge9_Node000005_Node000008" title=" " alt="" coords="207,265,219,299,214,301,202,267"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="293,313,351,339"/>
+<area shape="poly" id="edge10_Node000005_Node000009" title=" " alt="" coords="222,263,292,304,289,309,219,268"/>
+<area shape="poly" id="edge15_Node000010_Node000003" title=" " alt="" coords="611,121,473,304,469,300,607,117"/>
+<area shape="poly" id="edge26_Node000010_Node000005" title=" " alt="" coords="556,112,470,116,373,126,286,143,252,155,229,169,219,181,211,196,204,227,199,226,206,194,214,178,226,165,250,150,285,138,373,121,470,111,555,106"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="565,240,716,265"/>
+<area shape="poly" id="edge12_Node000010_Node000011" title=" " alt="" coords="622,119,639,226,634,227,617,120"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="1021,240,1138,265"/>
+<area shape="poly" id="edge13_Node000010_Node000012" title=" " alt="" coords="648,116,759,164,784,178,810,189,896,212,1007,235,1006,240,895,217,808,195,782,183,757,169,646,121"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="821,167,887,192"/>
+<area shape="poly" id="edge14_Node000010_Node000013" title=" " alt="" coords="657,116,808,161,807,167,655,121"/>
+<area shape="rect" id="Node000014" title=" " alt="" coords="911,167,978,192"/>
+<area shape="poly" id="edge16_Node000010_Node000014" title=" " alt="" coords="676,116,899,164,897,169,675,121"/>
+<area shape="rect" id="Node000015" href="$ITaskRunner_8hpp.html" title="Interface for managing background tasks and thread lifecycles." alt="" coords="379,167,507,192"/>
+<area shape="poly" id="edge17_Node000010_Node000015" title=" " alt="" coords="591,121,486,164,484,159,589,116"/>
+<area shape="rect" id="Node000016" href="$Signal_8hpp.html" title="Concrete implementation of the ISignal interface using FreeRTOS semaphores." alt="" coords="655,167,746,192"/>
+<area shape="poly" id="edge20_Node000010_Node000016" title=" " alt="" coords="633,117,678,155,675,160,630,121"/>
+<area shape="poly" id="edge18_Node000015_Node000003" title=" " alt="" coords="448,192,454,240,457,299,451,300,449,240,443,192"/>
+<area shape="poly" id="edge19_Node000015_Node000005" title=" " alt="" coords="405,195,254,239,252,234,404,189"/>
+<area shape="poly" id="edge21_Node000016_Node000011" title=" " alt="" coords="693,194,661,231,657,228,689,191"/>
+<area shape="poly" id="edge23_Node000016_Node000012" title=" " alt="" coords="747,187,1008,235,1007,240,746,192"/>
+<area shape="rect" id="Node000017" title=" " alt="" coords="859,240,996,265"/>
+<area shape="poly" id="edge22_Node000016_Node000017" title=" " alt="" coords="738,189,878,233,877,238,736,195"/>
+<area shape="rect" id="Node000018" href="$ISignal_8hpp.html" title="Interface for a thread synchronization signal." alt="" coords="740,240,835,265"/>
+<area shape="poly" id="edge24_Node000016_Node000018" title=" " alt="" coords="716,190,764,229,761,233,713,194"/>
+<area shape="poly" id="edge25_Node000018_Node000003" title=" " alt="" coords="740,267,501,317,500,312,739,261"/>
+</map>

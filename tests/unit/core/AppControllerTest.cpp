@@ -182,7 +182,7 @@ TEST_F(AppControllerTest, tc06_wifiEvent) {
 }
 
 TEST_F(AppControllerTest, tc07_playbackStatusEvent) {
-    EXPECT_CALL(*mockSensorService, setPlaybackActive(true)).Times(1);
+    EXPECT_CALL(*mockSensorService, startClapDetection(false)).Times(1);
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
     common::PlaybackStatusChangedEvent e{};
     e.status = common::PlaybackStatus::Playing;
@@ -219,7 +219,22 @@ TEST_F(AppControllerTest, tc09_buttonEvent_playStop_playStation_playing) {
     appController->onEvent(e2);
 }
 
-TEST_F(AppControllerTest, tc10_buttonEvent_playStop_stop) {
+TEST_F(AppControllerTest, tc10_buttonEvent_playStop_playStation_error) {
+    EXPECT_CALL(*mockPlayerService, getStatus()).WillOnce(Return(common::PlaybackStatus::Stopped));
+    const common::StationData station = {.id = "id", .name = "name", .url = "url"};
+    EXPECT_CALL(*mockStationRepo, currentStation()).WillOnce(ReturnRef(station));
+    EXPECT_CALL(*mockPlayerService, playStation(station.url)).WillOnce(Return(true));
+    common::ButtonPressedEvent e{};
+    e.button = common::Button::PlayStop;
+    appController->onEvent(e);
+
+    EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
+    common::PlaybackStatusChangedEvent e2{};
+    e2.status = common::PlaybackStatus::Error;
+    appController->onEvent(e2);
+}
+
+TEST_F(AppControllerTest, tc11_buttonEvent_playStop_stop) {
     EXPECT_CALL(*mockPlayerService, getStatus()).WillOnce(Return(common::PlaybackStatus::Playing));
     EXPECT_CALL(*mockPlayerService, stop()).WillOnce(Return(true));
     common::ButtonPressedEvent e{};
@@ -232,13 +247,12 @@ TEST_F(AppControllerTest, tc10_buttonEvent_playStop_stop) {
     appController->onEvent(e2);
 }
 
-TEST_F(AppControllerTest, tc11_buttonEvent_next_stop_nextStation_playStation) {
+TEST_F(AppControllerTest, tc12_buttonEvent_next_stop_nextStation) {
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
     EXPECT_CALL(*mockPlayerService, getStatus()).WillOnce(Return(common::PlaybackStatus::Playing));
     EXPECT_CALL(*mockPlayerService, stop()).WillOnce(Return(true));
     const common::StationData station = {.id = "id", .name = "name", .url = "url"};
     EXPECT_CALL(*mockStationRepo, nextStation()).WillOnce(ReturnRef(station));
-    EXPECT_CALL(*mockPlayerService, playStation(station.url)).WillOnce(Return(true));
     common::ButtonPressedEvent e{};
     e.button = common::Button::Next;
     appController->onEvent(e);
@@ -251,73 +265,46 @@ TEST_F(AppControllerTest, tc11_buttonEvent_next_stop_nextStation_playStation) {
 
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
     common::PlaybackStatusChangedEvent e3{};
-    e3.status = common::PlaybackStatus::Playing;
+    e3.status = common::PlaybackStatus::Stopped;
     appController->onEvent(e3);
 }
 
-TEST_F(AppControllerTest, tc12_buttonEvent_next_nextStation_playStation) {
+TEST_F(AppControllerTest, tc13_buttonEvent_next_nextStation) {
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
     EXPECT_CALL(*mockPlayerService, getStatus()).WillOnce(Return(common::PlaybackStatus::Stopped));
     const common::StationData station = {.id = "id", .name = "name", .url = "url"};
     EXPECT_CALL(*mockStationRepo, nextStation()).WillOnce(ReturnRef(station));
-    EXPECT_CALL(*mockPlayerService, playStation(station.url)).WillOnce(Return(true));
     common::ButtonPressedEvent e{};
     e.button = common::Button::Next;
     appController->onEvent(e);
-
-    EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
-    common::PlaybackStatusChangedEvent e2{};
-    e2.status = common::PlaybackStatus::Playing;
-    appController->onEvent(e2);
 }
 
-TEST_F(AppControllerTest, tc13_buttonEvent_next_nextStation_playStation_Error) {
-    EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
-    EXPECT_CALL(*mockPlayerService, getStatus()).WillOnce(Return(common::PlaybackStatus::Stopped));
-    const common::StationData station = {.id = "id", .name = "name", .url = "url"};
-    EXPECT_CALL(*mockStationRepo, nextStation()).WillOnce(ReturnRef(station));
-    EXPECT_CALL(*mockPlayerService, playStation(station.url)).WillOnce(Return(true));
-    common::ButtonPressedEvent e{};
-    e.button = common::Button::Next;
-    appController->onEvent(e);
-
-    EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
-    common::PlaybackStatusChangedEvent e2{};
-    e2.status = common::PlaybackStatus::Error;
-    appController->onEvent(e2);
-}
-
-TEST_F(AppControllerTest, tc14_buttonEvent_prev_stop_prevStation_playStation) {
+TEST_F(AppControllerTest, tc14_buttonEvent_prev_stop_prevStation) {
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
     EXPECT_CALL(*mockPlayerService, getStatus()).WillOnce(Return(common::PlaybackStatus::Playing));
     EXPECT_CALL(*mockPlayerService, stop()).WillOnce(Return(true));
     const common::StationData station = {.id = "id", .name = "name", .url = "url"};
     EXPECT_CALL(*mockStationRepo, prevStation()).WillOnce(ReturnRef(station));
-    EXPECT_CALL(*mockPlayerService, playStation(station.url)).WillOnce(Return(true));
+
     common::ButtonPressedEvent e{};
     e.button = common::Button::Previous;
     appController->onEvent(e);
 
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
     common::PlaybackStatusChangedEvent e2{};
-    e2.status = common::PlaybackStatus::Playing;
+    e2.status = common::PlaybackStatus::Stopped;
     appController->onEvent(e2);
 }
 
-TEST_F(AppControllerTest, tc15_buttonEvent_prev_nextStation_playStation) {
+TEST_F(AppControllerTest, tc15_buttonEvent_prev_nextStation) {
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
     EXPECT_CALL(*mockPlayerService, getStatus()).WillOnce(Return(common::PlaybackStatus::Stopped));
     const common::StationData station = {.id = "id", .name = "name", .url = "url"};
     EXPECT_CALL(*mockStationRepo, prevStation()).WillOnce(ReturnRef(station));
-    EXPECT_CALL(*mockPlayerService, playStation(station.url)).WillOnce(Return(true));
+
     common::ButtonPressedEvent e{};
     e.button = common::Button::Previous;
     appController->onEvent(e);
-
-    EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
-    common::PlaybackStatusChangedEvent e2{};
-    e2.status = common::PlaybackStatus::Playing;
-    appController->onEvent(e2);
 }
 
 TEST_F(AppControllerTest, tc16_volEvent_setVolume) {
@@ -533,7 +520,7 @@ TEST_F(AppControllerTest, tc21_longPressPlayStop_syncStations_wifiNotConnected) 
 }
 
 TEST_F(AppControllerTest, tc22_longPressPlayStop_syncStations_playing) {
-    EXPECT_CALL(*mockSensorService, setPlaybackActive(false)).Times(1);
+    EXPECT_CALL(*mockSensorService, startClapDetection(true)).Times(1);
     EXPECT_CALL(*mockPlayerService, getStatus()).WillOnce(Return(common::PlaybackStatus::Playing));
     EXPECT_CALL(*mockPlayerService, stop()).WillOnce(Return(true));
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce([](const common::AppEvent& event) {
@@ -633,7 +620,7 @@ TEST_F(AppControllerTest, tc22_longPressPlayStop_syncStations_playing) {
 }
 
 TEST_F(AppControllerTest, tc23_longPressPlayStop_syncStations_stopPlayback_error) {
-    EXPECT_CALL(*mockSensorService, setPlaybackActive(false)).Times(1);
+    EXPECT_CALL(*mockSensorService, startClapDetection(true)).Times(1);
     EXPECT_CALL(*mockPlayerService, getStatus()).WillOnce(Return(common::PlaybackStatus::Playing));
     EXPECT_CALL(*mockPlayerService, stop()).WillOnce(Return(true));
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce([](const common::AppEvent& event) {
@@ -1729,4 +1716,17 @@ TEST_F(AppControllerTest, tc40_longPressPlayStop_noPlaybackCmd) {
     common::ButtonLongPressedEvent start{};
     start.button = common::Button::PlayStop;
     appController->onEvent(start);
+}
+
+TEST_F(AppControllerTest, tc41_longPressNext_toggleClapFeature) {
+    EXPECT_CALL(*mockSensorService, toggleClapFeature()).WillOnce(Return(true));
+    EXPECT_CALL(*mockEventQueue, post(_)).WillOnce([](const common::AppEvent& event) {
+        const auto* e = std::get_if<common::ClapFeatureStateChangedEvent>(&event);
+        EXPECT_NE(e, nullptr);
+        return true;
+    });
+
+    common::ButtonLongPressedEvent e{};
+    e.button = common::Button::Next;
+    appController->onEvent(e);
 }

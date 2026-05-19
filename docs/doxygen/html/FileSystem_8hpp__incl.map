@@ -1,0 +1,17 @@
+<map id="components/adapters/include/FileSystem.hpp" name="components/adapters/include/FileSystem.hpp">
+<area shape="rect" id="Node000001" title="Implementation of the IFileSystem interface for managing file operations." alt="" coords="73,5,251,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,167,76,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="97,48,63,67,49,80,38,95,32,109,31,124,35,153,30,154,25,124,27,107,33,92,45,76,60,63,95,43"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="106,167,165,192"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="176,45,190,79,192,100,189,120,177,141,162,159,157,156,172,138,183,118,187,99,184,81,171,47"/>
+<area shape="rect" id="Node000004" href="$IFileSystem_8hpp.html" title="Interface definition for filesystem operations." alt="" coords="48,93,175,119"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="152,47,129,83,124,80,147,44"/>
+<area shape="rect" id="Node000005" href="$Mutex_8hpp.html" title="Portable wrapper for a mutual exclusion (mutex) primitive." alt="" coords="250,93,341,119"/>
+<area shape="poly" id="edge6_Node000001_Node000005" title=" " alt="" coords="195,43,265,84,263,89,193,48"/>
+<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="102,121,64,159,60,155,98,117"/>
+<area shape="poly" id="edge5_Node000004_Node000003" title=" " alt="" coords="118,118,130,153,125,154,113,120"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="214,167,281,192"/>
+<area shape="poly" id="edge7_Node000005_Node000006" title=" " alt="" coords="290,121,265,157,260,154,285,118"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="305,167,382,192"/>
+<area shape="poly" id="edge8_Node000005_Node000007" title=" " alt="" coords="305,118,330,154,326,157,301,121"/>
+</map>

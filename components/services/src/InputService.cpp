@@ -59,7 +59,7 @@ static inline bool indexToButton(const size_t idx, common::Button& out) {
 }
 
 static inline bool supportsLongPress(const common::Button button) {
-    return (button == common::Button::PlayStop);
+    return ((button == common::Button::PlayStop) || (button == common::Button::Next));
 }
 
 // Number of valid quarter-steps that represent one mechanical detent

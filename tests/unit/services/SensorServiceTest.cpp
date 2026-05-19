@@ -41,11 +41,13 @@ void SensorServiceTest::SetUp() {
     mockI2cBus = std::make_unique<StrictMock<adapters::MockI2cBus>>();
     mockAdcReader = std::make_unique<StrictMock<adapters::MockAdcReader>>();
     mockClock = std::make_unique<NiceMock<common::MockClock>>();
+    mockPersistentStorage = std::make_unique<StrictMock<adapters::MockPersistentStorage>>();
 
     EXPECT_CALL(*mockClock, nowMs()).Times(AnyNumber()).WillRepeatedly(Return(0U));
 
-    sensorService = std::make_unique<services::SensorService>(
-        *mockI2cBus, *mockAdcReader, *mockEventQueue, *mockTaskRunner, *mockClock);
+    sensorService = std::make_unique<services::SensorService>(*mockI2cBus, *mockAdcReader,
+                                                              *mockEventQueue, *mockTaskRunner,
+                                                              *mockClock, *mockPersistentStorage);
 }
 
 void SensorServiceTest::TearDown() {
@@ -58,6 +60,12 @@ void SensorServiceTest::TearDown() {
 }
 
 TEST_F(SensorServiceTest, tc01_init_success) {
+    EXPECT_CALL(*mockPersistentStorage, getU32("micfeature", _))
+        .WillOnce([](const std::string& key, uint32_t& out) {
+            out = 1;
+            return true;
+        });
+
     EXPECT_CALL(*mockAdcReader, setupChannel(common::MicAdcGpio)).WillOnce(Return(true));
     EXPECT_CALL(*mockAdcReader, setupChannel(common::BatteryAdcGpio)).WillOnce(Return(true));
 
@@ -102,6 +110,11 @@ TEST_F(SensorServiceTest, tc03_init_setupChannelBatFail) {
 }
 
 TEST_F(SensorServiceTest, tc04_init_micTaskFail) {
+    EXPECT_CALL(*mockPersistentStorage, getU32("micfeature", _))
+        .WillOnce([](const std::string& key, uint32_t& out) {
+            out = 1;
+            return true;
+        });
     EXPECT_CALL(*mockAdcReader, setupChannel(common::MicAdcGpio)).WillOnce(Return(true));
     EXPECT_CALL(*mockAdcReader, setupChannel(common::BatteryAdcGpio)).WillOnce(Return(true));
     EXPECT_CALL(*mockTaskRunner, start(_, _, _, _))
@@ -117,6 +130,11 @@ TEST_F(SensorServiceTest, tc04_init_micTaskFail) {
 }
 
 TEST_F(SensorServiceTest, tc05_sensorStepFn_success) {
+    EXPECT_CALL(*mockPersistentStorage, getU32("micfeature", _))
+        .WillOnce([](const std::string& key, uint32_t& out) {
+            out = 1;
+            return true;
+        });
     EXPECT_CALL(*mockAdcReader, setupChannel(common::MicAdcGpio)).WillOnce(Return(true));
     EXPECT_CALL(*mockAdcReader, setupChannel(common::BatteryAdcGpio)).WillOnce(Return(true));
     EXPECT_CALL(*mockTaskRunner, start(_, _, _, _))
@@ -193,6 +211,11 @@ TEST_F(SensorServiceTest, tc05_sensorStepFn_success) {
 }
 
 TEST_F(SensorServiceTest, tc06_listenStepFn_success) {
+    EXPECT_CALL(*mockPersistentStorage, getU32("micfeature", _))
+        .WillOnce([](const std::string& key, uint32_t& out) {
+            out = 1;
+            return true;
+        });
     EXPECT_CALL(*mockAdcReader, setupChannel(common::MicAdcGpio)).WillOnce(Return(true));
     EXPECT_CALL(*mockAdcReader, setupChannel(common::BatteryAdcGpio)).WillOnce(Return(true));
     EXPECT_CALL(*mockTaskRunner, start(_, _, _, _))
@@ -235,16 +258,23 @@ TEST_F(SensorServiceTest, tc06_listenStepFn_success) {
     const common::StepResult r2 = micStepFn(micStepUser, token);
     EXPECT_EQ(r1.action, common::StepAction::Sleep);
     EXPECT_EQ(r1.sleepMs, 5U);
-    EXPECT_EQ(r2.action, common::StepAction::Done);
+    EXPECT_EQ(r2.action, common::StepAction::Sleep);
+    EXPECT_EQ(r2.sleepMs, 3000U);
 
+    // Playback started -> stop clap
     EXPECT_CALL(*mockTaskRunner, stop(_, _)).WillOnce(Return(common::StopResult::Ok));
-    sensorService->setPlaybackActive(true);
+    sensorService->startClapDetection(false);
 
     EXPECT_CALL(*mockTaskRunner, stop(_, _)).WillOnce(Return(common::StopResult::Ok));
     sensorService->deinit();
 }
 
 TEST_F(SensorServiceTest, tc07_listenStepFn_weakFast_loud) {
+    EXPECT_CALL(*mockPersistentStorage, getU32("micfeature", _))
+        .WillOnce([](const std::string& key, uint32_t& out) {
+            out = 1;
+            return true;
+        });
     EXPECT_CALL(*mockAdcReader, setupChannel(common::MicAdcGpio)).WillOnce(Return(true));
     EXPECT_CALL(*mockAdcReader, setupChannel(common::BatteryAdcGpio)).WillOnce(Return(true));
     EXPECT_CALL(*mockTaskRunner, start(_, _, _, _))
@@ -298,6 +328,71 @@ TEST_F(SensorServiceTest, tc07_listenStepFn_weakFast_loud) {
 }
 
 TEST_F(SensorServiceTest, tc08_listenStepFn_playing) {
+    EXPECT_CALL(*mockPersistentStorage, getU32("micfeature", _))
+        .WillOnce([](const std::string& key, uint32_t& out) {
+            out = 1;
+            return true;
+        });
+    EXPECT_CALL(*mockAdcReader, setupChannel(common::MicAdcGpio)).WillOnce(Return(true));
+    EXPECT_CALL(*mockAdcReader, setupChannel(common::BatteryAdcGpio)).WillOnce(Return(true));
+    EXPECT_CALL(*mockTaskRunner, start(_, _, _, _))
+        .WillOnce([&](const common::TaskParams&, uint32_t, common::StepFn fn, void* user) {
+            sensorStepFn = fn;
+            sensorStepUser = user;
+            return common::TaskHandle{0, 1};
+        })
+        .WillOnce([&](const common::TaskParams&, uint32_t, common::StepFn fn, void* user) {
+            micStepFn = fn;
+            micStepUser = user;
+            return common::TaskHandle{1, 1};
+        });
+    ASSERT_TRUE(sensorService->init());
+    ASSERT_NE(micStepFn, nullptr);
+
+    // Playback started - need to stop Clap Detection
+    EXPECT_CALL(*mockTaskRunner, stop(_, _)).WillOnce(Return(common::StopResult::Ok));
+    sensorService->startClapDetection(false);
+
+    // Should be no calls towards adc reader
+    EXPECT_CALL(*mockAdcReader, readRawBurst(common::MicAdcGpio, _, _)).Times(0);
+    common::MockStopToken token;
+    EXPECT_CALL(token, stopRequested()).WillOnce(Return(true));
+    const common::StepResult r = micStepFn(micStepUser, token);
+    EXPECT_EQ(r.action, common::StepAction::Done);
+
+    EXPECT_CALL(*mockTaskRunner, stop(_, _)).WillOnce(Return(common::StopResult::Ok));
+    sensorService->deinit();
+}
+
+TEST_F(SensorServiceTest, tc09_startClapDetection_сlapFeatureDisabled) {
+    EXPECT_CALL(*mockPersistentStorage, getU32("micfeature", _))
+        .WillOnce([](const std::string& key, uint32_t& out) {
+            out = 0;
+            return true;
+        });
+    EXPECT_CALL(*mockAdcReader, setupChannel(common::MicAdcGpio)).WillOnce(Return(true));
+    EXPECT_CALL(*mockAdcReader, setupChannel(common::BatteryAdcGpio)).WillOnce(Return(true));
+    EXPECT_CALL(*mockTaskRunner, start(_, _, _, _))
+        .WillOnce([&](const common::TaskParams&, uint32_t, common::StepFn fn, void* user) {
+            sensorStepFn = fn;
+            sensorStepUser = user;
+            return common::TaskHandle{0, 1};
+        });
+    ASSERT_TRUE(sensorService->init());
+
+    // no calls, hard exit
+    sensorService->startClapDetection(true);
+
+    EXPECT_CALL(*mockTaskRunner, stop(_, _)).WillOnce(Return(common::StopResult::Ok));
+    sensorService->deinit();
+}
+
+TEST_F(SensorServiceTest, tc10_toggleClapFeature_disable_enable_stoppedPlayback) {
+    EXPECT_CALL(*mockPersistentStorage, getU32("micfeature", _))
+        .WillOnce([](const std::string& key, uint32_t& out) {
+            out = 1;
+            return true;
+        });
     EXPECT_CALL(*mockAdcReader, setupChannel(common::MicAdcGpio)).WillOnce(Return(true));
     EXPECT_CALL(*mockAdcReader, setupChannel(common::BatteryAdcGpio)).WillOnce(Return(true));
     EXPECT_CALL(*mockTaskRunner, start(_, _, _, _))
@@ -315,12 +410,31 @@ TEST_F(SensorServiceTest, tc08_listenStepFn_playing) {
     ASSERT_NE(micStepFn, nullptr);
 
     EXPECT_CALL(*mockTaskRunner, stop(_, _)).WillOnce(Return(common::StopResult::Ok));
-    sensorService->setPlaybackActive(true);
-    EXPECT_CALL(*mockAdcReader, readRawBurst(common::MicAdcGpio, _, _)).Times(0);
+    EXPECT_CALL(*mockPersistentStorage, setU32("micfeature", 0)).WillOnce(Return(true));
+
+    EXPECT_FALSE(sensorService->toggleClapFeature());
+
+    // playback stopped
+    sensorService->startClapDetection(true);
+    EXPECT_CALL(*mockTaskRunner, start(_, _, _, _))
+        .WillOnce([&](const common::TaskParams&, uint32_t, common::StepFn fn, void* user) {
+            micStepFn = fn;
+            micStepUser = user;
+            return common::TaskHandle{1, 1};
+        });
+    EXPECT_CALL(*mockPersistentStorage, setU32("micfeature", 1)).WillOnce(Return(true));
+    EXPECT_TRUE(sensorService->toggleClapFeature());
+
+    EXPECT_CALL(*mockTaskRunner, stop(_, _)).WillOnce(Return(common::StopResult::Ok));
+    EXPECT_CALL(*mockPersistentStorage, setU32("micfeature", 0)).WillOnce(Return(true));
+    EXPECT_FALSE(sensorService->toggleClapFeature());
+
     common::MockStopToken token;
-    EXPECT_CALL(token, stopRequested()).WillOnce(Return(true));
     const common::StepResult r = micStepFn(micStepUser, token);
     EXPECT_EQ(r.action, common::StepAction::Done);
+
+    // no calls, hard exit
+    sensorService->startClapDetection(true);
 
     EXPECT_CALL(*mockTaskRunner, stop(_, _)).WillOnce(Return(common::StopResult::Ok));
     sensorService->deinit();

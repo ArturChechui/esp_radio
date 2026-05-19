@@ -116,7 +116,7 @@ bool AppContext::initServices() {
     mWifiService = std::make_unique<services::WifiService>(
         *mWifiAdapter, *mProvisioningPortal, *mTaskRunner, *mCoreEventTask, *mPersistentStorage);
     mSensorService = std::make_unique<services::SensorService>(
-        *mI2cBus, *mAdcReader, *mCoreEventTask, *mTaskRunner, *mClock);
+        *mI2cBus, *mAdcReader, *mCoreEventTask, *mTaskRunner, *mClock, *mPersistentStorage);
     mInputService = std::make_unique<services::InputService>(
         *mGpioInput, *mCoreEventTask, *mQueue, *mTaskRunner, *mClock, *mPersistentStorage);
     mPlayerService = std::make_unique<services::PlayerService>(

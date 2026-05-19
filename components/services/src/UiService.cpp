@@ -90,7 +90,7 @@ static common::Icon batteryPercentToIcon(const uint8_t pct) {
     if (pct <= 25U) {
         return common::Icon::BatteryLow;
     }
-    if (pct <= 70U) {
+    if (pct <= 79U) {
         return common::Icon::BatteryMid;
     }
     return common::Icon::BatteryFull;
@@ -157,7 +157,8 @@ UiService::UiService(adapters::IDisplay& display, IStationRepository& stationRep
       mWifiDirty(false),
       mBatteryDirty(false),
       mPlaybackDirty(false),
-      mVolumeDirty(false) {
+      mVolumeDirty(false),
+      mClapFeatureEnabled(false) {
     ESP_LOGI(Tag, "Creating UiService");
     mTxBuf.reserve(Width * Pages);
 }
@@ -182,6 +183,12 @@ void UiService::onEvent(const common::AppEvent& e) {
     const auto prevMode = mMode;
 
     std::visit(common::Overloaded{
+                   [this](const common::ClapFeatureStateChangedEvent& c) {
+                       if (mClapFeatureEnabled != c.isEnabled) {
+                           mClapFeatureEnabled = c.isEnabled;
+                           mVolumeDirty = true;
+                       }
+                   },
                    [this](const common::CurrentStationChangedEvent&) { mStationDirty = true; },
                    [this](const common::TempHumidUpdateEvent& t) {
                        if (mTemperatureC != t.temperature || mHumidityPct != t.humidity) {
@@ -226,48 +233,48 @@ void UiService::onEvent(const common::AppEvent& e) {
                    [](const auto&) {}},
                e);
 
-    std::visit(common::Overloaded{[this, prevMode](const common::SwitchToWifiProvScreenEvent&) {
-                                      if (prevMode != mMode && mMode == UiMode::WifiProv) {
-                                          showWifiProvisioningScreen();
-                                      }
-                                  },
-                                  [this, prevMode](
-                                      const common::SwitchToSyncInProgressScreenEvent&) {
-                                      if (prevMode != mMode && mMode == UiMode::SyncInProgress) {
-                                          showSyncInProgressScreen();
-                                      }
-                                  },
-                                  [this, prevMode](const common::SwitchToMainScreenEvent&) {
-                                      if (prevMode != mMode && mMode == UiMode::Main) {
-                                          showFullMainScreen();
-                                      }
-                                  },
-                                  [this](const auto&) {
-                                      if (mMode != UiMode::Main) {
-                                          return;
-                                      }
+    std::visit(
+        common::Overloaded{[this, prevMode](const common::SwitchToWifiProvScreenEvent&) {
+                               if (prevMode != mMode && mMode == UiMode::WifiProv) {
+                                   showWifiProvisioningScreen();
+                               }
+                           },
+                           [this, prevMode](const common::SwitchToSyncInProgressScreenEvent&) {
+                               if (prevMode != mMode && mMode == UiMode::SyncInProgress) {
+                                   showSyncInProgressScreen();
+                               }
+                           },
+                           [this, prevMode](const common::SwitchToMainScreenEvent&) {
+                               if (prevMode != mMode && mMode == UiMode::Main) {
+                                   showFullMainScreen();
+                               }
+                           },
+                           [this](const auto&) {
+                               if (mMode != UiMode::Main) {
+                                   return;
+                               }
 
-                                      if (mStationDirty) {
-                                          updateStationName();
-                                          mStationDirty = false;
-                                      } else if (mStatusDirty) {
-                                          updateStatusText();
-                                          mStatusDirty = false;
-                                      } else if (mWifiDirty) {
-                                          updateWifiIcon();
-                                          mWifiDirty = false;
-                                      } else if (mBatteryDirty) {
-                                          updateBatteryIcon();
-                                          mBatteryDirty = false;
-                                      } else if (mPlaybackDirty) {
-                                          updatePlaybackIcon();
-                                          mPlaybackDirty = false;
-                                      } else if (mVolumeDirty) {
-                                          updateVolumeIcon();
-                                          mVolumeDirty = false;
-                                      }
-                                  }},
-               e);
+                               if (mStationDirty) {
+                                   updateStationName();
+                                   mStationDirty = false;
+                               } else if (mStatusDirty) {
+                                   updateStatusText();
+                                   mStatusDirty = false;
+                               } else if (mWifiDirty) {
+                                   updateWifiIcon();
+                                   mWifiDirty = false;
+                               } else if (mBatteryDirty) {
+                                   updateBatteryIcon();
+                                   mBatteryDirty = false;
+                               } else if (mPlaybackDirty) {
+                                   updatePlaybackIcon();
+                                   mPlaybackDirty = false;
+                               } else if (mVolumeDirty) {
+                                   updateVolumeIcon();
+                                   mVolumeDirty = false;
+                               }
+                           }},
+        e);
 }
 
 void UiService::showFullMainScreen() {
@@ -377,6 +384,18 @@ void UiService::updateVolumeIcon(const bool doFlush) {
 
     if (const auto* bmp = common::fonts::icon16(mVolume)) {
         blitRect(StatusVolRect, bmp);
+    }
+
+    // If the master feature toggle is active, draw a clean indicator line
+    if (mClapFeatureEnabled) {
+        // StatusVolRect is at x=80, y=0, w=16, h=16. Page 0 handles vertical pixels 0..7
+        // mFramebuffer layout is page-major: page 0 takes indices 0..127
+        uint16_t baseIndex = StatusVolRect.x;  // index 80
+
+        for (uint8_t i = 0U; i < StatusVolRect.w; ++i) {
+            // 0x01 sets the top 1 pixel of page 0 (binary 00000001)
+            mFramebuffer[baseIndex + i] |= 0x01;
+        }
     }
 
     if (doFlush) {

@@ -1,0 +1,19 @@
+<map id="components/adapters/include/IWifiClient.hpp" name="components/adapters/include/IWifiClient.hpp">
+<area shape="rect" id="Node000001" title="Interface definition for Wi&#45;Fi connectivity and management." alt="" coords="100,5,272,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,167,92,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="171,48,70,158,66,154,167,44"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="295,93,370,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="222,43,300,84,298,89,220,48"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="117,167,175,192"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="184,47,155,154,150,153,178,45"/>
+<area shape="rect" id="Node000005" href="$Types_8hpp.html" title="Global type definitions, enumerations, and data structures." alt="" coords="184,93,271,119"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="198,44,217,80,212,82,194,47"/>
+<area shape="poly" id="edge8_Node000005_Node000002" title=" " alt="" coords="200,121,91,164,89,159,198,116"/>
+<area shape="poly" id="edge9_Node000005_Node000004" title=" " alt="" coords="216,121,171,160,168,156,213,117"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="200,167,271,192"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="231,119,235,153,230,153,226,119"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="295,167,351,192"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="244,117,298,156,295,160,241,121"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="375,167,442,192"/>
+<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="257,116,367,159,365,164,255,121"/>
+</map>

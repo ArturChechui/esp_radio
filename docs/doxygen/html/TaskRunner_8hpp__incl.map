@@ -1,0 +1,37 @@
+<map id="components/common/include/TaskRunner.hpp" name="components/common/include/TaskRunner.hpp">
+<area shape="rect" id="Node000001" title="Concrete implementation of the ITaskRunner interface." alt="" coords="401,5,616,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,167,156,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="412,48,329,68,244,96,172,129,112,162,109,157,170,124,242,91,328,63,411,43"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="461,167,578,192"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="507,46,501,80,502,118,512,153,507,155,497,119,496,79,501,45"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="370,93,437,119"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="485,48,432,87,428,83,482,43"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="582,240,649,265"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="543,43,570,64,592,92,607,126,615,163,619,226,614,226,610,164,602,128,588,95,566,68,540,47"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="511,93,578,119"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="520,44,536,79,531,82,515,47"/>
+<area shape="rect" id="Node000007" href="$ITaskRunner_8hpp.html" title="Interface for managing background tasks and thread lifecycles." alt="" coords="653,93,781,119"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="559,43,674,86,672,91,558,48"/>
+<area shape="rect" id="Node000008" href="$Types_8hpp.html" title="Global type definitions, enumerations, and data structures." alt="" coords="753,167,840,192"/>
+<area shape="poly" id="edge20_Node000001_Node000008" title=" " alt="" coords="617,36,723,57,767,72,795,92,803,106,807,122,805,153,800,153,801,123,798,108,791,95,764,77,722,62,616,41"/>
+<area shape="rect" id="Node000013" href="$Signal_8hpp.html" title="Concrete implementation of the ISignal interface using FreeRTOS semaphores." alt="" coords="255,93,346,119"/>
+<area shape="poly" id="edge14_Node000001_Node000013" title=" " alt="" coords="460,48,345,91,343,86,458,43"/>
+<area shape="poly" id="edge7_Node000007_Node000005" title=" " alt="" coords="711,121,633,230,629,227,706,118"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="731,117,775,156,772,160,728,121"/>
+<area shape="poly" id="edge11_Node000008_Node000005" title=" " alt="" coords="769,195,659,237,657,232,767,190"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="948,240,1019,265"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="828,190,941,233,939,237,826,195"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="673,240,729,265"/>
+<area shape="poly" id="edge10_Node000008_Node000010" title=" " alt="" coords="783,194,729,234,726,229,780,190"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="753,240,840,265"/>
+<area shape="poly" id="edge12_Node000008_Node000011" title=" " alt="" coords="799,192,799,226,794,226,794,192"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="865,240,923,265"/>
+<area shape="poly" id="edge13_Node000008_Node000012" title=" " alt="" coords="814,190,868,229,865,234,811,194"/>
+<area shape="poly" id="edge15_Node000013_Node000002" title=" " alt="" coords="266,121,130,165,128,160,265,116"/>
+<area shape="poly" id="edge17_Node000013_Node000003" title=" " alt="" coords="337,116,472,160,470,165,335,121"/>
+<area shape="rect" id="Node000014" title=" " alt="" coords="299,167,436,192"/>
+<area shape="poly" id="edge16_Node000013_Node000014" title=" " alt="" coords="314,117,349,155,345,158,310,121"/>
+<area shape="rect" id="Node000015" href="$ISignal_8hpp.html" title="Interface for a thread synchronization signal." alt="" coords="180,167,275,192"/>
+<area shape="poly" id="edge18_Node000013_Node000015" title=" " alt="" coords="290,121,251,159,247,155,287,117"/>
+<area shape="poly" id="edge19_Node000015_Node000005" title=" " alt="" coords="275,187,286,189,569,240,568,246,286,195,274,192"/>
+</map>

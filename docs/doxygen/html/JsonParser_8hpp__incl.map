@@ -1,0 +1,23 @@
+<map id="components/common/include/JsonParser.hpp" name="components/common/include/JsonParser.hpp">
+<area shape="rect" id="Node000001" title="Concrete implementation of the IJsonParser interface." alt="" coords="5,5,220,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="43,240,102,265"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="102,47,72,100,57,133,46,167,45,183,47,198,60,227,55,229,42,200,39,183,41,166,52,131,67,97,97,44"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="56,167,119,192"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="107,46,93,94,89,153,84,153,87,93,102,45"/>
+<area shape="rect" id="Node000004" href="$IJsonParser_8hpp.html" title="Interface for JSON parsing utilities." alt="" coords="102,93,222,119"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="127,44,150,80,145,83,122,47"/>
+<area shape="rect" id="Node000005" href="$Types_8hpp.html" title="Global type definitions, enumerations, and data structures." alt="" coords="207,167,293,192"/>
+<area shape="poly" id="edge12_Node000001_Node000005" title=" " alt="" coords="171,43,206,63,236,92,249,122,253,153,248,153,244,123,232,95,203,67,168,48"/>
+<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="162,120,151,154,132,193,99,232,95,229,128,191,146,152,157,118"/>
+<area shape="poly" id="edge5_Node000004_Node000003" title=" " alt="" coords="152,121,111,159,108,155,148,117"/>
+<area shape="poly" id="edge6_Node000004_Node000005" title=" " alt="" coords="178,117,227,156,223,160,174,121"/>
+<area shape="poly" id="edge11_Node000005_Node000002" title=" " alt="" coords="222,194,115,237,113,232,221,190"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="127,240,197,265"/>
+<area shape="poly" id="edge7_Node000005_Node000006" title=" " alt="" coords="238,194,189,233,185,229,234,190"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="222,240,278,265"/>
+<area shape="poly" id="edge8_Node000005_Node000007" title=" " alt="" coords="253,192,253,226,247,226,247,192"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="302,240,369,265"/>
+<area shape="poly" id="edge9_Node000005_Node000008" title=" " alt="" coords="265,190,313,229,309,233,262,194"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="393,240,480,265"/>
+<area shape="poly" id="edge10_Node000005_Node000009" title=" " alt="" coords="281,190,394,233,393,237,279,195"/>
+</map>

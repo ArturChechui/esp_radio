@@ -1,0 +1,5 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$classadapters_1_1IProvisioningPortal.html" title="Abstract interface for a Wi&#45;Fi provisioning portal." alt="" coords="5,5,215,31"/>
+<area shape="rect" id="Node000001" href="$classadapters_1_1ProvisioningPortal.html" title="Concrete implementation of a Wi&#45;Fi provisioning portal using ESP&#45;IDF&#39;s HTTP server." alt="" coords="263,5,468,31"/>
+<area shape="poly" id="edge10_Node000000_Node000001" title=" " alt="" coords="229,15,262,15,262,21,229,21"/>
+</map>

@@ -1,0 +1,34 @@
+<map id="components/common/src/JsonParser.cpp" name="components/common/src/JsonParser.cpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="210,5,397,45"/>
+<area shape="rect" id="Node000002" href="$JsonParser_8hpp.html" title="Concrete implementation of the IJsonParser interface." alt="" coords="76,93,192,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="264,48,173,90,170,85,262,43"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="5,240,68,265"/>
+<area shape="poly" id="edge18_Node000001_Node000004" title=" " alt="" coords="210,33,172,40,133,52,97,70,65,95,46,125,37,161,34,196,36,226,30,227,29,196,31,160,41,123,61,92,94,66,131,47,170,35,209,28"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="216,93,289,119"/>
+<area shape="poly" id="edge14_Node000001_Node000011" title=" " alt="" coords="293,47,270,83,265,80,289,44"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="313,93,397,119"/>
+<area shape="poly" id="edge15_Node000001_Node000012" title=" " alt="" coords="318,44,342,80,338,83,314,47"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="421,93,487,119"/>
+<area shape="poly" id="edge16_Node000001_Node000013" title=" " alt="" coords="341,43,421,84,418,89,338,48"/>
+<area shape="rect" id="Node000014" title=" " alt="" coords="511,93,571,119"/>
+<area shape="poly" id="edge17_Node000001_Node000014" title=" " alt="" coords="361,43,498,88,497,93,359,48"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="106,313,165,339"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="158,117,186,136,208,165,214,185,215,204,203,243,182,277,159,305,155,301,178,274,198,241,209,204,209,186,204,168,182,140,155,121"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="116,121,89,141,64,168,50,197,43,227,38,226,45,196,60,165,85,137,113,117"/>
+<area shape="rect" id="Node000005" href="$IJsonParser_8hpp.html" title="Interface for JSON parsing utilities." alt="" coords="74,167,194,192"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="137,119,137,153,131,153,131,119"/>
+<area shape="rect" id="Node000006" href="$Types_8hpp.html" title="Global type definitions, enumerations, and data structures." alt="" coords="269,240,356,265"/>
+<area shape="poly" id="edge13_Node000002_Node000006" title=" " alt="" coords="167,116,209,136,252,165,280,195,301,226,297,229,276,198,248,169,206,141,164,121"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="137,192,138,300,132,300,131,192"/>
+<area shape="poly" id="edge6_Node000005_Node000004" title=" " alt="" coords="120,194,65,234,62,229,117,190"/>
+<area shape="poly" id="edge7_Node000005_Node000006" title=" " alt="" coords="164,190,272,232,270,237,162,195"/>
+<area shape="poly" id="edge12_Node000006_Node000003" title=" " alt="" coords="285,268,178,311,176,306,283,263"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="189,313,260,339"/>
+<area shape="poly" id="edge8_Node000006_Node000007" title=" " alt="" coords="300,267,251,307,248,302,297,263"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="285,313,341,339"/>
+<area shape="poly" id="edge9_Node000006_Node000008" title=" " alt="" coords="315,266,315,300,310,300,310,266"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="365,313,431,339"/>
+<area shape="poly" id="edge10_Node000006_Node000009" title=" " alt="" coords="328,263,375,302,372,307,325,267"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="456,313,543,339"/>
+<area shape="poly" id="edge11_Node000006_Node000010" title=" " alt="" coords="344,263,457,306,455,311,342,268"/>
+</map>

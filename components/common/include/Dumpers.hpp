@@ -1,3 +1,12 @@
+/**
+ * @file Dumpers.hpp
+ * @brief Utility functions for converting system types and events to strings.
+ *
+ * This file contains inline helper functions to "dump" internal enums and
+ * event structures into human-readable strings, primarily for logging and
+ * diagnostic purposes.
+ */
+
 #pragma once
 #include <string>
 
@@ -6,6 +15,11 @@
 #include "Types.hpp"
 
 namespace common {
+/**
+ * @brief Converts a Button enum value to its string representation.
+ * @param b The button enum to convert.
+ * @return A string such as "PlayStop", "Next", or "Previous".
+ */
 inline std::string dump(const Button& b) {
     switch (b) {
         case Button::PlayStop:
@@ -19,6 +33,11 @@ inline std::string dump(const Button& b) {
     }
 }
 
+/**
+ * @brief Converts a PlaybackStatus enum value to its string representation.
+ * @param p The playback status to convert.
+ * @return A string such as "Playing", "Buffering", or "Stopped".
+ */
 inline std::string dump(const PlaybackStatus& p) {
     switch (p) {
         case PlaybackStatus::Playing:
@@ -36,6 +55,11 @@ inline std::string dump(const PlaybackStatus& p) {
     }
 }
 
+/**
+ * @brief Converts an Icon enum value to its string representation.
+ * @param i The icon enum to convert.
+ * @return A human-readable name of the icon.
+ */
 inline std::string dump(const Icon& i) {
     switch (i) {
         case Icon::WifiOff:
@@ -75,6 +99,11 @@ inline std::string dump(const Icon& i) {
     }
 }
 
+/**
+ * @brief Converts a StationData struct value to its string representation.
+ * @param s The StationData struct to convert.
+ * @return A string such as "{name=STATION1}"
+ */
 inline std::string dump(const StationData& s) {
     std::string out;
     out.reserve(8 + s.name.size() + 1);
@@ -84,6 +113,11 @@ inline std::string dump(const StationData& s) {
     return out;
 }
 
+/**
+ * @brief Converts a TaskHandle struct value to its string representation.
+ * @param t The TaskHandle struct to convert.
+ * @return A string such as "{runId=1,slot=2}"
+ */
 inline std::string dump(const TaskHandle& t) {
     std::string out;
     out.reserve(24);  // enough for "{runId=65535,slot=65535}"
@@ -95,6 +129,13 @@ inline std::string dump(const TaskHandle& t) {
     return out;
 }
 
+/**
+ * @brief Converts an AppEvent variant to a detailed string representation.
+ * * Uses std::visit and the Overloaded pattern to inspect the specific event type
+ * and extract its internal fields into a formatted string.
+ * * @param ev The application event to dump.
+ * @return A string containing the event type and its parameters.
+ */
 inline std::string dump(const common::AppEvent& ev) {
     return std::visit(
         Overloaded{
@@ -119,6 +160,10 @@ inline std::string dump(const common::AppEvent& ev) {
                        ", p=" + std::to_string(e.percent) + "}";
             },
             [](const SystemInitedEvent&) { return std::string("SystemInitedEvent{}"); },
+            [](const ClapFeatureStateChangedEvent& c) {
+                return std::string("ClapFeatureStateChangedEvent{e=") +
+                       (c.isEnabled ? "true}" : "false}");
+            },
             [](const CurrentStationChangedEvent&) {
                 return std::string{"CurrentStationChangedEvent{}"};
             },

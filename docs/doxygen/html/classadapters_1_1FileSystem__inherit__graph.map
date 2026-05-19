@@ -1,0 +1,5 @@
+<map id="adapters::FileSystem" name="adapters::FileSystem">
+<area shape="rect" id="Node000001" title="Concrete implementation of a file system controller." alt="" coords="7,79,166,104"/>
+<area shape="rect" id="Node000002" href="$classadapters_1_1IFileSystem.html" title="Abstract interface for a filesystem controller." alt="" coords="5,5,168,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="89,44,89,79,84,79,84,44"/>
+</map>
