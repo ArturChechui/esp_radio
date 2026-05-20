@@ -1,0 +1,23 @@
+<map id="components/adapters/include/ProvisioningPortal.hpp" name="components/adapters/include/ProvisioningPortal.hpp">
+<area shape="rect" id="Node000001" title="Implementation of the IProvisioningPortal interface for Wi&#45;Fi configuration." alt="" coords="177,5,399,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="41,93,178,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="246,48,149,90,147,85,244,43"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="383,240,441,265"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="332,43,363,64,389,92,405,126,413,162,417,226,411,226,408,163,400,128,384,95,359,68,329,48"/>
+<area shape="rect" id="Node000004" href="$IProvisioningPortal_8hpp.html" title="Interface definition for a Wi&#45;Fi provisioning portal." alt="" coords="202,93,374,119"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="291,46,291,79,285,79,285,46"/>
+<area shape="poly" id="edge6_Node000004_Node000003" title=" " alt="" coords="300,117,395,228,391,231,296,121"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="5,240,72,265"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="260,121,212,142,160,169,109,202,66,233,63,229,106,197,157,164,210,137,258,116"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="271,240,358,265"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="293,119,313,226,307,227,288,120"/>
+<area shape="rect" id="Node000007" href="$Types_8hpp.html" title="Global type definitions, enumerations, and data structures." alt="" coords="171,167,258,192"/>
+<area shape="poly" id="edge7_Node000004_Node000007" title=" " alt="" coords="278,121,238,159,235,155,274,117"/>
+<area shape="poly" id="edge12_Node000007_Node000003" title=" " alt="" coords="247,190,370,234,369,239,245,195"/>
+<area shape="poly" id="edge10_Node000007_Node000005" title=" " alt="" coords="187,194,81,237,79,232,185,190"/>
+<area shape="poly" id="edge11_Node000007_Node000006" title=" " alt="" coords="232,190,289,230,286,234,229,194"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="177,240,247,265"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="217,192,216,227,210,226,212,192"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="96,240,152,265"/>
+<area shape="poly" id="edge9_Node000007_Node000009" title=" " alt="" coords="202,194,151,233,148,229,198,190"/>
+</map>

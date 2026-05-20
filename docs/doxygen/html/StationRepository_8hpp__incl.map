@@ -1,0 +1,26 @@
+<map id="components/services/include/StationRepository.hpp" name="components/services/include/StationRepository.hpp">
+<area shape="rect" id="Node000001" title="Implementation of the IStationRepository interface for station management." alt="" coords="166,5,385,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="84,167,147,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="188,48,151,67,135,79,122,95,115,108,112,123,113,153,107,153,107,122,110,106,117,92,131,76,148,62,186,43"/>
+<area shape="rect" id="Node000003" href="$IStationRepository_8hpp.html" title="Interface definition for the radio station database repository." alt="" coords="131,93,299,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="263,47,235,84,230,81,259,44"/>
+<area shape="rect" id="Node000004" href="$Types_8hpp.html" title="Global type definitions, enumerations, and data structures." alt="" coords="181,167,268,192"/>
+<area shape="poly" id="edge13_Node000001_Node000004" title=" " alt="" coords="294,44,315,79,318,100,314,120,293,145,268,163,265,158,290,141,309,117,313,100,310,81,290,47"/>
+<area shape="rect" id="Node000010" href="$Mutex_8hpp.html" title="Portable wrapper for a mutual exclusion (mutex) primitive." alt="" coords="374,93,465,119"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="311,43,387,84,385,89,309,48"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="201,121,144,161,141,156,198,117"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="220,119,224,153,219,154,214,119"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="5,240,76,265"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="196,195,85,237,83,232,194,190"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="101,240,157,265"/>
+<area shape="poly" id="edge6_Node000004_Node000006" title=" " alt="" coords="211,194,157,234,154,229,208,190"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="375,240,442,265"/>
+<area shape="poly" id="edge7_Node000004_Node000007" title=" " alt="" coords="255,190,367,232,365,237,253,195"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="181,240,268,265"/>
+<area shape="poly" id="edge8_Node000004_Node000008" title=" " alt="" coords="227,192,227,226,222,226,222,192"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="293,240,351,265"/>
+<area shape="poly" id="edge9_Node000004_Node000009" title=" " alt="" coords="242,190,296,229,293,234,239,194"/>
+<area shape="poly" id="edge11_Node000010_Node000007" title=" " alt="" coords="421,119,413,226,408,226,416,119"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="446,167,523,192"/>
+<area shape="poly" id="edge12_Node000010_Node000011" title=" " alt="" coords="432,117,467,155,463,158,428,121"/>
+</map>

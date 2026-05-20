@@ -1,0 +1,19 @@
+<map id="components/common/include/IJsonParser.hpp" name="components/common/include/IJsonParser.hpp">
+<area shape="rect" id="Node000001" title="Interface for JSON parsing utilities." alt="" coords="450,5,665,45"/>
+<area shape="rect" id="Node000002" href="$JsonParser_8hpp.html" title="Concrete implementation of the IJsonParser interface." alt="" coords="97,93,311,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="467,51,282,96,281,91,466,46"/>
+<area shape="rect" id="Node000007" href="$SyncStationsCommand_8cpp.html" title=" " alt="" coords="336,93,563,133"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="524,56,475,95,472,91,521,52"/>
+<area shape="rect" id="Node000008" href="$AppController_8cpp.html" title=" " alt="" coords="587,93,744,133"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="594,52,643,91,640,95,590,56"/>
+<area shape="rect" id="Node000009" href="$StationRepository_8cpp.html" title=" " alt="" coords="769,93,959,133"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="638,46,798,91,796,96,637,52"/>
+<area shape="rect" id="Node000003" href="$JsonParser_8cpp.html" title=" " alt="" coords="5,181,192,221"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="172,144,124,183,120,179,169,140"/>
+<area shape="rect" id="Node000004" href="$AppContext_8hpp.html" title="Central registry and lifecycle manager for the application." alt="" coords="217,181,402,221"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="239,140,288,179,284,183,236,144"/>
+<area shape="rect" id="Node000005" href="$AppContext_8cpp.html" title=" " alt="" coords="141,269,299,309"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="281,233,242,271,238,267,278,229"/>
+<area shape="rect" id="Node000006" href="$app__main_8cpp.html" title=" " alt="" coords="323,277,474,302"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="341,229,388,274,384,278,337,233"/>
+</map>

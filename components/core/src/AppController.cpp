@@ -66,21 +66,24 @@ void AppController::processCommandLane(const common::AppEvent& e) {
                         mPlayerService, mStationRepository, mUiEventQueue, b.button);
                 },
                 [this](const common::ButtonLongPressedEvent& b) {
-                    if (b.button != common::Button::PlayStop) {
-                        return;
+                    if (b.button == common::Button::Next) {
+                        // TODO: move to a command?
+                        const bool val = mSensorService.toggleClapFeature();
+                        (void)mUiEventQueue.post(
+                            common::ClapFeatureStateChangedEvent{.isEnabled = val});
+                    } else if (b.button == common::Button::PlayStop) {
+                        mCurrentCmd = std::make_unique<commands::SyncStationsCommand>(
+                            mPlayerService, mWifiService, mHttpClient, mFileSystem, mJsonParser,
+                            mStationRepository, mUiEventQueue);
+                        mInputLocked = true;
                     }
-
-                    // TODO: add mSensorService to enable/disable mic task when finished
-                    mCurrentCmd = std::make_unique<commands::SyncStationsCommand>(
-                        mPlayerService, mWifiService, mHttpClient, mFileSystem, mJsonParser,
-                        mStationRepository, mUiEventQueue);
-                    mInputLocked = true;
                 },
                 [this](const common::VolumeChangedEvent& v) { mPlayerService.setVolume(v.volume); },
                 [this](const common::PlaybackStatusChangedEvent& p) {
-                    // TODO: rename the func
-                    mSensorService.setPlaybackActive(p.status == common::PlaybackStatus::Playing ||
-                                                     p.status == common::PlaybackStatus::Buffering);
+                    const bool shouldStart = (p.status != common::PlaybackStatus::Playing &&
+                                              p.status != common::PlaybackStatus::Buffering);
+
+                    mSensorService.startClapDetection(shouldStart);
                 },
                 [this](const common::LightLevelUpdateEvent& l) {
                     mInputService.setMode(l.lux <= services::NightLux);

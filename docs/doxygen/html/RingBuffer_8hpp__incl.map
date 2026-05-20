@@ -1,0 +1,31 @@
+<map id="components/common/include/RingBuffer.hpp" name="components/common/include/RingBuffer.hpp">
+<area shape="rect" id="Node000001" title="Concrete implementation of a thread&#45;safe circular buffer." alt="" coords="531,5,745,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,167,156,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="531,46,420,67,303,96,203,130,120,164,118,159,201,125,301,91,419,62,530,41"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="180,167,317,192"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="531,40,438,60,390,76,345,96,302,125,269,158,266,154,299,121,342,91,388,71,436,55,530,35"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="705,167,776,192"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="701,43,735,63,750,76,762,92,767,108,767,124,757,155,752,153,762,124,762,109,757,95,746,80,732,67,698,48"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="609,240,675,265"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="632,46,617,94,614,130,619,166,635,226,630,228,613,167,609,130,611,93,627,45"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="939,93,1001,119"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="722,43,926,91,924,96,721,48"/>
+<area shape="rect" id="Node000007" href="$IRingBuffer_8hpp.html" title="Interface for a thread&#45;safe circular buffer." alt="" coords="627,93,748,119"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="652,44,675,80,671,83,648,47"/>
+<area shape="rect" id="Node000008" href="$Mutex_8hpp.html" title="Portable wrapper for a mutual exclusion (mutex) primitive." alt="" coords="823,93,914,119"/>
+<area shape="poly" id="edge9_Node000001_Node000008" title=" " alt="" coords="694,43,823,86,821,91,692,48"/>
+<area shape="rect" id="Node000010" href="$Signal_8hpp.html" title="Concrete implementation of the ISignal interface using FreeRTOS semaphores." alt="" coords="355,93,446,119"/>
+<area shape="poly" id="edge12_Node000001_Node000010" title=" " alt="" coords="582,48,449,92,447,87,580,43"/>
+<area shape="poly" id="edge7_Node000007_Node000004" title=" " alt="" coords="698,117,726,154,722,157,694,121"/>
+<area shape="poly" id="edge8_Node000007_Node000005" title=" " alt="" coords="686,120,652,228,647,226,681,118"/>
+<area shape="poly" id="edge10_Node000008_Node000005" title=" " alt="" coords="862,121,832,156,789,194,739,221,690,240,688,235,737,216,786,190,828,153,858,118"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="851,167,929,192"/>
+<area shape="poly" id="edge11_Node000008_Node000009" title=" " alt="" coords="875,118,885,153,880,154,870,120"/>
+<area shape="poly" id="edge13_Node000010_Node000002" title=" " alt="" coords="356,120,146,166,145,161,355,115"/>
+<area shape="poly" id="edge14_Node000010_Node000003" title=" " alt="" coords="377,121,287,163,285,158,375,116"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="342,167,459,192"/>
+<area shape="poly" id="edge15_Node000010_Node000011" title=" " alt="" coords="403,119,403,153,398,153,398,119"/>
+<area shape="rect" id="Node000012" href="$ISignal_8hpp.html" title="Interface for a thread synchronization signal." alt="" coords="484,167,579,192"/>
+<area shape="poly" id="edge16_Node000010_Node000012" title=" " alt="" coords="423,116,499,158,497,162,420,121"/>
+<area shape="poly" id="edge17_Node000012_Node000005" title=" " alt="" coords="551,190,614,230,611,235,548,194"/>
+</map>

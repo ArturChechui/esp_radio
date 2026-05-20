@@ -1,0 +1,17 @@
+<map id="components/services/include/IPlayerService.hpp" name="components/services/include/IPlayerService.hpp">
+<area shape="rect" id="Node000001" title="Interface definition for the audio player service." alt="" coords="26,5,225,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,167,72,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="117,47,54,156,50,153,112,45"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="96,167,155,192"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="128,46,128,153,123,153,123,46"/>
+<area shape="rect" id="Node000004" href="$Types_8hpp.html" title="Global type definitions, enumerations, and data structures." alt="" coords="167,93,254,119"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="148,44,190,82,186,86,144,48"/>
+<area shape="poly" id="edge6_Node000004_Node000002" title=" " alt="" coords="184,121,80,164,78,159,182,116"/>
+<area shape="poly" id="edge8_Node000004_Node000003" title=" " alt="" coords="199,121,151,160,148,156,195,117"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="179,167,250,192"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="214,119,216,153,211,153,209,119"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="275,167,331,192"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="227,117,279,156,275,160,224,121"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="355,167,442,192"/>
+<area shape="poly" id="edge7_Node000004_Node000007" title=" " alt="" coords="242,116,356,159,354,164,240,121"/>
+</map>

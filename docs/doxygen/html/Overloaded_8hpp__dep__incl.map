@@ -1,0 +1,19 @@
+<map id="components/common/include/Overloaded.hpp" name="components/common/include/Overloaded.hpp">
+<area shape="rect" id="Node000001" title="Helper utility for variant visitation." alt="" coords="381,5,595,45"/>
+<area shape="rect" id="Node000002" href="$Dumpers_8hpp.html" title="Utility functions for converting system types and events to strings." alt="" coords="162,93,377,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="428,53,318,96,316,91,426,48"/>
+<area shape="rect" id="Node000003" href="$AppController_8cpp.html" title=" " alt="" coords="5,181,163,221"/>
+<area shape="poly" id="edge8_Node000001_Node000003" title=" " alt="" coords="367,43,242,65,189,79,152,96,131,115,114,138,93,182,88,180,110,135,127,111,149,91,187,74,241,59,367,38"/>
+<area shape="rect" id="Node000005" href="$UiService_8cpp.html" title=" " alt="" coords="376,181,536,221"/>
+<area shape="poly" id="edge9_Node000001_Node000005" title=" " alt="" coords="463,58,451,75,443,94,439,117,440,140,451,180,445,182,435,141,433,116,437,93,446,73,458,55"/>
+<area shape="rect" id="Node000006" href="$ConnectWifiCommand_8cpp.html" title=" " alt="" coords="452,93,673,133"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="516,54,548,91,544,95,512,58"/>
+<area shape="rect" id="Node000007" href="$PlayStopSkipCommand_8cpp.html" title=" " alt="" coords="698,93,926,133"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="573,46,742,91,740,96,571,51"/>
+<area shape="rect" id="Node000008" href="$SyncStationsCommand_8cpp.html" title=" " alt="" coords="951,93,1177,133"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="610,42,939,91,951,92,950,98,938,96,609,47"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="217,142,126,184,123,179,215,137"/>
+<area shape="rect" id="Node000004" href="$PlayerService_8cpp.html" title=" " alt="" coords="187,181,352,221"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="272,147,272,181,267,181,267,147"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="324,137,416,179,414,184,321,141"/>
+</map>

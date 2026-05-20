@@ -1,0 +1,7 @@
+<map id="components/common/include/Mutex.hpp" name="components/common/include/Mutex.hpp">
+<area shape="rect" id="Node000001" title="Portable wrapper for a mutual exclusion (mutex) primitive." alt="" coords="5,5,220,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="31,93,98,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="103,47,81,83,77,80,99,44"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="122,93,199,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="127,44,149,80,144,83,122,47"/>
+</map>

@@ -1,0 +1,21 @@
+<map id="components/common/src/Signal.cpp" name="components/common/src/Signal.cpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="114,5,301,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="100,167,251,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="206,46,183,154,178,152,201,45"/>
+<area shape="rect" id="Node000003" href="$Helper_8hpp.html" title="Common utility functions for time and unit conversions." alt="" coords="77,93,169,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="189,48,148,86,144,82,185,44"/>
+<area shape="rect" id="Node000005" href="$Signal_8hpp.html" title="Concrete implementation of the ISignal interface using FreeRTOS semaphores." alt="" coords="277,93,367,119"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="237,43,295,83,292,88,234,48"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="134,117,161,154,157,157,130,121"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="5,167,76,192"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="112,121,66,160,63,155,108,117"/>
+<area shape="poly" id="edge6_Node000005_Node000002" title=" " alt="" coords="300,121,213,163,210,158,297,116"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="393,167,531,192"/>
+<area shape="poly" id="edge7_Node000005_Node000006" title=" " alt="" coords="346,116,428,158,426,163,343,121"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="555,167,673,192"/>
+<area shape="poly" id="edge8_Node000005_Node000007" title=" " alt="" coords="368,116,554,161,553,166,367,121"/>
+<area shape="rect" id="Node000008" href="$ISignal_8hpp.html" title="Interface for a thread synchronization signal." alt="" coords="275,167,369,192"/>
+<area shape="poly" id="edge9_Node000005_Node000008" title=" " alt="" coords="325,119,325,153,319,153,319,119"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="289,240,355,265"/>
+<area shape="poly" id="edge10_Node000008_Node000009" title=" " alt="" coords="325,192,325,226,319,226,319,192"/>
+</map>

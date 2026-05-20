@@ -1,0 +1,5 @@
+<map id="services::PlayerService" name="services::PlayerService">
+<area shape="rect" id="Node000001" title="Concrete implementation of the audio player engine." alt="" coords="7,79,181,104"/>
+<area shape="rect" id="Node000002" href="$classservices_1_1IPlayerService.html" title="Abstract interface for a playback management service." alt="" coords="5,5,183,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="97,44,97,79,91,79,91,44"/>
+</map>

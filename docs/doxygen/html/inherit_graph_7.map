@@ -1,0 +1,5 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$classadapters_1_1IMp3Decoder.html" title="Abstract interface for an MP3 decoder." alt="" coords="5,5,179,31"/>
+<area shape="rect" id="Node000001" href="$classadapters_1_1Mp3Decoder.html" title="Concrete MP3 decoder implementation using the minimp3 library." alt="" coords="227,5,396,31"/>
+<area shape="poly" id="edge8_Node000000_Node000001" title=" " alt="" coords="193,15,226,15,226,21,193,21"/>
+</map>

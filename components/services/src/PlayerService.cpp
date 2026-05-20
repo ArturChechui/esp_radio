@@ -32,11 +32,13 @@ constexpr uint32_t HttpTaskStackWords = 8192U;
 
 constexpr size_t ReadMaxBytes = 4 * 1024U;  // Max read from ring buffer per decode
 constexpr size_t PrebufferBytes = 8U * 1024U;
-constexpr uint32_t FreeSpaceTimeoutMs = 500U;         // for waiting for space
-constexpr uint32_t AvailDataTimeoutMs = 200U;         // for waiting for data
-constexpr uint32_t NoWaitMs = 0U;                     // for non-blocking calls
-constexpr uint32_t LowWaterMarkBytes = 40U * 1024U;   // Speeds up the HTTP task
-constexpr uint32_t HighWaterMarkBytes = 60U * 1024U;  // Slows down the HTTP task
+constexpr uint32_t FreeSpaceTimeoutMs = 500U;  // for waiting for space
+constexpr uint32_t AvailDataTimeoutMs = 200U;  // for waiting for data
+constexpr uint32_t NoWaitMs = 0U;              // for non-blocking calls
+constexpr uint32_t LowWaterMarkBytes =
+    PlayerService::RingBufferSize * 0.7;  // Speeds up the HTTP task before the buffer hits 50 %
+constexpr uint32_t HighWaterMarkBytes =
+    PlayerService::RingBufferSize * 0.9;  // Slows down the HTTP task after it hits 90%
 
 constexpr int StereoChannels = 2;
 constexpr int MonoChannels = 1;
@@ -48,11 +50,11 @@ constexpr size_t InputScratchBytes = 4096U;  // Scratch buffer for wrap-boundary
 constexpr int32_t InitVolQ15 = 3277;         // Volume in Q15 fixed point (0..32768). 0.10 ~= 3277
 
 constexpr size_t ResyncThresholdBytes = 2048U;  // if more, try to resync MP3 frame
-constexpr uint32_t StreamReadRetrySleepMs = 100U;
+constexpr uint32_t StreamReadRetrySleepMs = 300U;
 constexpr uint32_t StreamOpenRetrySleepMs = 500U;
-constexpr uint32_t ReconnectAfterReadStallMs = 10000U;
+constexpr uint32_t ReconnectAfterReadStallMs = 5000U;
 constexpr uint32_t BufferingPollSleepMs = 20U;
-constexpr size_t ResumeBufferBytes = 2U * PrebufferBytes;
+constexpr size_t ResumeBufferBytes = 10U * PrebufferBytes;
 
 constexpr int32_t Q15One = 0x7FFF;  // 32767
 }  // namespace

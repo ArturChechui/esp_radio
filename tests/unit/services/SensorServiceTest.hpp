@@ -8,6 +8,7 @@
 #include "MockClock.hpp"
 #include "MockEventQueue.hpp"
 #include "MockI2cBus.hpp"
+#include "MockPersistentStorage.hpp"
 #include "MockTaskRunner.hpp"
 #include "SensorService.hpp"
 #include "Types.hpp"
@@ -25,6 +26,7 @@ class SensorServiceTest : public ::testing::Test {
     std::unique_ptr<StrictMock<common::MockEventQueue>> mockEventQueue;
     std::unique_ptr<StrictMock<common::MockTaskRunner>> mockTaskRunner;
     std::unique_ptr<NiceMock<common::MockClock>> mockClock;
+    std::unique_ptr<StrictMock<adapters::MockPersistentStorage>> mockPersistentStorage;
 
     std::unique_ptr<services::SensorService> sensorService;
 

@@ -1,0 +1,19 @@
+<map id="components/common/include/Events.hpp" name="components/common/include/Events.hpp">
+<area shape="rect" id="Node000001" title="Definition of application&#45;level events and the core event variant." alt="" coords="58,5,273,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,167,72,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="151,48,59,158,55,154,147,44"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="96,167,155,192"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="163,47,134,154,129,153,158,45"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="274,93,342,119"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="201,43,276,84,274,89,198,48"/>
+<area shape="rect" id="Node000005" href="$Types_8hpp.html" title="Global type definitions, enumerations, and data structures." alt="" coords="163,93,250,119"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="178,44,196,80,192,82,173,47"/>
+<area shape="poly" id="edge7_Node000005_Node000002" title=" " alt="" coords="181,121,80,164,78,159,179,116"/>
+<area shape="poly" id="edge9_Node000005_Node000003" title=" " alt="" coords="195,121,151,160,147,156,192,117"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="179,167,250,192"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="211,119,215,153,209,153,205,119"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="275,167,331,192"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="224,117,277,156,274,160,221,121"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="355,167,442,192"/>
+<area shape="poly" id="edge8_Node000005_Node000008" title=" " alt="" coords="238,116,355,159,353,164,237,121"/>
+</map>

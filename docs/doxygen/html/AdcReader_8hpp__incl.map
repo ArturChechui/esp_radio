@@ -1,0 +1,20 @@
+<map id="components/adapters/include/AdcReader.hpp" name="components/adapters/include/AdcReader.hpp">
+<area shape="rect" id="Node000001" title="Implementation of the IAdcReader interface for ESP32 ADC oneshot mode." alt="" coords="282,5,457,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,93,179,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="304,48,147,92,145,87,302,43"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="230,167,301,192"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="304,48,270,67,255,80,244,95,239,109,240,124,252,154,247,156,235,125,234,108,239,92,251,76,267,63,301,43"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="448,167,515,192"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="409,43,439,64,465,92,478,123,483,153,478,154,473,124,460,95,436,68,406,48"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="400,93,451,119"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="385,44,411,80,407,84,381,47"/>
+<area shape="rect" id="Node000006" href="$IAdcReader_8hpp.html" title="Interface definition for an Analog&#45;to&#45;Digital Converter (ADC) reader." alt="" coords="253,93,376,119"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="358,47,333,84,328,80,354,44"/>
+<area shape="rect" id="Node000007" href="$Mutex_8hpp.html" title="Portable wrapper for a mutual exclusion (mutex) primitive." alt="" coords="525,93,616,119"/>
+<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="419,43,529,86,527,91,417,48"/>
+<area shape="poly" id="edge6_Node000006_Node000003" title=" " alt="" coords="309,121,283,157,279,154,304,117"/>
+<area shape="poly" id="edge7_Node000006_Node000004" title=" " alt="" coords="342,116,443,159,441,164,340,121"/>
+<area shape="poly" id="edge9_Node000007_Node000004" title=" " alt="" coords="558,121,508,160,505,156,555,117"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="539,167,616,192"/>
+<area shape="poly" id="edge10_Node000007_Node000008" title=" " alt="" coords="574,119,578,153,572,153,569,119"/>
+</map>

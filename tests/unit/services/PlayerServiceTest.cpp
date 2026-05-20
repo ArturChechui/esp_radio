@@ -17,7 +17,7 @@ void PlayerServiceTest::SetUp() {
     mockEventQueue = std::make_unique<common::MockEventQueue>();
     mockTaskRunner = std::make_unique<common::MockTaskRunner>();
 
-    auto rb = std::make_unique<common::FakeRingBuffer>(64U * 1024U);
+    auto rb = std::make_unique<common::FakeRingBuffer>(services::PlayerService::RingBufferSize);
     fakeRing = rb.get();
 
     playerService = std::make_unique<services::PlayerService>(
@@ -165,7 +165,7 @@ TEST_F(PlayerServiceTest, tc07_playStation_notPrebuffered_sleep) {
     ASSERT_NE(httpFn, nullptr);
     const common::StepResult r1 = httpFn(httpUser, token);
     EXPECT_EQ(r1.action, common::StepAction::Sleep);
-    EXPECT_EQ(r1.sleepMs, 100U);
+    EXPECT_EQ(r1.sleepMs, 300U);
 
     ASSERT_NE(playerFn, nullptr);
     EXPECT_CALL(token, stopRequested()).WillOnce(Return(false));
@@ -179,11 +179,12 @@ TEST_F(PlayerServiceTest, tc07_playStation_notPrebuffered_sleep) {
         .WillRepeatedly(::testing::Return(common::StopResult::Ok));
 }
 
-TEST_F(PlayerServiceTest, tc08_playStation_decodeFrame0) {
+TEST_F(PlayerServiceTest, tc08_playStation_decodeFrame0_drop1Byte) {
     expectStartCaptureBothStepFns();
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
     ASSERT_TRUE(playerService->playStation("http://example.com/stream.mp3"));
 
+    // simulate that http task worked
     EXPECT_CALL(*mockHttpClient, isStreamOpen()).WillOnce(Return(false));
     EXPECT_CALL(*mockHttpClient, openStream(_, _)).WillOnce(Return(true));
     EXPECT_CALL(*mockHttpClient, readStream(_, _)).WillOnce(Return(0));
@@ -193,12 +194,13 @@ TEST_F(PlayerServiceTest, tc08_playStation_decodeFrame0) {
     EXPECT_CALL(token, stopRequested()).Times(2).WillRepeatedly(Return(false));
     const common::StepResult r1 = httpFn(httpUser, token);
     EXPECT_EQ(r1.action, common::StepAction::Sleep);
-    EXPECT_EQ(r1.sleepMs, 100U);
+    EXPECT_EQ(r1.sleepMs, 300U);
 
-    std::vector<uint8_t> data(20U * 1024U, 0xAA);
+    // fill RB to 90KB for buffer condition
+    std::vector<uint8_t> data(90U * 1024U, 0xAA);
     ASSERT_EQ(fakeRing->push(data.data(), data.size()), data.size());
     const size_t before = fakeRing->available();
-    ASSERT_GT(before, 16384U);
+    ASSERT_EQ(before, 92160U);
 
     common::Mp3FrameInfo info{};
     info.frameBytes = 0;
@@ -248,6 +250,10 @@ TEST_F(PlayerServiceTest, tc09_playStation_fullPath_stereo_success) {
     r1 = httpFn(httpUser, token);
     EXPECT_EQ(r1.action, common::StepAction::Continue);
 
+    // Fill RB to make the buffer condition pass
+    std::vector<uint8_t> data1(112U * 1024U, 0xAA);
+    ASSERT_EQ(fakeRing->push(data1.data(), data1.size()), data1.size() - 1);
+
     common::Mp3FrameInfo info{
         .frameBytes = adapters::MaxBytesPerFrame, .hz = 44100, .channels = 2, .samplesPerCh = 1152};
     EXPECT_CALL(*mockMp3Decoder, decode(_, _, _, _)).WillOnce(Return(info));
@@ -294,6 +300,10 @@ TEST_F(PlayerServiceTest, tc10_playStation_fullPath_mono_success) {
     EXPECT_EQ(r1.action, common::StepAction::Continue);
     r1 = httpFn(httpUser, token);
     EXPECT_EQ(r1.action, common::StepAction::Continue);
+
+    // Fill RB to make the buffer condition pass
+    std::vector<uint8_t> data1(112U * 1024U, 0xAA);
+    ASSERT_EQ(fakeRing->push(data1.data(), data1.size()), data1.size() - 1);
 
     common::Mp3FrameInfo info{
         .frameBytes = adapters::MaxBytesPerFrame, .hz = 44100, .channels = 1, .samplesPerCh = 1152};
@@ -364,11 +374,14 @@ TEST_F(PlayerServiceTest, tc12_playStation_decodeFail_retry_decodeOk) {
     r1 = httpFn(httpUser, token);
     EXPECT_EQ(r1.action, common::StepAction::Continue);
 
-    // Prepare RB (fill to full after http task)
-    std::vector<uint8_t> data1(52U * 1024U, 0xAA);
+    // Prepare RB
+    // 1) Fill to full first
+    // 2) Read to 127 to have 2 spans
+    // 3) Fill some data
+    std::vector<uint8_t> data1(116U * 1024U, 0xAA);
     ASSERT_EQ(fakeRing->push(data1.data(), data1.size()), data1.size() - 1);
-    fakeRing->commitRead(63U * 1024U);
-    std::vector<uint8_t> data2(32U * 1024U, 0xAA);
+    fakeRing->commitRead(127U * 1024U);
+    std::vector<uint8_t> data2(90U * 1024U, 0xAA);
     ASSERT_EQ(fakeRing->push(data2.data(), data2.size()), data2.size());
 
     // Fail
@@ -411,7 +424,7 @@ TEST_F(PlayerServiceTest, tc14_playStation_streamStall_reopenAndRetry) {
         InSequence seq;
         EXPECT_CALL(*mockHttpClient, isStreamOpen()).WillOnce(Return(false));
         EXPECT_CALL(*mockHttpClient, openStream(_, _)).WillOnce(Return(true));
-        EXPECT_CALL(*mockHttpClient, readStream(_, _)).Times(100).WillRepeatedly(Return(0));
+        EXPECT_CALL(*mockHttpClient, readStream(_, _)).Times(17).WillRepeatedly(Return(0));
         EXPECT_CALL(*mockHttpClient, closeStream()).Times(1);
         EXPECT_CALL(*mockHttpClient, isStreamOpen()).WillOnce(Return(false));
         EXPECT_CALL(*mockHttpClient, openStream(_, _)).WillOnce(Return(true));
@@ -420,13 +433,13 @@ TEST_F(PlayerServiceTest, tc14_playStation_streamStall_reopenAndRetry) {
 
     common::MockStopToken token;
     configureNonStoppingToken(token);
-    EXPECT_CALL(token, stopRequested()).Times(202).WillRepeatedly(Return(false));
+    EXPECT_CALL(token, stopRequested()).Times(36).WillRepeatedly(Return(false));
 
     ASSERT_NE(httpFn, nullptr);
-    for (int i = 0; i < 99; ++i) {
+    for (int i = 0; i < 16; ++i) {
         const common::StepResult r = httpFn(httpUser, token);
         EXPECT_EQ(r.action, common::StepAction::Sleep);
-        EXPECT_EQ(r.sleepMs, 100U);
+        EXPECT_EQ(r.sleepMs, 300U);
     }
 
     const common::StepResult reconnectStep = httpFn(httpUser, token);
@@ -435,7 +448,7 @@ TEST_F(PlayerServiceTest, tc14_playStation_streamStall_reopenAndRetry) {
 
     const common::StepResult afterReconnect = httpFn(httpUser, token);
     EXPECT_EQ(afterReconnect.action, common::StepAction::Sleep);
-    EXPECT_EQ(afterReconnect.sleepMs, 100U);
+    EXPECT_EQ(afterReconnect.sleepMs, 300U);
 
     EXPECT_EQ(playerService->getStatus(), common::PlaybackStatus::Buffering);
 

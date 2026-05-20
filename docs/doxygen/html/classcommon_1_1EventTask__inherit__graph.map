@@ -1,0 +1,5 @@
+<map id="common::EventTask" name="common::EventTask">
+<area shape="rect" id="Node000001" title="Concrete implementation of an event queue and background processor." alt="" coords="14,79,167,104"/>
+<area shape="rect" id="Node000002" href="$classcommon_1_1IEventQueue.html" title="Abstract interface for an asynchronous message queue." alt="" coords="5,5,176,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="93,44,93,79,88,79,88,44"/>
+</map>

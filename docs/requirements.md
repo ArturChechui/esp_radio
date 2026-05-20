@@ -72,15 +72,16 @@ Acceptance:
 
 ### FR-04 Active station indicator & navigation
 
-- The selected station shall be marked with a play icon if playing, and a stop icon if stopped.
-- `Next` shall switch to the previous station and start playback.
-- `Previous` shall switch to the next station and start playback.
+- The selected station shall be marked with a playback status icon (Play, Stop, Buffering).
+- `Next` shall increment to the next logical station in the list.
+- `Previous` shall decrement to the previous logical station in the list.
 - Selection wraps at list boundaries.
+- Multiple rapid presses on `Next` or `Previous` shall quickly browse through station names on the UI without initializing the network stream or starting playback on each hop.
 
 Acceptance:
 
-- Pressing Next/Previous switches station and updates the marker within 50 ms.
-- UI shows correct playback status icon for the active/selected station.
+- Pressing Next/Previous updates the selected station index and renders the text change within 50 ms.
+- Rapidly pounding the navigation buttons updates the screen but does not trigger audio decoding errors or network thread crashes.
 
 ### FR-05 Volume control (rotary encoder)
 
@@ -105,32 +106,24 @@ Acceptance:
 
 Persist in NVS:
 
-- `autoplay` (bool): whether device should auto-start playback on boot
-- `last_station_id` (string): id of last active station
-- `volume` (uint8 0..100)
-
-Rules:
-
-- When playback successfully transitions to `Playing`: set `autoplay=true` and store `last_station_id=<active station>`.
-- When user presses `Stop` and state becomes `Stopped`: set `autoplay=false`.
-- Volume persists with debounce: save 1-2 seconds after the last volume change (coalescing multiple updates).
+- `station_idx` (`uint32_t`): The active zero-based index of the currently selected radio station.
+- `volume` (`uint32_t`, range `0..100`): The current system audio output level.
+- `wifi_ssid` (`string`): The network service set identifier captured via provisioning.
+- `wifi_password` (`string`): The network security key captured via provisioning.
+- `micfeature` (`uint32_t`, `0` or `1`): The master toggle state for the acoustic clap-to-play trigger feature (`0` = disabled, `1` = enabled).
 
 Acceptance:
 
-- After setting `volume=V`, rebooting, and reading settings, volume equals V.
-- After a successful Play (state reaches `Playing`), `autoplay=true` and `last_station_id` equals the active station id (verified by reading NVS).
-- After Stop (state becomes `Stopped`), `autoplay=false` (verified by reading NVS).
-- Volume debounce: during rapid encoder rotation (≥10 changes within 2 seconds), NVS write occurs at most once per debounce window, and final stored volume equals the last value.
-
-Notes:
-
-- If NVS keys are missing or corrupted, fall back to defaults: `autoplay=false`, `volume=50`, `last_station_id=""`.
+- Given an adjusted volume value $V$, after a hardware reset or brownout cycle, the system initializes and restores the audio output level exactly to $V$.
+- Given a station switch to index $I$, after a complete system power cycle, the UI and audio components boot directly into station index $I$.
+- Given a state toggle where `toggleClapFeature()` sets claps to active, after a device reboot, the `micfeature` value reads as `1` and the `UiService` correctly restores the 1-pixel bitwise top ledger line over the volume block.
+- Given a successful network configuration cycle through the portal, the captured SSID and password must be successfully written to `wifi_ssid` and `wifi_password` respectively.
 
 ### FR-08 Wi-Fi configuration
 
-- Device connects to Wi-Fi automatically on boot using build-time configured SSID/password.
-- UI exposes Wi-Fi state: `Connecting`, `Connected`, `Disconnected`.
-- If Wi-Fi disconnects, device retries reconnect in background.
+- Device connects to Wi-Fi automatically on boot using stored credentials.
+- Provisioning Portal: If credentials are missing or connection fails, the device shall host a local captive provisioning network portal.
+- Input Constraints: The provisioning web UI portal shall explicitly denote that only Latin-based ASCII characters are supported for SSID and Passwords to prevent downstream configuration parsing corruption.
 
 Acceptance:
 
@@ -171,34 +164,20 @@ Notes:
 
 ### FR-10 Boot behavior
 
-On boot, the device shall:
+On boot, the device shall execute the following sequence:
 
-1. Initialize UI and show a boot status (e.g., "Starting…").
-2. Load station list for the session:
-   - Load `stations.json` from LittleFS (FR-09).
-   - If missing/invalid, show "No stations available" and skip autoplay.
-3. Load settings from NVS (FR-07): `autoplay`, `last_station_id`, `volume`.
-4. Start Wi-Fi connection in background (FR-08).
-5. If `autoplay=true`, attempt to start playback of `last_station_id` after:
-   - station list is loaded, and
-   - Wi-Fi is connected (or once it becomes connected).
-
-Behavior:
-
-- If `autoplay=true` but `last_station_id` is not found in the loaded station list, the device shall show "Last station missing" and remain stopped.
-- If station list is unavailable, autoplay is ignored for this boot (device remains stopped).
-- Boot shall not block UI responsiveness; playback start runs asynchronously.
+1. Initialize UI: Show "Booting..." screen immediately.
+2. Load NVS: Read `volume`, `station_idx`, and `micfeature` settings.
+3. Load FS: Load `stations.json` from LittleFS into RAM.
+4. Network Check & Route: Read `wifi_ssid` and `wifi_password`.
+4.1 If valid/connected: Route to Main Screen, display station name from `station_idx`.
+4.2 If missing/failed: Route to Provisioning Screen and display a small instruction and a QR code to the portal.
 
 Acceptance:
 
-- Device reaches a usable UI state (station list visible) without requiring network connectivity.
-- If `autoplay=false`, device stays stopped and does not start playback automatically.
-- If `autoplay=true` and last station exists, device eventually starts playback after Wi-Fi connects (no manual input required).
-- If `autoplay=true` and last station is missing, device shows "Last station missing" and remains stopped.
-
-Notes:
-
-- "Eventually" for autoplay means: once Wi-Fi is connected; exact timing is network-dependent.
+- Happy Path: With valid credentials stored, the radio boots directly to the Main station screen without showing the provisioning portal.
+- Fallback Path: If credentials are missing or connection fails, the radio automatically opens the captive portal and renders the QR code with an instruction.
+- Missing Playlist: If `stations.json` is missing or corrupt, the UI displays a "No stations available" error and blocks playback actions.
 
 ### FR-11 Station list synchronization (GitHub, on-demand)
 
@@ -250,13 +229,17 @@ Acceptance:
 - Device shall read ambient light periodically and expose a `LightLevelUpdate` event.
 - Device shall read battery voltage and estimated percentage periodically and expose a `BatteryLevelUpdate` event.
 - UI shall show battery state icon (low/mid/full).
-- Device shall run clap detection logic from the microphone input.
+- Device shall run clap detection logic utilizing a dedicated FreeRTOS processing task monitoring microphone input.
+- A Long Press on the `Next` button shall invoke `toggleClapFeature()`, flipping the master setting (`mClapFeatureEnabled`).
+- Execution calls to activate detection (`startClapDetection(true)`) shall be conditionally checked against the master user setting (`mClapFeatureEnabled`). If the feature is toggled off, the execution request is ignored.
+- When the master clap feature is active, an event (`ClapFeatureStateChangedEvent`) shall notify the UI service, drawing a minimalist 1-pixel-thick bitwise notification overlay at the top edge of the volume status block icon.
 
 Acceptance:
 
 - Light sensor values are produced periodically and can drive day/night input behavior.
 - Battery voltage/percent values are produced periodically and battery icon updates accordingly.
-- Clap detector runs continuously when playback is inactive and terminates upon a successful trigger.
+- Long-pressing `Next` successfully flips the master state, saves the new value to NVS, and triggers a UI redraw.
+- The clap detection task only runs when playback is stopped and the master feature state is enabled. If the feature is disabled, the microphone task remains completely inactive.
 
 ## 4. Non-Functional Requirements (NFR)
 

@@ -1,0 +1,18 @@
+<map id="components/adapters/include/PersistentStorage.hpp" name="components/adapters/include/PersistentStorage.hpp">
+<area shape="rect" id="Node000001" title="Implementation of the IPersistentStorage interface using ESP32 NVS." alt="" coords="146,5,366,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="107,167,173,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="216,48,186,68,161,95,148,124,143,154,138,153,143,122,156,92,183,64,213,43"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="288,167,347,192"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="303,43,332,64,356,92,360,109,357,127,340,157,335,155,352,125,355,109,351,95,329,68,300,48"/>
+<area shape="rect" id="Node000004" href="$IPersistentStorage_8hpp.html" title="Interface definition for non&#45;volatile key&#45;value storage." alt="" coords="171,93,341,119"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="259,46,259,79,253,79,253,46"/>
+<area shape="rect" id="Node000005" href="$Mutex_8hpp.html" title="Portable wrapper for a mutual exclusion (mutex) primitive." alt="" coords="5,93,96,119"/>
+<area shape="poly" id="edge6_Node000001_Node000005" title=" " alt="" coords="208,48,95,91,93,86,206,43"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="417,93,474,119"/>
+<area shape="poly" id="edge9_Node000001_Node000007" title=" " alt="" coords="302,43,406,85,404,90,300,48"/>
+<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="239,121,172,162,169,157,236,116"/>
+<area shape="poly" id="edge5_Node000004_Node000003" title=" " alt="" coords="268,117,300,154,296,158,264,121"/>
+<area shape="poly" id="edge7_Node000005_Node000002" title=" " alt="" coords="67,117,116,156,113,160,63,121"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="5,167,83,192"/>
+<area shape="poly" id="edge8_Node000005_Node000006" title=" " alt="" coords="52,119,49,153,44,153,47,119"/>
+</map>

@@ -91,7 +91,7 @@ TEST_F(InputServiceTest, tc02_stepFn_playStop) {
     stepFn(stepUser, token);
 }
 
-TEST_F(InputServiceTest, tc09_stepFn_playStop_longPress) {
+TEST_F(InputServiceTest, tc03_stepFn_playStop_longPress) {
     initSuccess();
 
     common::MockStopToken token;
@@ -125,7 +125,7 @@ TEST_F(InputServiceTest, tc09_stepFn_playStop_longPress) {
     stepFn(stepUser, token);
 }
 
-TEST_F(InputServiceTest, tc03_stepFn_next) {
+TEST_F(InputServiceTest, tc04_stepFn_next_longPress) {
     initSuccess();
 
     common::MockStopToken token;
@@ -134,10 +134,48 @@ TEST_F(InputServiceTest, tc03_stepFn_next) {
         out = common::ButtonNextGpio;
         return true;
     });
-    EXPECT_CALL(*mockClock, nowMs()).WillOnce(Return(300)).WillOnce(Return(325));
+    EXPECT_CALL(*mockClock, nowMs())
+        .WillOnce(Return(300))
+        .WillOnce(Return(325))
+        .WillOnce(Return(3325))
+        .WillOnce(Return(3330));
     EXPECT_CALL(*mockGpioInput, getLevel(common::ButtonNextGpio))
-        .Times(2)
-        .WillRepeatedly(Return(0));
+        .WillOnce(Return(0))
+        .WillOnce(Return(0))
+        .WillOnce(Return(0))
+        .WillOnce(Return(0));
+    EXPECT_CALL(token, sleepMs(_)).WillOnce(Return(false)).WillOnce(Return(false));
+
+    EXPECT_CALL(*mockEventQueue, post(_)).WillOnce([](const common::AppEvent& event) {
+        if (const auto* e = std::get_if<common::ButtonLongPressedEvent>(&event)) {
+            EXPECT_EQ(e->button, common::Button::Next);
+            return true;
+        }
+
+        return false;
+    });
+
+    ASSERT_NE(stepFn, nullptr);
+    stepFn(stepUser, token);
+}
+
+TEST_F(InputServiceTest, tc05_stepFn_next) {
+    initSuccess();
+
+    common::MockStopToken token;
+    EXPECT_CALL(token, stopRequested()).WillOnce(Return(false));
+    EXPECT_CALL(*mockQueue, get(_)).WillOnce([](uint32_t& out) {
+        out = common::ButtonNextGpio;
+        return true;
+    });
+    EXPECT_CALL(*mockClock, nowMs())
+        .WillOnce(Return(300))
+        .WillOnce(Return(325))
+        .WillOnce(Return(330));
+    EXPECT_CALL(*mockGpioInput, getLevel(common::ButtonNextGpio))
+        .WillOnce(Return(0))
+        .WillOnce(Return(0))
+        .WillOnce(Return(1));
     EXPECT_CALL(token, sleepMs(_)).WillOnce(Return(false));
 
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce([](const common::AppEvent& event) {
@@ -153,7 +191,7 @@ TEST_F(InputServiceTest, tc03_stepFn_next) {
     stepFn(stepUser, token);
 }
 
-TEST_F(InputServiceTest, tc04_stepFn_prev) {
+TEST_F(InputServiceTest, tc06_stepFn_prev) {
     initSuccess();
 
     common::MockStopToken token;
@@ -181,7 +219,7 @@ TEST_F(InputServiceTest, tc04_stepFn_prev) {
     stepFn(stepUser, token);
 }
 
-TEST_F(InputServiceTest, tc05_stepFn_enc_increaseVol) {
+TEST_F(InputServiceTest, tc07_stepFn_enc_increaseVol) {
     initSuccess();
 
     common::MockStopToken token;
@@ -226,7 +264,7 @@ TEST_F(InputServiceTest, tc05_stepFn_enc_increaseVol) {
     }
 }
 
-TEST_F(InputServiceTest, tc06_stepFn_enc_decreaseVol) {
+TEST_F(InputServiceTest, tc08_stepFn_enc_decreaseVol) {
     initSuccess();
 
     common::MockStopToken token;
@@ -271,7 +309,7 @@ TEST_F(InputServiceTest, tc06_stepFn_enc_decreaseVol) {
     }
 }
 
-TEST_F(InputServiceTest, tc07_stepFn_enc_3qStepsDec_noPost) {
+TEST_F(InputServiceTest, tc09_stepFn_enc_3qStepsDec_noPost) {
     initSuccess();
 
     common::MockStopToken token;
@@ -304,7 +342,7 @@ TEST_F(InputServiceTest, tc07_stepFn_enc_3qStepsDec_noPost) {
     }
 }
 
-TEST_F(InputServiceTest, tc08_stepFn_enc_3qStepsInc_noPost) {
+TEST_F(InputServiceTest, tc10_stepFn_enc_3qStepsInc_noPost) {
     initSuccess();
 
     common::MockStopToken token;
@@ -337,7 +375,7 @@ TEST_F(InputServiceTest, tc08_stepFn_enc_3qStepsInc_noPost) {
     }
 }
 
-TEST_F(InputServiceTest, tc10_init_deinit_success) {
+TEST_F(InputServiceTest, tc11_init_deinit_success) {
     initSuccess();
 
     EXPECT_CALL(*mockTaskRunner, stop(_, _)).WillOnce(Return(common::StopResult::Ok));

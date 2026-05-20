@@ -1,0 +1,20 @@
+<map id="components/adapters/include/I2cBus.hpp" name="components/adapters/include/I2cBus.hpp">
+<area shape="rect" id="Node000001" title="Implementation of the II2cBus interface for ESP32 I2C master communication." alt="" coords="244,5,407,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,93,152,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="267,48,128,92,127,87,265,43"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="198,167,269,192"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="273,48,241,67,217,95,212,109,213,124,222,153,217,155,207,125,207,108,212,92,238,63,270,43"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="397,167,464,192"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="362,43,390,64,414,92,427,122,432,152,427,153,422,124,410,95,386,68,359,48"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="349,93,400,119"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="340,44,362,80,358,83,335,47"/>
+<area shape="rect" id="Node000006" href="$II2cBus_8hpp.html" title="Interface definition for I2C bus master operations." alt="" coords="227,93,325,119"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="316,47,293,83,288,80,311,44"/>
+<area shape="rect" id="Node000007" href="$Mutex_8hpp.html" title="Portable wrapper for a mutual exclusion (mutex) primitive." alt="" coords="475,93,565,119"/>
+<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="373,43,480,86,478,91,371,48"/>
+<area shape="poly" id="edge6_Node000006_Node000003" title=" " alt="" coords="271,120,249,156,245,154,267,118"/>
+<area shape="poly" id="edge7_Node000006_Node000004" title=" " alt="" coords="302,116,394,158,392,163,300,121"/>
+<area shape="poly" id="edge9_Node000007_Node000004" title=" " alt="" coords="507,121,458,160,454,156,504,117"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="488,167,565,192"/>
+<area shape="poly" id="edge10_Node000007_Node000008" title=" " alt="" coords="524,119,527,153,522,153,518,119"/>
+</map>

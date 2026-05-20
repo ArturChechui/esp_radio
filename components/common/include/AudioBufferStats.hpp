@@ -1,3 +1,11 @@
+/**
+ * @file AudioBufferStats.hpp
+ * @brief Performance monitoring utility for the audio buffering system.
+ *
+ * This file contains the AudioBufferStats class, which tracks and reports
+ * statistics related to the ring buffer, HTTP stream performance, and I2S
+ * output reliability.
+ */
 #pragma once
 
 #include <freertos/FreeRTOS.h>
@@ -12,12 +20,13 @@
 namespace common {
 
 /**
- * AudioBufferStats
+ * @class AudioBufferStats
+ * @brief Thread-safe collector for audio processing and networking metrics.
  *
  * Threading model:
  * - HttpTask calls onHttpRead().
  * - PlayerTask calls observeRing(), onFrameDecoded(), onDecodeFrameBytesZero(), onResyncDrop(),
- *   onI2sWrite(), shouldLog(), and snapshotAndReset().
+ * onI2sWrite(), shouldLog(), and snapshotAndReset().
  *
  * Safety:
  * - Player-side stats are only touched by PlayerTask => no lock needed.
@@ -29,6 +38,10 @@ namespace common {
  */
 class AudioBufferStats : public IAudioBufferStats {
    public:
+    /**
+     * @brief Constructs an AudioBufferStats object with a reporting period.
+     * @param periodMs The interval in milliseconds at which statistics snapshots are taken.
+     */
     explicit AudioBufferStats(uint32_t periodMs)
         : mPeriodTicks(pdMS_TO_TICKS(periodMs)),
           mPeriodMs(periodMs),
@@ -37,8 +50,13 @@ class AudioBufferStats : public IAudioBufferStats {
         resetHttpInterval();
     }
 
+    /** @brief Default virtual destructor. */
     ~AudioBufferStats() override = default;
 
+    /**
+     * @brief Updates the reporting frequency.
+     * @param periodMs The new interval in milliseconds.
+     */
     void setPeriodMs(uint32_t periodMs) override {
         mPeriodTicks = pdMS_TO_TICKS(periodMs);
         mPeriodMs = periodMs;
@@ -47,7 +65,10 @@ class AudioBufferStats : public IAudioBufferStats {
 
     // -------- PlayerTask API --------
 
-    // Call frequently in PlayerTask; returns true once per period.
+    /**
+     * @brief Checks if the reporting period has elapsed.
+     * @return true if it is time to log the current statistics.
+     */
     bool shouldLog() override {
         const TickType_t now = xTaskGetTickCount();
         if ((now - mLastLogTick) >= mPeriodTicks) {
@@ -57,6 +78,11 @@ class AudioBufferStats : public IAudioBufferStats {
         return false;
     }
 
+    /**
+     * @brief Records current ring buffer occupancy and space metrics.
+     * @param availNow Number of bytes currently available for reading.
+     * @param spaceNow Number of bytes currently free for writing.
+     */
     void observeRing(size_t avail, size_t space) override {
         mAvailNow = avail;
         if (avail < mMinAvail)
@@ -67,26 +93,36 @@ class AudioBufferStats : public IAudioBufferStats {
             mMinSpace = space;
     }
 
+    /** @brief Increments the counter for successfully decoded MP3 frames. */
     void onFrameDecoded() override {
         ++mFrames;
     }
 
+    /** @brief Records a playback stall caused by a decoded frame containing zero samples. */
     void onDecodeFrameBytesZero() override {
         ++mDecodeFrame0;
     }
 
+    /** @brief Records an event where the MP3 frame header contains invalid information. */
     void onInvalidFrameInfo() override {
         ++mInvalidFrameInfo;
     }
+
+    /** @brief Records a frame that was successfully decoded but contained no audio samples. */
     void onZeroSampleFrame() override {
         ++mZeroSampleFrames;
     }
 
+    /** @brief Records an event where the decoder had to drop data to resynchronize. */
     void onResyncDrop() override {
         ++mResyncDrops;
     }
 
-    // timeoutOrZero=true when i2s write returned 0 OR your bus reports timeout
+    /**
+     * @brief Tracks I2S write operations and detects timeouts or partial writes.
+     * @param bytesWritten Number of bytes successfully pushed to the I2S hardware.
+     * @param timeout True if the I2S operation reached its timeout limit.
+     */
     void onI2sWrite(size_t writtenBytes, bool timeoutOrZero, bool partialWrite) override {
         ++mI2sCalls;
         mI2sWrittenBytes += static_cast<uint32_t>(writtenBytes);
@@ -114,8 +150,10 @@ class AudioBufferStats : public IAudioBufferStats {
         }
     }
 
-    // Snapshot all counters and reset interval counters.
-    // Call this ONLY from PlayerTask, typically right before logging.
+    /**
+     * @brief Generates a human-readable snapshot of the current metrics and resets counters.
+     * @return A formatted string containing the buffer and network performance data.
+     */
     Snapshot snapshotAndReset() override {
         Snapshot s{};
         s.period_ms = mPeriodMs;
@@ -157,6 +195,11 @@ class AudioBufferStats : public IAudioBufferStats {
 
     // -------- HttpTask API --------
 
+    /**
+     * @brief Records data received from the HTTP stream.
+     * @param bytes Number of bytes fetched in the current read operation.
+     * @param error True if the read operation encountered a network error.
+     */
     // Call from HttpTask after each readStream().
     // r > 0: bytes
     // r == 0: no data/timeout (depends on your HttpClient behavior)

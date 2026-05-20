@@ -1,0 +1,29 @@
+<map id="components/adapters/src/AdcReader.cpp" name="components/adapters/src/AdcReader.cpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="299,5,462,45"/>
+<area shape="rect" id="Node000002" href="$AdcReader_8hpp.html" title="Implementation of the IAdcReader interface for ESP32 ADC oneshot mode." alt="" coords="141,93,260,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="339,48,241,90,239,85,336,43"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="284,93,368,119"/>
+<area shape="poly" id="edge12_Node000001_Node000010" title=" " alt="" coords="370,47,344,84,340,80,365,44"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="393,93,478,119"/>
+<area shape="poly" id="edge13_Node000001_Node000011" title=" " alt="" coords="396,44,422,80,417,84,392,47"/>
+<area shape="rect" id="Node000012" href="$LockGuard_8hpp.html" title="RAII wrapper for automatic mutex locking and unlocking." alt="" coords="503,93,621,119"/>
+<area shape="poly" id="edge14_Node000001_Node000012" title=" " alt="" coords="425,43,524,85,522,90,423,48"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="301,167,474,192"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="232,116,345,159,343,164,230,121"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="5,240,76,265"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="142,112,109,117,75,128,44,144,19,168,13,182,14,197,27,228,22,230,9,198,8,181,14,165,41,140,73,123,107,112,141,106"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="230,240,297,265"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="212,118,240,166,260,225,255,227,236,168,207,120"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="175,167,226,192"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="203,119,203,153,198,153,198,119"/>
+<area shape="rect" id="Node000007" href="$IAdcReader_8hpp.html" title="Interface definition for an Analog&#45;to&#45;Digital Converter (ADC) reader." alt="" coords="29,167,151,192"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="184,121,121,161,118,157,181,116"/>
+<area shape="rect" id="Node000008" href="$Mutex_8hpp.html" title="Portable wrapper for a mutual exclusion (mutex) primitive." alt="" coords="498,167,589,192"/>
+<area shape="poly" id="edge9_Node000002_Node000008" title=" " alt="" coords="256,116,485,163,484,169,255,121"/>
+<area shape="poly" id="edge7_Node000007_Node000004" title=" " alt="" coords="84,194,59,230,54,227,80,191"/>
+<area shape="poly" id="edge8_Node000007_Node000005" title=" " alt="" coords="119,190,223,232,221,237,117,194"/>
+<area shape="poly" id="edge10_Node000008_Node000005" title=" " alt="" coords="499,195,311,242,309,237,498,189"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="505,240,582,265"/>
+<area shape="poly" id="edge11_Node000008_Node000009" title=" " alt="" coords="546,192,546,226,541,226,541,192"/>
+<area shape="poly" id="edge15_Node000012_Node000008" title=" " alt="" coords="561,120,552,154,547,153,556,118"/>
+</map>

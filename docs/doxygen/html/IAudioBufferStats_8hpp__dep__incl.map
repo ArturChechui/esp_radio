@@ -1,0 +1,13 @@
+<map id="components/common/include/IAudioBufferStats.hpp" name="components/common/include/IAudioBufferStats.hpp">
+<area shape="rect" id="Node000001" title="Interface for tracking and reporting audio pipeline statistics." alt="" coords="173,5,387,45"/>
+<area shape="rect" id="Node000002" href="$AudioBufferStats_8hpp.html" title="Performance monitoring utility for the audio buffering system." alt="" coords="66,93,281,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="247,56,199,95,195,91,244,52"/>
+<area shape="rect" id="Node000006" href="$PlayerService_8cpp.html" title=" " alt="" coords="305,93,471,133"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="316,52,366,91,362,95,313,56"/>
+<area shape="rect" id="Node000003" href="$AppContext_8hpp.html" title="Central registry and lifecycle manager for the application." alt="" coords="81,181,266,221"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="176,147,176,181,171,181,171,147"/>
+<area shape="rect" id="Node000004" href="$AppContext_8cpp.html" title=" " alt="" coords="5,269,163,309"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="145,233,106,271,102,267,142,229"/>
+<area shape="rect" id="Node000005" href="$app__main_8cpp.html" title=" " alt="" coords="187,277,338,302"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="205,229,252,274,248,278,201,233"/>
+</map>

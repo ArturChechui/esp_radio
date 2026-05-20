@@ -1,0 +1,5 @@
+<map id="adapters::I2cBus" name="adapters::I2cBus">
+<area shape="rect" id="Node000001" title="Concrete implementation of an I2C master bus controller." alt="" coords="7,79,138,104"/>
+<area shape="rect" id="Node000002" href="$classadapters_1_1II2cBus.html" title="Abstract interface for an I2C master bus." alt="" coords="5,5,140,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="75,44,75,79,70,79,70,44"/>
+</map>

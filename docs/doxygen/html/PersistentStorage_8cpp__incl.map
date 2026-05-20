@@ -1,0 +1,27 @@
+<map id="components/adapters/src/PersistentStorage.cpp" name="components/adapters/src/PersistentStorage.cpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="296,5,487,45"/>
+<area shape="rect" id="Node000002" href="$PersistentStorage_8hpp.html" title="Implementation of the IPersistentStorage interface using ESP32 NVS." alt="" coords="115,93,281,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="346,48,240,91,238,86,344,43"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="305,93,365,119"/>
+<area shape="poly" id="edge11_Node000001_Node000009" title=" " alt="" coords="380,47,354,84,349,80,376,44"/>
+<area shape="rect" id="Node000010" href="$LockGuard_8hpp.html" title="RAII wrapper for automatic mutex locking and unlocking." alt="" coords="389,93,508,119"/>
+<area shape="poly" id="edge12_Node000001_Node000010" title=" " alt="" coords="407,44,434,80,430,84,403,47"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="532,93,616,119"/>
+<area shape="poly" id="edge14_Node000001_Node000011" title=" " alt="" coords="436,43,535,85,533,90,434,48"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="275,240,342,265"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="226,117,259,136,288,165,303,196,309,226,304,227,298,197,284,168,255,140,223,121"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="18,240,77,265"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="116,115,87,122,59,132,34,147,14,168,8,182,11,198,29,228,24,231,6,199,3,182,9,165,31,143,57,127,85,116,114,110"/>
+<area shape="rect" id="Node000005" href="$IPersistentStorage_8hpp.html" title="Interface definition for non&#45;volatile key&#45;value storage." alt="" coords="24,167,193,192"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="185,121,136,160,132,156,182,117"/>
+<area shape="rect" id="Node000006" href="$Mutex_8hpp.html" title="Portable wrapper for a mutual exclusion (mutex) primitive." alt="" coords="357,167,447,192"/>
+<area shape="poly" id="edge7_Node000002_Node000006" title=" " alt="" coords="232,116,357,160,355,165,230,121"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="217,167,275,192"/>
+<area shape="poly" id="edge10_Node000002_Node000008" title=" " alt="" coords="208,118,233,154,228,157,204,121"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="142,190,264,233,262,238,140,195"/>
+<area shape="poly" id="edge6_Node000005_Node000004" title=" " alt="" coords="101,194,68,231,64,228,97,191"/>
+<area shape="poly" id="edge8_Node000006_Node000003" title=" " alt="" coords="389,194,336,234,333,229,385,190"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="366,240,443,265"/>
+<area shape="poly" id="edge9_Node000006_Node000007" title=" " alt="" coords="405,192,406,226,401,227,400,192"/>
+<area shape="poly" id="edge13_Node000010_Node000006" title=" " alt="" coords="443,120,419,157,415,154,439,118"/>
+</map>

@@ -1,0 +1,27 @@
+<map id="components/common/include/EventTask.hpp" name="components/common/include/EventTask.hpp">
+<area shape="rect" id="Node000001" title="Header for the system&#39;s asynchronous event processing task." alt="" coords="137,5,352,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,93,156,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="207,48,118,90,116,85,204,43"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="180,93,309,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="247,46,247,79,242,79,242,46"/>
+<area shape="rect" id="Node000004" href="$IEventQueue_8hpp.html" title="Interface for the system&#45;wide event distribution system." alt="" coords="334,93,467,119"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="283,43,367,85,364,89,281,48"/>
+<area shape="rect" id="Node000005" href="$Events_8hpp.html" title="Definition of application&#45;level events and the core event variant." alt="" coords="353,167,448,192"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="403,119,403,153,398,153,398,119"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="241,313,307,339"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="392,194,295,305,291,301,388,191"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="331,313,390,339"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="400,193,370,301,365,299,395,192"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="509,240,577,265"/>
+<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="425,190,509,231,507,236,422,194"/>
+<area shape="rect" id="Node000009" href="$Types_8hpp.html" title="Global type definitions, enumerations, and data structures." alt="" coords="399,240,485,265"/>
+<area shape="poly" id="edge8_Node000005_Node000009" title=" " alt="" coords="410,191,431,227,426,229,405,194"/>
+<area shape="poly" id="edge11_Node000009_Node000006" title=" " alt="" coords="416,268,315,310,313,305,414,263"/>
+<area shape="poly" id="edge13_Node000009_Node000007" title=" " alt="" coords="431,267,386,306,382,302,427,263"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="415,313,485,339"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="446,265,450,300,445,300,441,266"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="510,313,566,339"/>
+<area shape="poly" id="edge10_Node000009_Node000011" title=" " alt="" coords="459,263,513,303,510,307,456,268"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="591,313,677,339"/>
+<area shape="poly" id="edge12_Node000009_Node000012" title=" " alt="" coords="474,263,591,306,589,311,472,268"/>
+</map>

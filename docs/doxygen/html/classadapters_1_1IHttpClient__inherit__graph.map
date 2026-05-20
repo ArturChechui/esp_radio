@@ -1,0 +1,5 @@
+<map id="adapters::IHttpClient" name="adapters::IHttpClient">
+<area shape="rect" id="Node000001" title="Abstract interface for an HTTP client." alt="" coords="5,5,163,31"/>
+<area shape="rect" id="Node000002" href="$classadapters_1_1HttpClient.html" title="Concrete implementation of an HTTP client." alt="" coords="7,79,161,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="87,44,87,79,81,79,81,44"/>
+</map>

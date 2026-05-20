@@ -1,0 +1,15 @@
+<map id="components/adapters/include/Display.hpp" name="components/adapters/include/Display.hpp">
+<area shape="rect" id="Node000001" title="Implementation of the IDisplay interface for I2C&#45;based displays." alt="" coords="53,5,215,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="37,167,108,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="71,48,38,67,24,80,12,94,9,111,15,127,28,143,44,157,40,161,24,146,10,130,3,111,8,92,20,76,35,63,69,43"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="163,167,230,192"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="199,43,233,63,248,76,260,92,265,111,258,130,244,147,228,161,225,157,241,143,253,127,259,111,256,94,244,80,230,67,197,48"/>
+<area shape="rect" id="Node000004" href="$IDisplay_8hpp.html" title="Interface definition for display peripherals." alt="" coords="22,93,123,119"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="121,47,92,84,88,81,117,44"/>
+<area shape="rect" id="Node000005" href="$II2cBus_8hpp.html" title="Interface definition for I2C bus master operations." alt="" coords="148,93,245,119"/>
+<area shape="poly" id="edge6_Node000001_Node000005" title=" " alt="" coords="151,44,181,81,177,84,147,47"/>
+<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="75,119,75,153,70,153,70,119"/>
+<area shape="poly" id="edge5_Node000004_Node000003" title=" " alt="" coords="94,116,166,157,163,162,91,121"/>
+<area shape="poly" id="edge7_Node000005_Node000002" title=" " alt="" coords="178,121,106,162,103,157,175,116"/>
+<area shape="poly" id="edge8_Node000005_Node000003" title=" " alt="" coords="199,119,199,153,194,153,194,119"/>
+</map>

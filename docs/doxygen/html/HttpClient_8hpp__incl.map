@@ -1,0 +1,13 @@
+<map id="components/adapters/include/HttpClient.hpp" name="components/adapters/include/HttpClient.hpp">
+<area shape="rect" id="Node000001" title="Implementation of the IHttpClient interface for ESP32 HTTP communication." alt="" coords="139,5,309,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,93,139,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="189,48,108,89,106,84,186,43"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="148,167,215,192"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="219,47,204,94,189,154,184,153,199,93,214,45"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="292,167,351,192"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="287,43,321,63,336,76,348,92,353,108,352,125,340,156,335,154,347,124,348,109,343,95,332,80,318,67,284,48"/>
+<area shape="rect" id="Node000005" href="$IHttpClient_8hpp.html" title="Interface definition for HTTP client operations." alt="" coords="213,93,333,119"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="238,44,261,80,257,83,234,47"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="260,121,209,160,205,156,257,117"/>
+<area shape="poly" id="edge6_Node000005_Node000004" title=" " alt="" coords="283,118,308,154,304,157,279,121"/>
+</map>

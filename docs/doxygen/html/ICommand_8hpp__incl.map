@@ -1,0 +1,23 @@
+<map id="components/core/commands/include/ICommand.hpp" name="components/core/commands/include/ICommand.hpp">
+<area shape="rect" id="Node000001" title="Interface definition for the Command design pattern." alt="" coords="19,5,229,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,240,64,265"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="104,48,84,69,66,95,52,128,44,164,37,227,32,226,38,163,47,127,62,92,80,66,100,44"/>
+<area shape="rect" id="Node000003" href="$Events_8hpp.html" title="Definition of application&#45;level events and the core event variant." alt="" coords="77,93,171,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="127,46,127,79,121,79,121,46"/>
+<area shape="rect" id="Node000006" href="$Types_8hpp.html" title="Global type definitions, enumerations, and data structures." alt="" coords="217,167,303,192"/>
+<area shape="poly" id="edge12_Node000001_Node000006" title=" " alt="" coords="143,44,242,154,238,158,139,48"/>
+<area shape="poly" id="edge4_Node000003_Node000002" title=" " alt="" coords="109,121,84,141,62,168,49,198,41,227,36,226,44,196,58,165,81,138,105,117"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="133,240,200,265"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="133,118,155,166,167,226,162,227,149,167,128,120"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="73,167,141,192"/>
+<area shape="poly" id="edge5_Node000003_Node000005" title=" " alt="" coords="124,120,115,154,110,153,119,118"/>
+<area shape="poly" id="edge6_Node000003_Node000006" title=" " alt="" coords="147,116,227,158,225,163,145,121"/>
+<area shape="poly" id="edge11_Node000006_Node000002" title=" " alt="" coords="225,195,78,241,76,235,223,189"/>
+<area shape="poly" id="edge9_Node000006_Node000004" title=" " alt="" coords="247,194,194,234,191,229,243,190"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="225,240,295,265"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="263,192,263,226,257,226,257,192"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="320,240,376,265"/>
+<area shape="poly" id="edge8_Node000006_Node000008" title=" " alt="" coords="276,190,325,229,321,233,272,194"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="401,240,487,265"/>
+<area shape="poly" id="edge10_Node000006_Node000009" title=" " alt="" coords="291,190,402,232,400,237,289,195"/>
+</map>

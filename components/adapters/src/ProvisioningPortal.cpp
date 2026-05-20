@@ -17,6 +17,14 @@ constexpr const char* Tag = "ProvisioningPortal";
 // Basic guardrail for POST body size from local form.
 constexpr size_t MaxFormSizeBytes = 1024U;
 
+/**
+ * @brief Embedded Captive Portal HTML Template
+ * @note Input Constraint: The parsing logic downstream expects strict standard ASCII
+ * (Latin alphabet, standard digits, and basic punctuation symbols). Non-Latin charsets
+ * (e.g., Chinese, Cyrillic, Emojis) will fail validation or corrupt flash storage strings.
+ * @note Browser Compatibility: Safari (iOS/macOS) is verified for stable frame handling
+ * and captive portal automatic close event behaviors.
+ */
 constexpr const char* PortalHtml = R"HTML(
 <!doctype html>
 <html>
@@ -27,6 +35,8 @@ constexpr const char* PortalHtml = R"HTML(
   <p>Tap <b>Save and Connect</b>.</p>
   <p>This page will close after credentials are saved.</p>
   <p><small>2.4 GHz Wi-Fi is recommended.</small></p>
+  <p><small><b>Notice:</b> Only standard Latin characters, numbers, and basic symbols are supported.</small></p>
+  <p><small><b>Recommended Browser:</b> Safari is highly recommended for stable setup connection.</small></p>
   <form method="post" action="/wifi">
     <label>SSID</label><br/>
     <input name="ssid" type="text" maxlength="32" required/><br/><br/>
@@ -38,6 +48,9 @@ constexpr const char* PortalHtml = R"HTML(
 </html>
 )HTML";
 
+/**
+ * @brief Captive Portal Success Page Template
+ */
 constexpr const char* SuccessHtml = R"HTML(
 <!doctype html>
 <html>
@@ -164,7 +177,8 @@ esp_err_t ProvisioningPortal::onWifiPost(httpd_req_t* req) {
 bool ProvisioningPortal::startWebServer() {
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
     config.max_uri_handlers = 8;
-    config.stack_size = 6144;
+    config.stack_size = 10240;
+    config.lru_purge_enable = true;
 
     esp_err_t err = httpd_start(&mHttpServer, &config);
     if (err != ESP_OK) {

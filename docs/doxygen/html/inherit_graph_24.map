@@ -1,0 +1,5 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$classcommon_1_1IRingBuffer.html" title="Abstract interface for a circular (ring) buffer." alt="" coords="5,5,164,31"/>
+<area shape="rect" id="Node000001" href="$classcommon_1_1RingBuffer.html" title="A thread&#45;safe circular buffer implementation optimized for audio pipelines." alt="" coords="212,5,367,31"/>
+<area shape="poly" id="edge20_Node000000_Node000001" title=" " alt="" coords="178,15,211,15,211,21,178,21"/>
+</map>

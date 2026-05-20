@@ -1,0 +1,11 @@
+<map id="components/adapters/include/I2sBus.hpp" name="components/adapters/include/I2sBus.hpp">
+<area shape="rect" id="Node000001" title="Implementation of the II2sBus interface for ESP32 I2S audio output." alt="" coords="52,5,215,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,93,128,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="119,47,87,84,83,81,115,44"/>
+<area shape="rect" id="Node000003" href="$II2sBus_8hpp.html" title="Interface definition for I2S bus operations for audio output." alt="" coords="153,93,250,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="152,44,184,81,180,84,148,47"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="119,167,190,192"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="196,120,172,157,168,154,191,118"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="215,167,281,192"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="211,118,235,154,231,157,207,120"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="core::commands::ConnectWifiCommand" name="core::commands::ConnectWifiCommand">
+<area shape="rect" id="Node000001" title="Command that orchestrates the Wi&#45;Fi connection process." alt="" coords="5,79,221,119"/>
+<area shape="rect" id="Node000002" href="$classcore_1_1commands_1_1ICommand.html" title="Abstract interface for an executable command." alt="" coords="9,5,218,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="116,44,116,79,111,79,111,44"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="core::commands::ICommand" name="core::commands::ICommand">
+<area shape="rect" id="Node000001" title="Abstract interface for an executable command." alt="" coords="5,77,215,102"/>
+<area shape="rect" id="Node000002" href="$classcore_1_1commands_1_1ConnectWifiCommand.html" title="Command that orchestrates the Wi&#45;Fi connection process." alt="" coords="266,5,482,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="176,71,290,43,291,48,177,76"/>
+<area shape="rect" id="Node000003" href="$classcore_1_1commands_1_1PlayStopSkipCommand.html" title="Command that processes Play, Stop, and Skip logic." alt="" coords="277,69,471,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="228,87,276,87,276,92,228,92"/>
+<area shape="rect" id="Node000004" href="$classcore_1_1commands_1_1SyncStationsCommand.html" title="Command that performs an atomic update of the local station database." alt="" coords="263,133,485,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="177,103,291,131,290,136,176,108"/>
+</map>
