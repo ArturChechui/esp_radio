@@ -1,5 +1,7 @@
 #include "AppController.hpp"
 
+#include <functional>
+
 #include "ConnectWifiCommand.hpp"
 #include "Dumpers.hpp"
 #include "IEventQueue.hpp"
@@ -7,6 +9,7 @@
 #include "IHttpClient.hpp"
 #include "IInputService.hpp"
 #include "IJsonParser.hpp"
+#include "IPersistentStorage.hpp"
 #include "IPlayerService.hpp"
 #include "ISensorService.hpp"
 #include "IStationRepository.hpp"
@@ -21,6 +24,9 @@
 namespace core {
 namespace {
 constexpr const char* Tag = "AppController";
+constexpr const char* AutoplayStorageKey = "autoplay";
+constexpr uint32_t AutoplayEnabled = 1U;
+constexpr uint32_t AutoplayDisabled = 0U;
 }  // namespace
 
 AppController::AppController(services::IWifiService& wifiService,
@@ -29,7 +35,8 @@ AppController::AppController(services::IWifiService& wifiService,
                              services::ISensorService& sensorService,
                              services::IInputService& inputService,
                              adapters::IHttpClient& httpClient, adapters::IFileSystem& fileSystem,
-                             common::IJsonParser& jsonParser, common::IEventQueue& uiEventQueue)
+                             common::IJsonParser& jsonParser, common::IEventQueue& uiEventQueue,
+                             adapters::IPersistentStorage& persistentStorage)
     : mWifiService(wifiService),
       mPlayerService(playerService),
       mStationRepository(stationRepository),
@@ -39,8 +46,10 @@ AppController::AppController(services::IWifiService& wifiService,
       mFileSystem(fileSystem),
       mJsonParser(jsonParser),
       mUiEventQueue(uiEventQueue),
+      mPersistentStorage(persistentStorage),
       mCurrentCmd(nullptr),
-      mInputLocked(false) {}
+      mInputLocked(false),
+      mAutoplayState(AutoplayDisabled) {}
 
 void AppController::onEvent(const common::AppEvent& e) {
     ESP_LOGI(Tag, "onEvent(%s)", common::dump(e).c_str());
@@ -58,8 +67,20 @@ void AppController::processCommandLane(const common::AppEvent& e) {
         std::visit(
             common::Overloaded{
                 [this](const common::SystemInitedEvent&) {
-                    mCurrentCmd =
-                        std::make_unique<commands::ConnectWifiCommand>(mWifiService, mUiEventQueue);
+                    // TODO: figure out a better way and place for autoplay check, this is a bit
+                    // hacky
+                    std::function<void()> cb = [this]() {
+                        (void)mPersistentStorage.getU32(AutoplayStorageKey, mAutoplayState);
+
+                        if (AutoplayEnabled == mAutoplayState) {
+                            mCurrentCmd = std::make_unique<commands::PlayStopSkipCommand>(
+                                mPlayerService, mStationRepository, mUiEventQueue,
+                                common::Button::PlayStop);
+                        }
+                    };
+
+                    mCurrentCmd = std::make_unique<commands::ConnectWifiCommand>(mWifiService,
+                                                                                 mUiEventQueue, cb);
                 },
                 [this](const common::ButtonPressedEvent& b) {
                     mCurrentCmd = std::make_unique<commands::PlayStopSkipCommand>(
@@ -80,10 +101,16 @@ void AppController::processCommandLane(const common::AppEvent& e) {
                 },
                 [this](const common::VolumeChangedEvent& v) { mPlayerService.setVolume(v.volume); },
                 [this](const common::PlaybackStatusChangedEvent& p) {
-                    const bool shouldStart = (p.status != common::PlaybackStatus::Playing &&
-                                              p.status != common::PlaybackStatus::Buffering);
+                    const bool isPlaybackInactive = (p.status != common::PlaybackStatus::Playing &&
+                                                     p.status != common::PlaybackStatus::Buffering);
 
-                    mSensorService.startClapDetection(shouldStart);
+                    mSensorService.startClapDetection(isPlaybackInactive);
+
+                    const auto autoplay = (isPlaybackInactive) ? AutoplayDisabled : AutoplayEnabled;
+                    if (mAutoplayState != autoplay) {
+                        mAutoplayState = autoplay;
+                        (void)mPersistentStorage.setU32(AutoplayStorageKey, autoplay);
+                    }
                 },
                 [this](const common::LightLevelUpdateEvent& l) {
                     mInputService.setMode(l.lux <= services::NightLux);

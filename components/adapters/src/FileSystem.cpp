@@ -37,9 +37,11 @@ bool FileSystem::init() {
     esp_vfs_littlefs_conf_t cfg = {
         .base_path = mBasePath.c_str(),
         .partition_label = mPartitionLabel.empty() ? nullptr : mPartitionLabel.c_str(),
+        .partition = nullptr,
         .format_if_mount_failed = true,
+        .read_only = false,
         .dont_mount = false,
-    };
+        .grow_on_mount = true};
 
     const esp_err_t err = esp_vfs_littlefs_register(&cfg);
     if (err != ESP_OK) {
@@ -165,7 +167,7 @@ bool FileSystem::exists(const std::string& relativePath) {
         return false;
     }
 
-    struct stat st {};
+    struct stat st{};
     return (::stat(path.c_str(), &st) == 0);
 }
 

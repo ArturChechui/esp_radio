@@ -143,7 +143,7 @@ bool AppContext::initCore() {
 
     mAppController = std::make_unique<AppController>(
         *mWifiService, *mPlayerService, *mStationRepository, *mSensorService, *mInputService,
-        *mJsonHttpClient, *mFileSystem, *mJsonParser, *mUiEventTask);
+        *mJsonHttpClient, *mFileSystem, *mJsonParser, *mUiEventTask, *mPersistentStorage);
 
     return true;
 }

@@ -36,6 +36,7 @@ class SyncStationsCommand {
 class ConnectWifiCommand {
     -mUiEventQueue: common::IEventQueue&
     -mWifiService: services::IWifiService& 
+    -mCb: std::function<void()>
 }
 
 interface IPlayerService

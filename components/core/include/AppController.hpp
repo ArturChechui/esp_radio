@@ -32,6 +32,7 @@ class IJsonParser;
 namespace adapters {
 class IHttpClient;
 class IFileSystem;
+class IPersistentStorage;
 }  // namespace adapters
 
 /**
@@ -84,12 +85,14 @@ class AppController : public common::IEventHandler {
      * @param fileSystem Adapter for storage operations.
      * @param jsonParser Utility for JSON serialization.
      * @param uiEventQueue Queue for sending events back to the UI layer.
+     * @param persistentStorage Adapter for non-volatile storage operations.
      */
     AppController(services::IWifiService& wifiService, services::IPlayerService& playerService,
                   services::IStationRepository& stationRepository,
                   services::ISensorService& sensorService, services::IInputService& inputService,
                   adapters::IHttpClient& httpClient, adapters::IFileSystem& fileSystem,
-                  common::IJsonParser& jsonParser, common::IEventQueue& uiEventQueue);
+                  common::IJsonParser& jsonParser, common::IEventQueue& uiEventQueue,
+                  adapters::IPersistentStorage& persistentStorage);
 
     /** @brief Virtual destructor. */
     ~AppController() override = default;
@@ -137,9 +140,11 @@ class AppController : public common::IEventHandler {
     adapters::IFileSystem& mFileSystem;               /**< Reference to file system. */
     common::IJsonParser& mJsonParser;                 /**< Reference to JSON utility. */
     common::IEventQueue& mUiEventQueue;               /**< Queue for UI-bound notifications. */
+    adapters::IPersistentStorage& mPersistentStorage; /**< Reference to persistent storage. */
 
     std::unique_ptr<commands::ICommand> mCurrentCmd; /**< Currently executing system command. */
-    bool mInputLocked; /**< Flag to temporarily disable input processing. */
+    bool mInputLocked;       /**< Flag to temporarily disable input processing. */
+    uint32_t mAutoplayState; /**< Tracks the current autoplay state for playback. */
 };
 
 }  // namespace core

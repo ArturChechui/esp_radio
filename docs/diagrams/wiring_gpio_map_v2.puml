@@ -1,0 +1,184 @@
+@startuml wiring_gpio_map_v2.puml
+title ESP32 Internet Radio - Wiring & GPIO Map (No Battery)
+
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam linetype ortho
+skinparam componentStyle rectangle
+skinparam nodesep 2
+skinparam ranksep 10
+left to right direction
+
+component "PSU" as PSU #DDDDDD {
+  [5V] as R5
+  [GND] as R5_GND
+}
+
+together {
+    component "Decoupling\n470µF electrolytic || 0.1µF ceramic" as DEC_L
+    component "Decoupling\n470µF electrolytic || 0.1µF ceramic" as DEC_R
+}
+
+component "Decoupling\n100µF electrolytic || 0.1µF ceramic" as DEC_M
+
+component "R1 100K to GND ||\nR2 220K to 3.3V ||\n0.1µF ceramic to GND" as DIV_R_AMP
+
+component "ESP32-S3 SuperMini" as ESP #DDDDDD {
+    [5V IN (USB-C)] as ESP_5V
+    [3V3 OUT] as ESP_33
+    [GND] as ESP_GND
+
+    [GP1  (I2C_SCL)] as GP1
+    [GP2  (I2C_SDA)] as GP2
+
+    [GP4  (BTN_PLAY_STOP)]  as GP4
+    [GP5  (I2S_LRCK)] as GP5
+
+    [GP6  (I2S_BCLK)]   as GP6
+    [GP7  (I2S_DOUT)] as GP7
+    [GP8  (MIC)] as GP8
+
+    [GP9 (BTN_NEXT)]  as GP9
+    [GP10 (BTN_PREV)]  as GP10
+
+    [GP12 (ENC_S2)] as GP12
+    [GP13 (ENC_S1)]  as GP13
+}
+
+
+package "Inputs" as Inputs {
+    component "Button NEXT" as BN
+    component "Button PREV" as BP
+    component "Button PLAY/STOP" as BPS
+
+    component "Encoder EC11" as ENC {
+        [GND] as ENC_GND
+        [S1]  as ENC_S1
+        [S2]  as ENC_S2
+        [KEY] as ENC_KEY
+        [VCC] as ENC_VCC
+    }
+}
+
+package "ADC DEVICES" as ADC {
+    component "Clap Module" as MIC #DDDDDD {
+      [VCC] as MIC_VCC
+      [GND] as MIC_GND
+      [OUT] as MIC_OUT
+    }
+}
+
+package "I2C DEVICES" as I2C {
+    component "OLED SSD1306" as OLED #DDDDDD {
+      [VCC] as OLED_VCC
+      [GND] as OLED_GND
+      [SCL] as OLED_SCL
+      [SDA] as OLED_SDA
+    }
+
+    component "AHT20" as AHT #DDDDDD {
+      [VDD] as AHT_VDD
+      [GND] as AHT_GND
+      [SCL] as AHT_SCL
+      [SDA] as AHT_SDA
+    }
+
+    component "BH1750" as BH #DDDDDD {
+      [ADDR] as BH_ADDR
+      [VCC] as BH_VCC
+      [GND] as BH_GND
+      [SCL] as BH_SCL
+      [SDA] as BH_SDA
+    }
+}
+
+package Audio {
+    component "MAX98357A #1 (Left)" as AMP_L #DDDDDD {
+        [Vin] as AL_VIN
+        [GND] as AL_GND
+        [LRC] as AL_LRC
+        [BCLK] as AL_BCLK
+        [DIN] as AL_DIN
+        [GAIN] as AL_GAIN
+        [SD] as AL_SD
+    }
+
+    component "MAX98357A #2 (Right)" as AMP_R #DDDDDD {
+        [Vin] as AR_VIN
+        [GND] as AR_GND
+        [LRC] as AR_LRC
+        [BCLK] as AR_BCLK
+        [DIN] as AR_DIN
+        [GAIN] as AR_GAIN
+        [SD] as AR_SD
+    }
+
+    component "Speaker L\n4Ohms 3W" as SPK_L
+    component "Speaker R\n4Ohms 3W" as SPK_R
+}
+
+R5  -[#Red,thickness=3]-> ESP_5V
+R5_GND -[#Grey,thickness=3]-> ESP_GND
+
+ESP_33 -up[#Red]-> OLED_VCC
+ESP_GND -up[#Grey]-> OLED_GND
+
+ESP_33 -up[#Red]-> AHT_VDD
+ESP_GND -up[#Grey]-> AHT_GND
+
+ESP_33 -up[#Red]-> BH_VCC
+ESP_GND -up[#Grey]-> BH_GND
+ESP_GND -up[#Grey]-> BH_ADDR
+
+R5 -[#Red,thickness=3]-> DEC_L
+DEC_L -[#Red,thickness=3]-> AL_VIN
+ESP_GND -[#Grey]-> DEC_L
+DEC_L -[#Grey]-> AL_GND
+
+R5 -[#Red,thickness=3]-> DEC_R
+DEC_R -[#Red,thickness=3]-> AR_VIN
+ESP_GND -[#Grey]-> DEC_R
+DEC_R -[#Grey]-> AR_GND
+
+ESP_33 -[#Red]-> ENC_VCC
+ESP_GND -[#Grey]-> ENC_GND
+
+GP1 -up[#Green]-> OLED_SCL
+GP1 -up[#Green]-> AHT_SCL
+GP1 -up[#Green]-> BH_SCL
+GP2 -up[#Brown]-> OLED_SDA
+GP2 -up[#Brown]-> AHT_SDA
+GP2 -up[#Brown]-> BH_SDA
+
+GP5 -[#Teal]-> AL_LRC
+GP5 -[#Teal]-> AR_LRC
+GP6 -[#DarkGoldenRod]-> AL_BCLK
+GP6 -[#DarkGoldenRod]-> AR_BCLK
+GP7 -[#BlueViolet]-> AL_DIN
+GP7 -[#BlueViolet]-> AR_DIN
+
+GP8 --> MIC_OUT
+ESP_33 -[#Red]-> DEC_M
+DEC_M -[#Red]-> MIC_VCC
+ESP_GND -[#Grey]-> DEC_M
+DEC_M -[#Grey]-> MIC_GND
+
+ESP_33 -[#Red]-> AL_SD
+ESP_33 -[#Red]-> DIV_R_AMP
+ESP_GND -[#Grey]> DIV_R_AMP
+DIV_R_AMP -[#Red]-> AR_SD
+
+AMP_L --> SPK_L
+AMP_R --> SPK_R
+
+ENC_S1 <-- GP13
+ENC_S2 <-- GP12
+
+BPS <-- GP4
+BPS <-[#Grey]- ESP_GND 
+BN <-- GP9
+BN <-[#Grey]- ESP_GND 
+BP <-- GP10
+BP <-[#Grey]- ESP_GND 
+
+@enduml

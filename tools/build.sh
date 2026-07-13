@@ -17,6 +17,7 @@ DO_FLASH=0
 DO_MONITOR=0
 DO_FLASH_MONITOR=0
 DO_FULLCLEAN=0
+DO_GEN_DOCS=0
 
 # TODO: fix the tabs!
 usage() {
@@ -29,6 +30,7 @@ Usage:
   ./build.sh -m           -> monitor
   ./build.sh -F           -> flash + monitor
   ./build.sh -c           -> idf.py fullclean
+  ./build.sh -d           -> generate documentation (doxygen)
   ./build.sh -h           -> help
 
 Env overrides (optional):
@@ -40,16 +42,7 @@ EOF
 }
 
 load_idf_env() {
-	# TODO: properly load idf
-	if [[ "${USE_IDF_LOADER}" == "1" ]] && command -v idf >/dev/null 2>&1; then
-		idf
-	fi
-
-	# Soft check: allow users who already have the env loaded.
-	if ! command -v idf.py >/dev/null 2>&1; then
-		echo "ERROR: idf.py not found in PATH. Load ESP-IDF env first (or ensure 'idf' works)." >&2
-		exit 1
-	fi
+	. $HOME/git/esp/esp-idf/export.sh
 }
 
 ensure_target() {
@@ -111,6 +104,10 @@ unit_run() {
 		--print-summary
 }
 
+gen_docs() {
+	doxygen Doxyfile
+}
+
 parse_args() {
 	while getopts ":urfmFch" opt; do
 		case "${opt}" in
@@ -120,6 +117,7 @@ parse_args() {
 		m) DO_MONITOR=1 ;;
 		F) DO_FLASH_MONITOR=1 ;;
 		c) DO_FULLCLEAN=1 ;;
+		d) DO_GEN_DOCS=1 ;;
 		h)
 			usage
 			exit 0
@@ -141,7 +139,7 @@ parse_args() {
 	fi
 
 	# Default behavior: no flags => idf build
-	if [[ $DO_UNIT_BUILD -eq 0 && $DO_UNIT_RUN -eq 0 && $DO_FLASH -eq 0 && $DO_MONITOR -eq 0 && $DO_FLASH_MONITOR -eq 0 && $DO_FULLCLEAN -eq 0 ]]; then
+	if [[ $DO_UNIT_BUILD -eq 0 && $DO_UNIT_RUN -eq 0 && $DO_FLASH -eq 0 && $DO_MONITOR -eq 0 && $DO_FLASH_MONITOR -eq 0 && $DO_FULLCLEAN -eq 0 && $DO_GEN_DOCS -eq 0 ]]; then
 		DO_IDF_BUILD=1
 	fi
 
@@ -157,6 +155,7 @@ main() {
 
 	if ((DO_FULLCLEAN)); then idf_fullclean; fi
 	if ((DO_IDF_BUILD)); then idf_build; fi
+	if ((DO_GEN_DOCS)); then gen_docs; fi
 
 	if ((DO_UNIT_RUN)); then unit_run; fi
 	if ((DO_UNIT_BUILD)); then unit_build; fi

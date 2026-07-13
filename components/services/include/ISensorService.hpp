@@ -44,9 +44,9 @@ class ISensorService {
      * @brief Enables or disables the microphone or audio input path.
      * * This can be used to manage power consumption or ensure privacy when
      * voice-related features are not in use.
-     * @param active Set to true to power on/enable the microphone, false to disable.
+     * @param shouldStart Set to true to power on/enable the microphone, false to disable.
      */
-    virtual void startClapDetection(const bool active) = 0;
+    virtual void startClapDetection(const bool shouldStart) = 0;
 
     /**
      * @brief Toggles the persistent master state of the clap detection feature.

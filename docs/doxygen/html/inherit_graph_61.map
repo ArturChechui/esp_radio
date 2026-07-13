@@ -1,5 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$classservices_1_1IInputService.html" title="Abstract interface for an input processing service." alt="" coords="5,5,175,31"/>
-<area shape="rect" id="Node000001" href="$classservices_1_1InputService.html" title="Concrete implementation of input management logic." alt="" coords="223,5,388,31"/>
-<area shape="poly" id="edge28_Node000000_Node000001" title=" " alt="" coords="188,15,223,15,223,21,188,21"/>
+<area shape="rect" id="Node000000" href="$classservices_1_1IPlayerService.html" title="Abstract interface for a playback management service." alt="" coords="5,5,182,33"/>
+<area shape="rect" id="Node000001" href="$classservices_1_1PlayerService.html" title="Concrete implementation of the audio player engine." alt="" coords="230,5,402,33"/>
+<area shape="poly" id="edge28_Node000000_Node000001" title=" " alt="" coords="198,17,232,19,226,19,198,22"/>
 </map>

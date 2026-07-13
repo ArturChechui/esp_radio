@@ -1,3 +1,9 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$classcore_1_1AppContext.html" title="Manages the ownership and initialization of all application modules." alt="" coords="5,5,140,31"/>
+<area shape="rect" id="Node000000" href="$classcore_1_1commands_1_1ICommand.html" title="Abstract interface for an executable command." alt="" coords="5,83,214,111"/>
+<area shape="rect" id="Node000001" href="$classcore_1_1commands_1_1ConnectWifiCommand.html" title="Command that orchestrates the Wi&#45;Fi connection process." alt="" coords="265,5,480,50"/>
+<area shape="poly" id="edge24_Node000000_Node000001" title=" " alt="" coords="179,76,287,49,283,52,180,81"/>
+<area shape="rect" id="Node000002" href="$classcore_1_1commands_1_1PlayStopSkipCommand.html" title="Command that processes Play, Stop, and Skip logic." alt="" coords="275,75,470,119"/>
+<area shape="poly" id="edge25_Node000000_Node000002" title=" " alt="" coords="229,94,277,96,272,98,230,100"/>
+<area shape="rect" id="Node000003" href="$classcore_1_1commands_1_1SyncStationsCommand.html" title="Command that performs an atomic update of the local station database." alt="" coords="262,144,483,189"/>
+<area shape="poly" id="edge26_Node000000_Node000003" title=" " alt="" coords="180,113,287,142,282,144,179,118"/>
 </map>

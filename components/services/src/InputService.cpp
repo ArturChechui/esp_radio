@@ -28,7 +28,7 @@ constexpr uint64_t LockoutDelayMs = 200ULL;
 constexpr uint64_t LongPressThresholdMs = 3000ULL;
 constexpr uint64_t LongPressPollMs = 25ULL;
 
-constexpr uint16_t NightModeMaxVolume = 15U;
+constexpr uint16_t NightModeMaxVolume = 10U;
 constexpr uint16_t DayModeMaxVolume = 100U;
 
 constexpr const char* VolumeStorageKey = "volume";
@@ -129,6 +129,7 @@ bool InputService::init() {
     }
 
     ESP_LOGI(Tag, "Current volume: %lu%%", mVolume);
+    (void)mCoreEventQueue.post(common::VolumeChangedEvent{.volume = static_cast<uint8_t>(mVolume)});
 
     mTaskHandle = mTaskRunner.start(
         common::TaskParams{.name = "InputTask", .priority = TaskPriority, .core = TaskCore},
@@ -158,6 +159,8 @@ void InputService::setMode(const bool night) {
     if (mVolume > mMaxVolume) {
         mVolume = mMaxVolume;
         (void)mPersistentStorage.setU32(VolumeStorageKey, mVolume);
+        (void)mCoreEventQueue.post(
+            common::VolumeChangedEvent{.volume = static_cast<uint8_t>(mVolume)});
     }
 }
 
@@ -248,9 +251,8 @@ void InputService::applyDetentsToVolume(const int detents) {
         mVolume = static_cast<uint32_t>(next);
         (void)mPersistentStorage.setU32(VolumeStorageKey, mVolume);
 
-        common::VolumeChangedEvent ev;
-        ev.volume = static_cast<uint8_t>(next);
-        (void)mCoreEventQueue.post(ev);
+        (void)mCoreEventQueue.post(
+            common::VolumeChangedEvent{.volume = static_cast<uint8_t>(mVolume)});
     }
 }
 

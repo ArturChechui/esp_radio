@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <functional>
 #include <optional>
 #include <string>
 
@@ -53,8 +54,10 @@ class ConnectWifiCommand : public ICommand {
      * @brief Constructs a ConnectWifiCommand.
      * @param wifiService Reference to the Wi-Fi service for connection control.
      * @param uiEventQueue Queue used to send status updates back to the UI.
+     * @param cb Callback function to invoke when the command finishes its execution.
      */
-    ConnectWifiCommand(services::IWifiService& wifiService, common::IEventQueue& uiEventQueue);
+    ConnectWifiCommand(services::IWifiService& wifiService, common::IEventQueue& uiEventQueue,
+                       std::function<void()> cb);
 
     /** @brief Default virtual destructor. */
     ~ConnectWifiCommand() override = default;
@@ -94,6 +97,7 @@ class ConnectWifiCommand : public ICommand {
 
     bool mProvisioningPortalStarted; /**< Flag: indicates if the captive portal is active. */
     bool mFinished;                  /**< Flag: indicates if the command execution is complete. */
+    std::function<void()> mCb;       /**< Callback to invoke when the command finishes. */
 };
 
 }  // namespace core::commands

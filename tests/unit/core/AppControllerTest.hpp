@@ -11,6 +11,7 @@
 #include "MockHttpClient.hpp"
 #include "MockInputService.hpp"
 #include "MockJsonParser.hpp"
+#include "MockPersistentStorage.hpp"
 #include "MockPlayerService.hpp"
 #include "MockSensorService.hpp"
 #include "MockStationRepository.hpp"
@@ -30,6 +31,7 @@ class AppControllerTest : public ::testing::Test {
     std::unique_ptr<adapters::MockHttpClient> mockHttpClient;
     std::unique_ptr<adapters::MockFileSystem> mockFileSystem;
     std::unique_ptr<common::MockJsonParser> mockJsonParser;
+    std::unique_ptr<adapters::MockPersistentStorage> mockPersistentStorage;
 
     std::unique_ptr<core::AppController> appController;
 };

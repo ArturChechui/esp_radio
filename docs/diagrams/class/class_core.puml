@@ -51,7 +51,11 @@ class AppController {
     -mFileSystem: adapters::IFileSystem&
     -mJsonParser: common::IJsonParser&
     -mUiEventQueue: common::IEventQueue&
-    -mCurrentCmd: std::unique_ptr<commands::ICommand> 
+    -mPersistentStorage: adapters::IPersistentStorage&
+    
+    -mCurrentCmd: std::unique_ptr<commands::ICommand>
+    -mInputLocked: bool
+    -mAutoplayState: uint32_t
 }
 
 interface IEventHandler {
@@ -62,6 +66,7 @@ interface IEventQueue
 interface IWifiService
 interface IPlayerService
 interface IStationRepository
+interface IPersistentStorage
 interface ISensorService
 interface IInputService
 interface IHttpClient
@@ -124,6 +129,7 @@ AppController .left.|> IEventHandler
 AppController --> IWifiService
 AppController --> IPlayerService
 AppController --> IStationRepository
+AppController --> IPersistentStorage
 AppController --> ISensorService
 AppController --> IInputService
 AppController --> IHttpClient
