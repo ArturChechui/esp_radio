@@ -12,11 +12,12 @@ constexpr const char* Tag = "ConnectWifiCommand";
 }  // namespace
 
 ConnectWifiCommand::ConnectWifiCommand(services::IWifiService& wifiService,
-                                       common::IEventQueue& uiEventQueue)
+                                       common::IEventQueue& uiEventQueue, std::function<void()> cb)
     : mWifiService(wifiService),
       mUiEventQueue(uiEventQueue),
       mProvisioningPortalStarted(false),
-      mFinished(false) {}
+      mFinished(false),
+      mCb(cb) {}
 
 void ConnectWifiCommand::handle(const common::AppEvent& e) {
     if (mFinished) {
@@ -71,6 +72,10 @@ void ConnectWifiCommand::onWifiStateChanged(const bool isConnected) {
     } else {
         mFinished = true;
         mUiEventQueue.post(common::SwitchToMainScreenEvent{});
+
+        if (mCb) {
+            mCb();
+        }
     }
 }
 

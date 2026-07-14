@@ -1,0 +1,27 @@
+@startuml seq_autoplay.puml
+title ESP32 Internet Radio - Sequence Diagram (Autoplay)
+
+box "Core" #LightBlue
+participant "AppController" as AC
+end box
+
+box "Adapters" #LightYellow
+participant "PersistentStorage\n(IPersistentStorage)" as PS
+end box
+
+== Autoplay ==
+activate AC
+AC -> AC : connect wifi command finishes and calls callback to proceed with other actions
+note left
+    See seq_wifi_connect.puml for details
+end note
+AC -> PS ++: getU32(AutoplayStorageKey, mAutoplayState)
+return res
+alt mAutoplayState == AutoplayEnabled
+    AC -> AC: create PlayStopSkipCommand
+    note left
+        See seq_play_station.puml for details
+    end note
+end
+
+@enduml

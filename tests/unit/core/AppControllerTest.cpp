@@ -39,10 +39,12 @@ void AppControllerTest::SetUp() {
     mockHttpClient = std::make_unique<adapters::MockHttpClient>();
     mockFileSystem = std::make_unique<adapters::MockFileSystem>();
     mockJsonParser = std::make_unique<common::MockJsonParser>();
+    mockPersistentStorage = std::make_unique<adapters::MockPersistentStorage>();
 
     appController = std::make_unique<core::AppController>(
         *mockWifiService, *mockPlayerService, *mockStationRepo, *mockSensorService,
-        *mockInputService, *mockHttpClient, *mockFileSystem, *mockJsonParser, *mockEventQueue);
+        *mockInputService, *mockHttpClient, *mockFileSystem, *mockJsonParser, *mockEventQueue,
+        *mockPersistentStorage);
 }
 
 void AppControllerTest::TearDown() {
@@ -85,6 +87,11 @@ TEST_F(AppControllerTest, tc01_sysInitedEvent_wifiConnect_switchToMain) {
             return res;
         });
 
+    EXPECT_CALL(*mockPersistentStorage, getU32("autoplay", _))
+        .WillOnce([](const std::string& key, uint32_t& out) {
+            out = 0;
+            return true;
+        });
     common::WifiStateChangedEvent e2{};
     e2.bars = 1;
     e2.isConnected = true;
@@ -130,6 +137,11 @@ TEST_F(AppControllerTest, tc02_sysInitedEvent_wifiConnect_switchToProv_switchToM
     common::WifiCredsReceivedEvent e2{};
     appController->onEvent(e2);
 
+    EXPECT_CALL(*mockPersistentStorage, getU32("autoplay", _))
+        .WillOnce([](const std::string& key, uint32_t& out) {
+            out = 0;
+            return true;
+        });
     common::WifiStateChangedEvent e3{};
     e3.bars = 1;
     e3.isConnected = true;
@@ -1729,4 +1741,67 @@ TEST_F(AppControllerTest, tc41_longPressNext_toggleClapFeature) {
     common::ButtonLongPressedEvent e{};
     e.button = common::Button::Next;
     appController->onEvent(e);
+}
+
+TEST_F(AppControllerTest, tc42_autoplay_fullSequence) {
+    EXPECT_CALL(*mockWifiService, connect(_)).WillOnce(Return(true));
+    common::SystemInitedEvent e{};
+    appController->onEvent(e);
+
+    EXPECT_CALL(*mockEventQueue, post(_))
+        .WillOnce([](const common::AppEvent& event) {
+            bool res = false;
+            if (const auto* e = std::get_if<common::SwitchToMainScreenEvent>(&event)) {
+                res = true;
+            }
+            EXPECT_TRUE(res);
+            return res;
+        })
+        .WillOnce([](const common::AppEvent& event) {
+            bool res = false;
+            if (const auto* e = std::get_if<common::WifiStateChangedEvent>(&event)) {
+                EXPECT_EQ(e->bars, 1);
+                EXPECT_TRUE(e->isConnected);
+                res = true;
+            }
+            EXPECT_TRUE(res);
+            return res;
+        });
+
+    EXPECT_CALL(*mockPlayerService, getStatus()).WillOnce(Return(common::PlaybackStatus::Stopped));
+    const common::StationData station = {.id = "id", .name = "name", .url = "url"};
+    EXPECT_CALL(*mockStationRepo, currentStation()).WillOnce(ReturnRef(station));
+    EXPECT_CALL(*mockPlayerService, playStation(station.url)).WillOnce(Return(true));
+    EXPECT_CALL(*mockPersistentStorage, getU32("autoplay", _))
+        .WillOnce([](const std::string& key, uint32_t& out) {
+            out = 1;
+            return true;
+        });
+
+    common::WifiStateChangedEvent e2{};
+    e2.bars = 1;
+    e2.isConnected = true;
+    appController->onEvent(e2);
+
+    EXPECT_CALL(*mockSensorService, startClapDetection(false)).Times(1);
+    EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
+    common::PlaybackStatusChangedEvent e3{};
+    e3.status = common::PlaybackStatus::Buffering;
+    appController->onEvent(e3);
+
+    EXPECT_CALL(*mockSensorService, startClapDetection(true)).Times(1);
+    EXPECT_CALL(*mockPersistentStorage, setU32("autoplay", 0U)).WillOnce(Return(true));
+    EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
+    common::PlaybackStatusChangedEvent e4{};
+    e4.status = common::PlaybackStatus::Stopped;
+    appController->onEvent(e4);
+
+    // it is not a real case where from Stopped it goes to Playing by itself, but for the test it is
+    // enough to check that the value is set correctly
+    EXPECT_CALL(*mockSensorService, startClapDetection(false)).Times(1);
+    EXPECT_CALL(*mockPersistentStorage, setU32("autoplay", 1U)).WillOnce(Return(true));
+    EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
+    common::PlaybackStatusChangedEvent e5{};
+    e5.status = common::PlaybackStatus::Playing;
+    appController->onEvent(e5);
 }

@@ -1,0 +1,75 @@
+@startuml seq_wifi_connect.puml
+title ESP32 Internet Radio - Sequence Diagram (WiFi Connect)
+
+box "Core" #LightBlue
+participant "Core EventTask\n(IEventQueue)" as CET
+participant "Ui EventTask\n(IEventQueue)" as UET
+participant "AppController" as AC
+participant "AppContext" as ACTX
+end box
+
+box "Services" #LightGreen
+participant "WifiService" as WFS
+participant "UiService" as UI
+end box
+
+box "Adapters" #LightYellow
+participant "PersistentStorage\n(IPersistentStorage)" as PS
+participant "ProvisioningPortal\n(IProvisioningPortal)" as PP
+participant "WifiClient\n(IWifiClient)" as WC
+end box
+
+box "ESP-IDF" #LightGray
+participant "ESP-IDF" as IDF
+end box
+
+== Init ==
+ACTX -> WFS ++: init()
+WFS -> PS ++: getString(SsidStorageKey, ssid)
+return res
+WFS -> PS ++: getString(PasswordStorageKey, password)
+return res
+
+WFS -> WFS : save creds
+return
+
+== Connect ==
+ACTX -> AC ++: system inited event
+AC -> AC : create ConnectWifiCommand
+AC -> WFS ++: command calls connect()
+
+WFS -> PP ++: checks if portal is running
+return res
+
+WFS -> WC ++: setCallback(onWifiStateChanged)
+return
+WFS -> WC ++: connect(wifiCreds)
+WC -> WC : ensure wifi is inited and ready
+WC -> IDF ++: wifi configuration, start and connect
+return res
+return res
+WFS -> WC ++: waitConnection(timeout)
+WC -> IDF ++: xEventGroupWaitBits(WifiConnectedBit | WifiFailedBit, timeout)
+
+IDF -> WC ++: IP_EVENT_STA_GOT_IP
+WC -> IDF : xEventGroupSetBits(mEventGroup, WifiConnectedBit);
+IDF --> WC : res
+deactivate WC
+IDF -> WC: bits are set
+deactivate IDF
+WC -> WFS: mStateCallback(WifiState{isConnected})
+deactivate WC
+WFS -> CET ++: post(WifiStateChangedEvent{isConnected})
+deactivate WFS
+
+CET -> AC : onEvent(WifiStateChangedEvent{isConnected})
+deactivate CET
+AC -> AC : [CMD] checks if connected successfully
+AC -> UET : post(SwitchToMainScreenEvent{})
+note left
+    See seq_ui_events.puml for details
+end note
+
+AC -> AC : [CMD] calls callback
+
+@enduml

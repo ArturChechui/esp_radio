@@ -42,7 +42,21 @@ void InputServiceTest::TearDown() {
 }
 
 void InputServiceTest::initSuccess() {
-    EXPECT_CALL(*mockPersistentStorage, getU32("volume", _)).WillOnce(Return(true));
+    EXPECT_CALL(*mockPersistentStorage, getU32("volume", _))
+        .WillOnce([](const std::string& key, uint32_t& out) {
+            out = 15;
+            return true;
+        });
+
+    EXPECT_CALL(*mockEventQueue, post(_)).WillOnce([](const common::AppEvent& event) {
+        bool res = false;
+        if (const auto* e = std::get_if<common::VolumeChangedEvent>(&event)) {
+            EXPECT_EQ(e->volume, 15);
+            res = true;
+        }
+        return res;
+    });
+
     EXPECT_CALL(*mockTaskRunner, start(_, _, _, _))
         .WillOnce([&](const common::TaskParams&, uint32_t, common::StepFn fn, void* user) {
             stepFn = fn;
@@ -233,11 +247,11 @@ TEST_F(InputServiceTest, tc07_stepFn_enc_increaseVol) {
     ASSERT_NE(stepFn, nullptr);
     stepFn(stepUser, token);
 
-    EXPECT_CALL(*mockPersistentStorage, setU32("volume", 13)).WillOnce(Return(true));
+    EXPECT_CALL(*mockPersistentStorage, setU32("volume", 18)).WillOnce(Return(true));
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce([](const common::AppEvent& event) {
         bool res = false;
         if (const auto* e = std::get_if<common::VolumeChangedEvent>(&event)) {
-            EXPECT_EQ(e->volume, 13);
+            EXPECT_EQ(e->volume, 18);
             res = true;
         }
         return res;
@@ -278,11 +292,11 @@ TEST_F(InputServiceTest, tc08_stepFn_enc_decreaseVol) {
     ASSERT_NE(stepFn, nullptr);
     stepFn(stepUser, token);
 
-    EXPECT_CALL(*mockPersistentStorage, setU32("volume", 7)).WillOnce(Return(true));
+    EXPECT_CALL(*mockPersistentStorage, setU32("volume", 12)).WillOnce(Return(true));
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce([](const common::AppEvent& event) {
         bool res = false;
         if (const auto* e = std::get_if<common::VolumeChangedEvent>(&event)) {
-            EXPECT_EQ(e->volume, 7);
+            EXPECT_EQ(e->volume, 12);
             res = true;
         }
         return res;
@@ -380,4 +394,58 @@ TEST_F(InputServiceTest, tc11_init_deinit_success) {
 
     EXPECT_CALL(*mockTaskRunner, stop(_, _)).WillOnce(Return(common::StopResult::Ok));
     inputService->deinit();
+}
+
+TEST_F(InputServiceTest, tc12_init_volumeChangeTo18_setMode_night_success) {
+    initSuccess();
+
+    common::MockStopToken token;
+    EXPECT_CALL(token, stopRequested()).WillRepeatedly(Return(false));
+    EXPECT_CALL(*mockQueue, get(_)).WillRepeatedly([](uint32_t& out) {
+        out = common::EncS1Gpio;
+        return true;
+    });
+    EXPECT_CALL(*mockGpioInput, getLevel(_)).WillOnce(Return(0)).WillOnce(Return(0));
+    ASSERT_NE(stepFn, nullptr);
+    stepFn(stepUser, token);
+    EXPECT_CALL(*mockPersistentStorage, setU32("volume", 18)).WillOnce(Return(true));
+    EXPECT_CALL(*mockEventQueue, post(_)).WillOnce([](const common::AppEvent& event) {
+        bool res = false;
+        if (const auto* e = std::get_if<common::VolumeChangedEvent>(&event)) {
+            EXPECT_EQ(e->volume, 18);
+            res = true;
+        }
+        return res;
+    });
+    // 4 calls to make a single step to increase vol level.
+    // Transitions:
+    // 00 -> 10
+    // 10 -> 11
+    // 11 -> 01
+    // 01 -> 00
+    EXPECT_CALL(*mockGpioInput, getLevel(common::EncS1Gpio))
+        .WillOnce(Return(1))
+        .WillOnce(Return(1))
+        .WillOnce(Return(0))
+        .WillOnce(Return(0));
+    EXPECT_CALL(*mockGpioInput, getLevel(common::EncS2Gpio))
+        .WillOnce(Return(0))
+        .WillOnce(Return(1))
+        .WillOnce(Return(1))
+        .WillOnce(Return(0));
+    for (int j = 0; j < 4; j++) {
+        stepFn(stepUser, token);
+    }
+
+    EXPECT_CALL(*mockPersistentStorage, setU32("volume", 10)).WillOnce(Return(true));
+    EXPECT_CALL(*mockEventQueue, post(_)).WillOnce([](const common::AppEvent& event) {
+        bool res = false;
+        if (const auto* e = std::get_if<common::VolumeChangedEvent>(&event)) {
+            EXPECT_EQ(e->volume, 10);
+            res = true;
+        }
+        return res;
+    });
+    const bool night = true;
+    inputService->setMode(night);
 }

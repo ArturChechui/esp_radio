@@ -139,9 +139,9 @@ class InputService : public IInputService {
                                    volume changes only occur on physical clicks. */
     bool mEncInvert; /**< If true, reverses the logical direction (CW vs CCW) of the rotary encoder.
                       */
-    uint32_t mVolume; /**< The current system volume level. */
-    uint32_t
-        mMaxVolume; /**< The upper limit for the volume level, used for clamping and scaling. */
+    uint32_t mVolume;    /**< The current system volume level. (0-100) */
+    uint32_t mMaxVolume; /**< The upper limit for the volume level, used for clamping and scaling.
+                            (0-100) */
 };
 
 }  // namespace services

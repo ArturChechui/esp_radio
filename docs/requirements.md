@@ -111,6 +111,7 @@ Persist in NVS:
 - `wifi_ssid` (`string`): The network service set identifier captured via provisioning.
 - `wifi_password` (`string`): The network security key captured via provisioning.
 - `micfeature` (`uint32_t`, `0` or `1`): The master toggle state for the acoustic clap-to-play trigger feature (`0` = disabled, `1` = enabled).
+- `autoplay` (`uint32_t`, `0` or `1`): The saved playback intent status used to resume audio automatically upon network initialization (`0` = disabled, `1` = enabled).
 
 Acceptance:
 
@@ -118,6 +119,7 @@ Acceptance:
 - Given a station switch to index $I$, after a complete system power cycle, the UI and audio components boot directly into station index $I$.
 - Given a state toggle where `toggleClapFeature()` sets claps to active, after a device reboot, the `micfeature` value reads as `1` and the `UiService` correctly restores the 1-pixel bitwise top ledger line over the volume block.
 - Given a successful network configuration cycle through the portal, the captured SSID and password must be successfully written to `wifi_ssid` and `wifi_password` respectively.
+- Given a system reboot where `autoplay` evaluates to `1`, the orchestration layer (controller) shall automatically trigger audio playback of `station_idx` immediately after a successful Wi-Fi connection is established. If `autoplay` evaluates to `0`, the device shall remain in a connected but stopped idle state.
 
 ### FR-08 Wi-Fi configuration
 

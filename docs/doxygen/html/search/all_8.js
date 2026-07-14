@@ -10,7 +10,7 @@ var searchData=
   ['http_5fcalls_7',['http_calls',['../structcommon_1_1Snapshot.html#aa4addb7792e7608f98fe2ff78489b9b3',1,'common::Snapshot']]],
   ['http_5ferrors_8',['http_errors',['../structcommon_1_1Snapshot.html#a40680cd42896376b5a9ff11f18b13f5d',1,'common::Snapshot']]],
   ['http_5fzero_9',['http_zero',['../structcommon_1_1Snapshot.html#aa00705b3f0ee1ec3e3b1c08f052d0a8c',1,'common::Snapshot']]],
-  ['httpclient_10',['httpclient',['../classadapters_1_1HttpClient.html#a957c3ff46b1d397e16fbff1e4ce3c56f',1,'adapters::HttpClient::HttpClient()'],['../classadapters_1_1HttpClient.html',1,'adapters::HttpClient']]],
+  ['httpclient_10',['HttpClient',['../classadapters_1_1HttpClient.html',1,'adapters::HttpClient'],['../classadapters_1_1HttpClient.html#a957c3ff46b1d397e16fbff1e4ce3c56f',1,'adapters::HttpClient::HttpClient()']]],
   ['httpclient_2ecpp_11',['HttpClient.cpp',['../HttpClient_8cpp.html',1,'']]],
   ['httpclient_2ehpp_12',['HttpClient.hpp',['../HttpClient_8hpp.html',1,'']]],
   ['humidity_13',['humidity',['../structcommon_1_1TempHumidUpdateEvent.html#a11fa868baa1d9da4702ce40bad887741',1,'common::TempHumidUpdateEvent']]],

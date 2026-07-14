@@ -1,5 +1,5 @@
 <map id="common::IRingBuffer::ReadSpans" name="common::IRingBuffer::ReadSpans">
-<area shape="rect" id="Node000001" title="Result of a read&#45;span claim. Contains up to two segments if the read data wraps around the buffer end..." alt="" coords="5,123,164,163"/>
-<area shape="rect" id="Node000002" href="$structcommon_1_1IRingBuffer_1_1ConstSpan.html" title="A read&#45;only segment of memory." alt="" coords="5,5,164,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="87,59,87,122,82,122,82,59"/>
+<area shape="rect" id="Node000001" title="Result of a read&#45;span claim. Contains up to two segments if the read data wraps around the buffer end..." alt="" coords="5,145,164,190"/>
+<area shape="rect" id="Node000002" href="$structcommon_1_1IRingBuffer_1_1ConstSpan.html" title="A read&#45;only segment of memory." alt="" coords="5,5,164,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="87,64,87,146,82,145,82,67"/>
 </map>

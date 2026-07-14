@@ -27,6 +27,9 @@ idf_component_register(
   esp_netif
   esp_event
   nvs_flash
+  esp_driver_i2c
+  esp_driver_i2s
+  esp_driver_gpio
   PRIV_REQUIRES
   mbedtls
   littlefs)

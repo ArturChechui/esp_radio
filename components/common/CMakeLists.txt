@@ -14,4 +14,4 @@ idf_component_register(
   REQUIRES
   driver
   freertos
-  json)
+  cjson)

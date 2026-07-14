@@ -10,6 +10,6 @@ var searchData=
   ['id_7',['id',['../structcommon_1_1StationData.html#ad2e040f19e481be9e6988e662a8da075',1,'common::StationData']]],
   ['invalid_5fframe_5finfo_8',['invalid_frame_info',['../structcommon_1_1Snapshot.html#a9c21098e9b51618e190a2a50b4349631',1,'common::Snapshot']]],
   ['invalidslot_9',['InvalidSlot',['../structcommon_1_1TaskHandle.html#af9f89dd3e1eced5cd4dbf113110dc3c4',1,'common::TaskHandle']]],
-  ['isconnected_10',['isconnected',['../structcommon_1_1WifiStateChangedEvent.html#a08320f78e9be810fef8afd3aae78adbd',1,'common::WifiStateChangedEvent::isConnected'],['../structcommon_1_1WifiState.html#aac62ad565a1fa2545ae35ce15638feec',1,'common::WifiState::isConnected']]],
+  ['isconnected_10',['isConnected',['../structcommon_1_1WifiStateChangedEvent.html#a08320f78e9be810fef8afd3aae78adbd',1,'common::WifiStateChangedEvent::isConnected'],['../structcommon_1_1WifiState.html#aac62ad565a1fa2545ae35ce15638feec',1,'common::WifiState::isConnected']]],
   ['isenabled_11',['isEnabled',['../structcommon_1_1ClapFeatureStateChangedEvent.html#a7d0caf8be07f1d2ccf6b7196726313c2',1,'common::ClapFeatureStateChangedEvent']]]
 ];

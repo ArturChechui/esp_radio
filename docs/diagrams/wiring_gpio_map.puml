@@ -21,8 +21,8 @@ together {
 
 component "Decoupling\n100µF electrolytic || 0.1µF ceramic" as DEC_M
 
-component "R1 100K to POS ||\nR2 100K to GND ||\n0.1µF ceramic to GND" as DIV_B
-component "R1 100K to GND ||\nR2 220K to 3.3V ||\n0.1µF ceramic to GND" as DIV_R_AMP
+component "BAT: R1 100K to POS ||\nR2 100K to GND ||\n0.1µF ceramic to GND" as DIV_B
+component "R_AMP: R1 100K to GND ||\nR2 220K to 3.3V ||\n0.1µF ceramic to GND" as DIV_R_AMP
 
 component "ESP32-S3 SuperMini" as ESP #DDDDDD {
     [5V IN (USB-C)] as ESP_5V
@@ -46,7 +46,6 @@ component "ESP32-S3 SuperMini" as ESP #DDDDDD {
     [GP12 (ENC_S2)] as GP12
     [GP13 (ENC_S1)]  as GP13
 }
-
 
 package "Inputs" as Inputs {
     component "Button NEXT" as BN
@@ -193,5 +192,7 @@ BN <-- GP9
 BN <-[#Grey]- ESP_GND 
 BP <-- GP10
 BP <-[#Grey]- ESP_GND 
+
+BAT -[#Gray,thickness=3]-> PSU
 
 @enduml
