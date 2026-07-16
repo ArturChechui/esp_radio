@@ -12,15 +12,14 @@ constexpr const char* Tag = "ConnectWifiCommand";
 }  // namespace
 
 ConnectWifiCommand::ConnectWifiCommand(services::IWifiService& wifiService,
-                                       common::IEventQueue& uiEventQueue, std::function<void()> cb)
+                                       common::IEventQueue& uiEventQueue)
     : mWifiService(wifiService),
       mUiEventQueue(uiEventQueue),
       mProvisioningPortalStarted(false),
-      mFinished(false),
-      mCb(cb) {}
+      mResult(std::nullopt) {}
 
 void ConnectWifiCommand::handle(const common::AppEvent& e) {
-    if (mFinished) {
+    if (mResult.has_value()) {
         return;
     }
 
@@ -34,7 +33,15 @@ void ConnectWifiCommand::handle(const common::AppEvent& e) {
 }
 
 bool ConnectWifiCommand::isFinished() {
-    return mFinished;
+    return mResult.has_value();
+}
+
+common::CommandType ConnectWifiCommand::getCmdType() {
+    return common::CommandType::ConnectWifi;
+}
+
+std::optional<bool> ConnectWifiCommand::getResult() {
+    return mResult;
 }
 
 void ConnectWifiCommand::connect() {
@@ -45,7 +52,7 @@ void ConnectWifiCommand::connect() {
             const bool res = mWifiService.startProvisioningPortal();
             if (!res) {
                 ESP_LOGE(Tag, "Failed to start provisioning portal. Finish with error");
-                mFinished = true;
+                mResult = false;
                 return;
             }
 
@@ -62,7 +69,7 @@ void ConnectWifiCommand::onWifiStateChanged(const bool isConnected) {
         if (!mProvisioningPortalStarted) {
             if (!mWifiService.startProvisioningPortal()) {
                 ESP_LOGE(Tag, "Failed to start provisioning portal. Finish with error");
-                mFinished = true;
+                mResult = false;
                 return;
             }
 
@@ -70,12 +77,8 @@ void ConnectWifiCommand::onWifiStateChanged(const bool isConnected) {
             mUiEventQueue.post(common::SwitchToWifiProvScreenEvent{});
         }
     } else {
-        mFinished = true;
+        mResult = true;
         mUiEventQueue.post(common::SwitchToMainScreenEvent{});
-
-        if (mCb) {
-            mCb();
-        }
     }
 }
 

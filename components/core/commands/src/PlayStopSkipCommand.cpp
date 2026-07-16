@@ -26,10 +26,10 @@ PlayStopSkipCommand::PlayStopSkipCommand(services::IPlayerService& playerService
       mButton(btn),
       mRequestedAction(Action::Play),
       mStarted(false),
-      mFinished(false) {}
+      mResult(std::nullopt) {}
 
 void PlayStopSkipCommand::handle(const common::AppEvent& e) {
-    if (mFinished) {
+    if (mResult.has_value()) {
         return;
     }
 
@@ -44,6 +44,18 @@ void PlayStopSkipCommand::handle(const common::AppEvent& e) {
                                   },
                                   [](const auto&) {}},
                e);
+}
+
+bool PlayStopSkipCommand::isFinished() {
+    return mResult.has_value();
+}
+
+common::CommandType PlayStopSkipCommand::getCmdType() {
+    return common::CommandType::PlayStopSkip;
+}
+
+std::optional<bool> PlayStopSkipCommand::getResult() {
+    return mResult;
 }
 
 void PlayStopSkipCommand::startAction() {
@@ -71,7 +83,7 @@ void PlayStopSkipCommand::startAction() {
         ESP_LOGI(Tag, "Station after skip: %s", station.name.c_str());
         mUiEventQueue.post(common::CurrentStationChangedEvent{});
 
-        mFinished = true;
+        mResult = true;
         ESP_LOGI(Tag, "Finished");
     }
 }
@@ -79,22 +91,22 @@ void PlayStopSkipCommand::startAction() {
 void PlayStopSkipCommand::onPlaybackStatus(common::PlaybackStatus s) {
     // finish on error to avoid "stuck" command
     if (s == common::PlaybackStatus::Error) {
-        ESP_LOGW(Tag, "Finished on Error");
-        mFinished = true;
+        ESP_LOGW(Tag, "Finished with Error");
+        mResult = false;
         return;
     }
 
     switch (mRequestedAction) {
         case Action::Play: {
             if (s == common::PlaybackStatus::Playing || s == common::PlaybackStatus::Buffering) {
-                mFinished = true;
+                mResult = true;
                 ESP_LOGI(Tag, "Finished");
             }
             break;
         }
         case Action::Stop: {
             if (s == common::PlaybackStatus::Stopped) {
-                mFinished = true;
+                mResult = true;
                 ESP_LOGI(Tag, "Finished");
             }
             break;
@@ -105,10 +117,6 @@ void PlayStopSkipCommand::onPlaybackStatus(common::PlaybackStatus s) {
     }
 
     return;  // handled this status event
-}
-
-bool PlayStopSkipCommand::isFinished() {
-    return mFinished;
 }
 
 }  // namespace core::commands

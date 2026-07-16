@@ -1,26 +1,29 @@
 <map id="components/core/commands/include/SyncStationsCommand.hpp" name="components/core/commands/include/SyncStationsCommand.hpp">
-<area shape="rect" id="Node000001" title="Command for synchronizing the radio station database with a remote server." alt="" coords="351,5,607,45"/>
-<area shape="rect" id="Node000002" title=" " alt="" coords="461,313,519,339"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="491,45,506,93,511,151,510,208,498,300,493,299,504,208,506,151,501,94,486,46"/>
-<area shape="rect" id="Node000003" href="$ICommand_8hpp.html" title="Interface definition for the Command design pattern." alt="" coords="369,93,491,119"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="470,47,447,83,442,80,465,44"/>
-<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="437,118,455,166,474,238,488,299,483,300,469,239,450,167,432,120"/>
-<area shape="rect" id="Node000004" href="$Events_8hpp.html" title="Definition of application&#45;level events and the core event variant." alt="" coords="345,167,440,192"/>
-<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="426,120,407,156,403,153,421,118"/>
-<area shape="rect" id="Node000007" href="$Types_8hpp.html" title="Global type definitions, enumerations, and data structures." alt="" coords="196,240,283,265"/>
-<area shape="poly" id="edge14_Node000003_Node000007" title=" " alt="" coords="411,121,336,169,263,232,259,228,332,165,408,117"/>
-<area shape="poly" id="edge6_Node000004_Node000002" title=" " alt="" coords="405,191,442,238,479,300,475,303,437,242,400,194"/>
-<area shape="rect" id="Node000005" title=" " alt="" coords="291,313,358,339"/>
-<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="384,194,366,215,350,241,338,271,331,300,326,299,333,270,345,239,362,212,380,190"/>
-<area shape="rect" id="Node000006" title=" " alt="" coords="359,240,427,265"/>
-<area shape="poly" id="edge7_Node000004_Node000006" title=" " alt="" coords="395,192,395,226,390,226,390,192"/>
-<area shape="poly" id="edge8_Node000004_Node000007" title=" " alt="" coords="369,194,278,237,276,232,367,190"/>
-<area shape="poly" id="edge13_Node000007_Node000002" title=" " alt="" coords="280,263,448,310,447,315,279,268"/>
-<area shape="poly" id="edge11_Node000007_Node000005" title=" " alt="" coords="255,263,302,302,299,307,251,267"/>
-<area shape="rect" id="Node000008" title=" " alt="" coords="116,313,187,339"/>
-<area shape="poly" id="edge9_Node000007_Node000008" title=" " alt="" coords="227,267,178,307,175,302,224,263"/>
-<area shape="rect" id="Node000009" title=" " alt="" coords="211,313,267,339"/>
-<area shape="poly" id="edge10_Node000007_Node000009" title=" " alt="" coords="242,266,242,300,237,300,237,266"/>
-<area shape="rect" id="Node000010" title=" " alt="" coords="5,313,92,339"/>
-<area shape="poly" id="edge12_Node000007_Node000010" title=" " alt="" coords="210,268,94,311,92,306,208,263"/>
+<area shape="rect" id="Node000001" title="Command for synchronizing the radio station database with a remote server." alt="" coords="253,5,508,50"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="385,325,443,353"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="390,48,405,97,412,156,416,215,417,311,413,308,411,215,407,157,399,99,388,53"/>
+<area shape="rect" id="Node000003" href="$ICommand_8hpp.html" title="Interface definition for the Command design pattern." alt="" coords="270,98,390,126"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="369,48,348,86,344,83,366,52"/>
+<area shape="poly" id="edge4_Node000003_Node000002" title=" " alt="" coords="337,124,407,311,401,310,333,128"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="218,174,292,201"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="319,125,281,165,278,161,315,128"/>
+<area shape="rect" id="Node000005" href="$Events_8hpp.html" title="Definition of application&#45;level events and the core event variant." alt="" coords="101,174,194,201"/>
+<area shape="poly" id="edge5_Node000003_Node000005" title=" " alt="" coords="295,128,195,170,193,165,299,124"/>
+<area shape="rect" id="Node000009" href="$Types_8hpp.html" title="Global type definitions, enumerations, and data structures." alt="" coords="258,249,344,277"/>
+<area shape="poly" id="edge15_Node000003_Node000009" title=" " alt="" coords="330,124,309,235,304,233,325,128"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="5,325,71,353"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="100,204,68,222,52,235,40,251,32,280,34,310,28,309,27,279,36,248,49,231,65,218,103,200"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="142,249,233,277"/>
+<area shape="poly" id="edge7_Node000005_Node000007" title=" " alt="" coords="155,199,176,236,170,235,154,204"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="50,249,117,277"/>
+<area shape="poly" id="edge8_Node000005_Node000008" title=" " alt="" coords="134,204,107,239,103,236,138,200"/>
+<area shape="poly" id="edge9_Node000005_Node000009" title=" " alt="" coords="175,199,262,241,257,243,174,205"/>
+<area shape="poly" id="edge14_Node000009_Node000002" title=" " alt="" coords="322,275,384,317,379,316,320,280"/>
+<area shape="poly" id="edge12_Node000009_Node000006" title=" " alt="" coords="258,279,86,327,85,322,257,274"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="102,325,172,353"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="274,277,181,321,179,316,269,278"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="196,325,251,353"/>
+<area shape="poly" id="edge11_Node000009_Node000011" title=" " alt="" coords="289,277,249,317,247,312,284,279"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="275,325,361,353"/>
+<area shape="poly" id="edge13_Node000009_Node000012" title=" " alt="" coords="305,275,314,311,309,308,302,280"/>
 </map>

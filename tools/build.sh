@@ -109,7 +109,7 @@ gen_docs() {
 }
 
 parse_args() {
-	while getopts ":urfmFch" opt; do
+	while getopts ":urfmFcdh" opt; do
 		case "${opt}" in
 		u) DO_UNIT_BUILD=1 ;;
 		r) DO_UNIT_RUN=1 ;;

@@ -59,8 +59,9 @@ var searchData=
   ['switchtowifiprovscreenevent_56',['SwitchToWifiProvScreenEvent',['../structcommon_1_1SwitchToWifiProvScreenEvent.html',1,'common']]],
   ['syncinprogress_57',['SyncInProgress',['../namespaceservices.html#aa1c6f273f2f4bf5febef1a12ad97d11eaeff4e67ffa366a7482478b4bce84f70f',1,'services']]],
   ['syncinprogressscreen_58',['syncInProgressScreen',['../namespacecommon_1_1fonts.html#aa3fd56615460c2197ba6313966285b36',1,'common::fonts']]],
-  ['syncstationscommand_59',['SyncStationsCommand',['../classcore_1_1commands_1_1SyncStationsCommand.html',1,'core::commands::SyncStationsCommand'],['../classcore_1_1commands_1_1SyncStationsCommand.html#a57771a2ac067490e80db16720f3075d0',1,'core::commands::SyncStationsCommand::SyncStationsCommand()']]],
-  ['syncstationscommand_2ecpp_60',['SyncStationsCommand.cpp',['../SyncStationsCommand_8cpp.html',1,'']]],
-  ['syncstationscommand_2ehpp_61',['SyncStationsCommand.hpp',['../SyncStationsCommand_8hpp.html',1,'']]],
-  ['systeminitedevent_62',['SystemInitedEvent',['../structcommon_1_1SystemInitedEvent.html',1,'common']]]
+  ['syncstations_59',['SyncStations',['../namespacecommon.html#a42916b8af7fcefcac772bd93b9c884e7ad319205640efe00933253c2ab17d3366',1,'common']]],
+  ['syncstationscommand_60',['SyncStationsCommand',['../classcore_1_1commands_1_1SyncStationsCommand.html',1,'core::commands::SyncStationsCommand'],['../classcore_1_1commands_1_1SyncStationsCommand.html#a57771a2ac067490e80db16720f3075d0',1,'core::commands::SyncStationsCommand::SyncStationsCommand()']]],
+  ['syncstationscommand_2ecpp_61',['SyncStationsCommand.cpp',['../SyncStationsCommand_8cpp.html',1,'']]],
+  ['syncstationscommand_2ehpp_62',['SyncStationsCommand.hpp',['../SyncStationsCommand_8hpp.html',1,'']]],
+  ['systeminitedevent_63',['SystemInitedEvent',['../structcommon_1_1SystemInitedEvent.html',1,'common']]]
 ];

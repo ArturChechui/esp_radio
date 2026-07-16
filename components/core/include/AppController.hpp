@@ -118,6 +118,11 @@ class AppController : public common::IEventHandler {
     void processUiLane(const common::AppEvent& e);
 
     /**
+     * @brief Handles post-processing and chaining for finished commands.
+     */
+    void postCommandHandling();
+
+    /**
      * @brief Determines if an event originated from a physical user interaction.
      * @param e The application event.
      * @return true if the event is a user input event.
@@ -130,6 +135,11 @@ class AppController : public common::IEventHandler {
      * @return true if the action is considered simple.
      */
     bool isSimpleAction(const common::AppEvent& e) const;
+
+    /**
+     * @brief Evaluates the autoplay configuration and launches playback if active.
+     */
+    void triggerAutoplayIfEnabled();
 
     services::IWifiService& mWifiService;             /**< Reference to Wi-Fi logic. */
     services::IPlayerService& mPlayerService;         /**< Reference to audio playback logic. */

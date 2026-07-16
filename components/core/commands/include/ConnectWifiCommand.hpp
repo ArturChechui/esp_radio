@@ -54,10 +54,8 @@ class ConnectWifiCommand : public ICommand {
      * @brief Constructs a ConnectWifiCommand.
      * @param wifiService Reference to the Wi-Fi service for connection control.
      * @param uiEventQueue Queue used to send status updates back to the UI.
-     * @param cb Callback function to invoke when the command finishes its execution.
      */
-    ConnectWifiCommand(services::IWifiService& wifiService, common::IEventQueue& uiEventQueue,
-                       std::function<void()> cb);
+    ConnectWifiCommand(services::IWifiService& wifiService, common::IEventQueue& uiEventQueue);
 
     /** @brief Default virtual destructor. */
     ~ConnectWifiCommand() override = default;
@@ -73,6 +71,19 @@ class ConnectWifiCommand : public ICommand {
      * @return true if the command has finished its lifecycle.
      */
     bool isFinished() override;
+
+    /**
+     * @brief Retrieves the type of the command for identification and routing purposes.
+     * @return The type of the command.
+     */
+    common::CommandType getCmdType() override;
+
+    /**
+     * @brief Retrieves the result of the command's execution.
+     * @return An optional boolean indicating success (true), failure (false), or nullopt if the
+     * result is not yet available since the command is still executing.
+     */
+    std::optional<bool> getResult() override;
 
    private:
     /**
@@ -96,8 +107,7 @@ class ConnectWifiCommand : public ICommand {
     common::IEventQueue& mUiEventQueue;   /**< Queue for UI-bound notification events. */
 
     bool mProvisioningPortalStarted; /**< Flag: indicates if the captive portal is active. */
-    bool mFinished;                  /**< Flag: indicates if the command execution is complete. */
-    std::function<void()> mCb;       /**< Callback to invoke when the command finishes. */
+    std::optional<bool> mResult;     /**< Flag: indicates the result of the command execution. */
 };
 
 }  // namespace core::commands

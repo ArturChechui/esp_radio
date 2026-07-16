@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <optional>
 #include <string>
 
 #include "Events.hpp"
@@ -50,5 +51,18 @@ class ICommand {
      * * @return true if the command is complete, false if it is still active.
      */
     virtual bool isFinished() = 0;
+
+    /**
+     * @brief Retrieves the type of the command for identification and routing purposes.
+     * @return The type of the command.
+     */
+    virtual common::CommandType getCmdType() = 0;
+
+    /**
+     * @brief Retrieves the result of the command's execution.
+     * @return An optional boolean indicating success (true), failure (false), or nullopt if the
+     * result is not yet available since the command is still executing.
+     */
+    virtual std::optional<bool> getResult() = 0;
 };
 }  // namespace core::commands

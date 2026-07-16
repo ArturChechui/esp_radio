@@ -206,9 +206,9 @@ Enumerations</h2></td></tr>
 <tr id="enum-members-0" class="groupHeader"><td colspan="2"><div class="groupHeader">Enumerations</div></td></tr>
 <tr><td colspan="2" class="ititle"><div class="groupText"><p>Simple value types for state machines and command routing. </p>
 </div></td></tr>
-<tr class="memitem:a42916b8af7fcefcac772bd93b9c884e7" id="r_a42916b8af7fcefcac772bd93b9c884e7"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a42916b8af7fcefcac772bd93b9c884e7">CommandType</a> : uint8_t { <a class="el" href="#a42916b8af7fcefcac772bd93b9c884e7af32ec19e830ee9e4db26b2a67b12b41b">PlayStopSkip</a>
-, <a class="el" href="#a42916b8af7fcefcac772bd93b9c884e7a381faf1c1a172e6beabe2015570147aa">RestoreLastMode</a>
-, <a class="el" href="#a42916b8af7fcefcac772bd93b9c884e7a26d7e77dd4165bbb26087543717b9fe1">UpdateStations</a>
+<tr class="memitem:a42916b8af7fcefcac772bd93b9c884e7" id="r_a42916b8af7fcefcac772bd93b9c884e7"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a42916b8af7fcefcac772bd93b9c884e7">CommandType</a> : uint8_t { <a class="el" href="#a42916b8af7fcefcac772bd93b9c884e7a115f8c6170f44dea5888e2a78d773b91">ConnectWifi</a>
+, <a class="el" href="#a42916b8af7fcefcac772bd93b9c884e7af32ec19e830ee9e4db26b2a67b12b41b">PlayStopSkip</a>
+, <a class="el" href="#a42916b8af7fcefcac772bd93b9c884e7ad319205640efe00933253c2ab17d3366">SyncStations</a>
  }</td></tr>
 <tr class="memdesc:a42916b8af7fcefcac772bd93b9c884e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">High-level control commands dispatched to the system manager.  <a href="#a42916b8af7fcefcac772bd93b9c884e7">More...</a><br /></td></tr>
 <tr class="memitem:ae01c7d789809ee25c2b6931c871f8502" id="r_ae01c7d789809ee25c2b6931c871f8502"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae01c7d789809ee25c2b6931c871f8502">StopResult</a> : uint8_t { <a class="el" href="#ae01c7d789809ee25c2b6931c871f8502aa60852f204ed8028c1c58808b746d115">Ok</a>
@@ -469,11 +469,11 @@ Functions</h2></td></tr>
 
 <p>High-level control commands dispatched to the system manager. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a42916b8af7fcefcac772bd93b9c884e7af32ec19e830ee9e4db26b2a67b12b41b" name="a42916b8af7fcefcac772bd93b9c884e7af32ec19e830ee9e4db26b2a67b12b41b"></a>PlayStopSkip&#160;</td><td class="fielddoc"><p>Toggles playback or skips to the next station. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a42916b8af7fcefcac772bd93b9c884e7a115f8c6170f44dea5888e2a78d773b91" name="a42916b8af7fcefcac772bd93b9c884e7a115f8c6170f44dea5888e2a78d773b91"></a>ConnectWifi&#160;</td><td class="fielddoc"><p>Initiates a connection to a Wi-Fi network. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a42916b8af7fcefcac772bd93b9c884e7a381faf1c1a172e6beabe2015570147aa" name="a42916b8af7fcefcac772bd93b9c884e7a381faf1c1a172e6beabe2015570147aa"></a>RestoreLastMode&#160;</td><td class="fielddoc"><p>Commands the system to resume its previous state. </p>
+<tr><td class="fieldname"><a id="a42916b8af7fcefcac772bd93b9c884e7af32ec19e830ee9e4db26b2a67b12b41b" name="a42916b8af7fcefcac772bd93b9c884e7af32ec19e830ee9e4db26b2a67b12b41b"></a>PlayStopSkip&#160;</td><td class="fielddoc"><p>Toggles playback or skips to the next station. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a42916b8af7fcefcac772bd93b9c884e7a26d7e77dd4165bbb26087543717b9fe1" name="a42916b8af7fcefcac772bd93b9c884e7a26d7e77dd4165bbb26087543717b9fe1"></a>UpdateStations&#160;</td><td class="fielddoc"><p>Triggers a refresh of the station database. </p>
+<tr><td class="fieldname"><a id="a42916b8af7fcefcac772bd93b9c884e7ad319205640efe00933253c2ab17d3366" name="a42916b8af7fcefcac772bd93b9c884e7ad319205640efe00933253c2ab17d3366"></a>SyncStations&#160;</td><td class="fielddoc"><p>Triggers a refresh of the station database. </p>
 </td></tr>
 </table>
 

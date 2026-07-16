@@ -82,18 +82,9 @@ class EventTask : public IEventQueue {
     TaskHandle mTaskHandle;   /**< Handle to the running FreeRTOS task. */
     ITaskRunner& mTaskRunner; /**< Reference to the system's task manager. */
 
-    // IMPORTANT:
-    // FreeRTOS queues copy elements with memcpy. AppEvent is a std::variant and
-    // currently contains non-trivial types (e.g. std::string via WifiStateChangedEvent).
-    // Copying such objects with memcpy causes memory corruption and random crashes.
-    //
-    // To make this safe, we pass pointers through the queue and allocate events on the heap.
     QueueHandle_t mEventQueue; /**< FreeRTOS handle for the underlying message queue. */
     bool mIsRunning;           /**< Flag indicating if the background task is active. */
 
-    // TODO: think about Observer pattern:
-    // observers list  std::vector<std::function<void(const AppEvent&)>> mObservers;
-    // subscribe / unsubscribe methods
     IEventHandler* mHandler; /**< Non-owning pointer to the event dispatcher target. */
 };
 

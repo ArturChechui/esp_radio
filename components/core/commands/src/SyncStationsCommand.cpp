@@ -57,11 +57,11 @@ SyncStationsCommand::SyncStationsCommand(services::IPlayerService& playerService
       mStationRepository(stationRepository),
       mUiEventQueue(uiEventQueue),
       mStarted(false),
-      mFinished(false),
+      mResult(std::nullopt),
       mRemoteManifestJson() {}
 
 void SyncStationsCommand::handle(const common::AppEvent& e) {
-    if (mFinished) {
+    if (mResult.has_value()) {
         return;
     }
 
@@ -82,18 +82,29 @@ void SyncStationsCommand::handle(const common::AppEvent& e) {
         ESP_LOGI(Tag, "Playback is active, wait until stopped");
     } else {
         ESP_LOGI(Tag, "Starting station sync");
+
+        bool res = false;
         if (runSync()) {
             ESP_LOGI(Tag, "Sync completed");
+            res = true;
         } else {
             ESP_LOGE(Tag, "Sync failed");
         }
 
-        finish();
+        finish(res);
     }
 }
 
 bool SyncStationsCommand::isFinished() {
-    return mFinished;
+    return mResult.has_value();
+}
+
+common::CommandType SyncStationsCommand::getCmdType() {
+    return common::CommandType::SyncStations;
+}
+
+std::optional<bool> SyncStationsCommand::getResult() {
+    return mResult;
 }
 
 bool SyncStationsCommand::stopPlaybackIfStarted() {
@@ -109,18 +120,21 @@ bool SyncStationsCommand::stopPlaybackIfStarted() {
 }
 
 void SyncStationsCommand::onPlaybackStatus(common::PlaybackStatus s) {
+    bool res = false;
+
     if (s == common::PlaybackStatus::Error) {
-        ESP_LOGW(Tag, "Finished on Error");
+        ESP_LOGW(Tag, "Finished with Error");
     } else if (s == common::PlaybackStatus::Stopped) {
         ESP_LOGI(Tag, "Playback stopped. Starting station sync");
         if (runSync()) {
             ESP_LOGI(Tag, "Sync completed");
+            res = true;
         } else {
             ESP_LOGE(Tag, "Sync failed");
         }
     }
 
-    finish();
+    finish(res);
 }
 
 bool SyncStationsCommand::runSync() {
@@ -273,9 +287,9 @@ bool SyncStationsCommand::replaceFileAtomically(const std::string& livePath,
     return true;
 }
 
-void SyncStationsCommand::finish() {
+void SyncStationsCommand::finish(const bool success) {
     (void)mUiEventQueue.post(common::SwitchToMainScreenEvent{});
-    mFinished = true;
+    mResult = success;
 }
 
 }  // namespace core::commands

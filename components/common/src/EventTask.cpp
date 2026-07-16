@@ -21,7 +21,6 @@ constexpr uint8_t TaskPriority = 6U;
 constexpr const char* Tag = "EventTask";
 }  // namespace
 
-// TODO: change the AppEvent approach?
 EventTask::EventTask(const char* taskName, ITaskRunner& taskRunner)
     : mTaskParams(),
       mTaskHandle(),
@@ -43,32 +42,25 @@ EventTask::~EventTask() {
         mTaskRunner.stop(mTaskHandle, 2000U);
     }
 
-    // TODO: make a leak if stop failed, it is safer
-    if (mEventQueue != nullptr) {
-        // Drain leftovers safely
-        AppEvent* eventPtr = nullptr;
-        while (xQueueReceive(mEventQueue, &eventPtr, 0) == pdTRUE) {
-            delete eventPtr;
-            eventPtr = nullptr;
-        }
+    if (mEventQueue) {
         vQueueDelete(mEventQueue);
         mEventQueue = nullptr;
     }
 }
 
 bool EventTask::init() {
-    if (mEventQueue != nullptr) {
+    if (mEventQueue) {
         ESP_LOGW(Tag, "[%s] Already initialized", mTaskParams.name);
         return false;
     }
 
-    mEventQueue = xQueueCreate(QueueSize, sizeof(AppEvent*));
+    mEventQueue = xQueueCreate(QueueSize, sizeof(AppEvent));
     if (!mEventQueue) {
         ESP_LOGE(Tag, "[%s] Failed to create queue", mTaskParams.name);
         return false;
     }
     ESP_LOGI(Tag, "[%s] Created queue (length=%u, itemSize=%u)", mTaskParams.name, QueueSize,
-             sizeof(AppEvent*));
+             sizeof(AppEvent));
 
     ESP_LOGI(Tag, "[%s] EventTask initialized", mTaskParams.name);
     return true;
@@ -81,13 +73,10 @@ bool EventTask::run(IEventHandler& handler) {
     mTaskHandle = mTaskRunner.start(mTaskParams, StackSize, &EventTask::processStepFn, this);
     if (!mTaskHandle.isValid()) {
         ESP_LOGE(Tag, "[%s] Failed to create a task", mTaskParams.name);
-        AppEvent* eventPtr = nullptr;
-        while (xQueueReceive(mEventQueue, &eventPtr, 0) == pdTRUE) {
-            delete eventPtr;
-            eventPtr = nullptr;
+        if (mEventQueue) {
+            vQueueDelete(mEventQueue);
+            mEventQueue = nullptr;
         }
-        vQueueDelete(mEventQueue);
-        mEventQueue = nullptr;
         return false;
     }
     ESP_LOGI(Tag, "[%s] Created task (core=%u, prio=%u, stackSize=%u)", mTaskParams.name,
@@ -102,18 +91,9 @@ bool EventTask::post(const AppEvent& event) {
         return false;
     }
 
-    // TODO: come up with another solution without new
-    // Allocate an event copy on heap (safe for std::variant/std::string)
-    auto* heapEvent = new (std::nothrow) AppEvent(event);
-    if (!heapEvent) {
-        ESP_LOGE(Tag, "[%s] Failed to allocate event", mTaskParams.name);
-        return false;
-    }
-
-    const BaseType_t res = xQueueSend(mEventQueue, &heapEvent, pdMS_TO_TICKS(QueueTimeoutMs));
+    const BaseType_t res = xQueueSend(mEventQueue, &event, pdMS_TO_TICKS(QueueTimeoutMs));
     if (res != pdPASS) {
         ESP_LOGW(Tag, "[%s] Failed to post event", mTaskParams.name);
-        delete heapEvent;
         return false;
     }
 
@@ -134,15 +114,10 @@ StepResult EventTask::processStep(IStopToken& token) {
         return {.action = StepAction::Done};
     }
 
-    AppEvent* eventPtr = nullptr;
-    const auto result = xQueueReceive(mEventQueue, &eventPtr, pdMS_TO_TICKS(QueueTimeoutMs));
-    if (result == pdTRUE) {
-        if (eventPtr != nullptr && mHandler) {
-            mHandler->onEvent(*eventPtr);
-        }
-
-        delete eventPtr;
-        eventPtr = nullptr;
+    AppEvent event;
+    const auto result = xQueueReceive(mEventQueue, &event, pdMS_TO_TICKS(QueueTimeoutMs));
+    if ((result == pdTRUE) && mHandler) {
+        mHandler->onEvent(event);
     }
 
     return {.action = StepAction::Continue};
