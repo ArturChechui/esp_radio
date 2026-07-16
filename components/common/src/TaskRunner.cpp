@@ -70,7 +70,6 @@ TaskHandle TaskRunner::start(const TaskParams& params, uint32_t stackWords, Step
     if (slotIdx < 0) {
         ESP_LOGE(TR, "start(%s): no free slot (MaxTasks=%u)", params.name ? params.name : "?",
                  (unsigned)MaxTasks);
-        // optionally dump slot states here
         return {};
     }
 
@@ -255,6 +254,7 @@ void TaskRunner::taskEntry(void* arg) {
     while (!token.stopRequested()) {
         const StepResult r = s->fn(s->user, token);
 
+        // Periodically log stack high-water mark for monitoring
         const TickType_t now = xTaskGetTickCount();
         if ((now - lastPrint) >= pdMS_TO_TICKS(30000)) {
             lastPrint = now;

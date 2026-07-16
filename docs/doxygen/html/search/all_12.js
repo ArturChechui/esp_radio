@@ -15,13 +15,12 @@ var searchData=
   ['renamefile_12',['renameFile',['../classadapters_1_1FileSystem.html#a5c30ef94442b81918ce9150d1fafb38e',1,'adapters::FileSystem::renameFile()'],['../classadapters_1_1IFileSystem.html#aaef9a8a27a62f9d038817e68841886ff',1,'adapters::IFileSystem::renameFile()']]],
   ['reset_13',['reset',['../classadapters_1_1IMp3Decoder.html#add4d7a7652a7ebe850faee42b078a73f',1,'adapters::IMp3Decoder::reset()'],['../classadapters_1_1Mp3Decoder.html#a3c3749df79a1239811ae1e43cafcfcf5',1,'adapters::Mp3Decoder::reset()'],['../classcommon_1_1IRingBuffer.html#a00e95411f050b0edcdb59cf0a2063e74',1,'common::IRingBuffer::reset()'],['../classcommon_1_1ISignal.html#abb73fb06a6b677159854f7d9be79eb8d',1,'common::ISignal::reset()'],['../classcommon_1_1RingBuffer.html#ae82094b44b922daaca8717c3775376e0',1,'common::RingBuffer::reset()'],['../classcommon_1_1Signal.html#ada79fec4b056f73ece5d565924c9100b',1,'common::Signal::reset()'],['../structcommon_1_1TaskHandle.html#ad28d2f2df85a3c5da82770a221b6fde4',1,'common::TaskHandle::reset()']]],
   ['resilience_20edge_20case_20buffering_14',['Network Resilience &amp;amp; Edge-Case Buffering',['../index.html#autotoc_md6',1,'']]],
-  ['restorelastmode_15',['RestoreLastMode',['../namespacecommon.html#a42916b8af7fcefcac772bd93b9c884e7a381faf1c1a172e6beabe2015570147aa',1,'common']]],
-  ['resync_5fdrops_16',['resync_drops',['../structcommon_1_1Snapshot.html#a9b7c01ca0299ff976abbb094ffb2e261',1,'common::Snapshot']]],
-  ['ringbuffer_17',['RingBuffer',['../classcommon_1_1RingBuffer.html',1,'common::RingBuffer'],['../classcommon_1_1RingBuffer.html#a410ee0619a5af4f5dd2d80c1fd5efdf5',1,'common::RingBuffer::RingBuffer()']]],
-  ['ringbuffer_2ecpp_18',['RingBuffer.cpp',['../RingBuffer_8cpp.html',1,'']]],
-  ['ringbuffer_2ehpp_19',['RingBuffer.hpp',['../RingBuffer_8hpp.html',1,'']]],
-  ['ringbuffersize_20',['RingBufferSize',['../classservices_1_1PlayerService.html#ad46390a46452e4fff2e2e0e902af330e',1,'services::PlayerService']]],
-  ['rssi_21',['rssi',['../structcommon_1_1WifiState.html#aa40d413fd4d9b66347628916a040888b',1,'common::WifiState']]],
-  ['run_22',['run',['../classcommon_1_1EventTask.html#a63eace2dabdd4d34f781acb8a87f833b',1,'common::EventTask']]],
-  ['runid_23',['runId',['../structcommon_1_1TaskHandle.html#aa4f3735c1ebb061f2ee5bc72ee9c6e4a',1,'common::TaskHandle']]]
+  ['resync_5fdrops_15',['resync_drops',['../structcommon_1_1Snapshot.html#a9b7c01ca0299ff976abbb094ffb2e261',1,'common::Snapshot']]],
+  ['ringbuffer_16',['RingBuffer',['../classcommon_1_1RingBuffer.html',1,'common::RingBuffer'],['../classcommon_1_1RingBuffer.html#a410ee0619a5af4f5dd2d80c1fd5efdf5',1,'common::RingBuffer::RingBuffer()']]],
+  ['ringbuffer_2ecpp_17',['RingBuffer.cpp',['../RingBuffer_8cpp.html',1,'']]],
+  ['ringbuffer_2ehpp_18',['RingBuffer.hpp',['../RingBuffer_8hpp.html',1,'']]],
+  ['ringbuffersize_19',['RingBufferSize',['../classservices_1_1PlayerService.html#ad46390a46452e4fff2e2e0e902af330e',1,'services::PlayerService']]],
+  ['rssi_20',['rssi',['../structcommon_1_1WifiState.html#aa40d413fd4d9b66347628916a040888b',1,'common::WifiState']]],
+  ['run_21',['run',['../classcommon_1_1EventTask.html#a63eace2dabdd4d34f781acb8a87f833b',1,'common::EventTask']]],
+  ['runid_22',['runId',['../structcommon_1_1TaskHandle.html#aa4f3735c1ebb061f2ee5bc72ee9c6e4a',1,'common::TaskHandle']]]
 ];

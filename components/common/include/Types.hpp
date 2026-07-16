@@ -25,9 +25,9 @@ namespace common {
  * @brief High-level control commands dispatched to the system manager.
  */
 enum class CommandType : uint8_t {
-    PlayStopSkip,    /**< Toggles playback or skips to the next station. */
-    RestoreLastMode, /**< Commands the system to resume its previous state. */
-    UpdateStations   /**< Triggers a refresh of the station database. */
+    ConnectWifi,  /**< Initiates a connection to a Wi-Fi network. */
+    PlayStopSkip, /**< Toggles playback or skips to the next station. */
+    SyncStations  /**< Triggers a refresh of the station database. */
 };
 
 /** @enum StopResult

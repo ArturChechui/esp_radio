@@ -67,20 +67,8 @@ void AppController::processCommandLane(const common::AppEvent& e) {
         std::visit(
             common::Overloaded{
                 [this](const common::SystemInitedEvent&) {
-                    // TODO: figure out a better way and place for autoplay check, this is a bit
-                    // hacky
-                    std::function<void()> cb = [this]() {
-                        (void)mPersistentStorage.getU32(AutoplayStorageKey, mAutoplayState);
-
-                        if (AutoplayEnabled == mAutoplayState) {
-                            mCurrentCmd = std::make_unique<commands::PlayStopSkipCommand>(
-                                mPlayerService, mStationRepository, mUiEventQueue,
-                                common::Button::PlayStop);
-                        }
-                    };
-
-                    mCurrentCmd = std::make_unique<commands::ConnectWifiCommand>(mWifiService,
-                                                                                 mUiEventQueue, cb);
+                    mCurrentCmd =
+                        std::make_unique<commands::ConnectWifiCommand>(mWifiService, mUiEventQueue);
                 },
                 [this](const common::ButtonPressedEvent& b) {
                     mCurrentCmd = std::make_unique<commands::PlayStopSkipCommand>(
@@ -88,7 +76,6 @@ void AppController::processCommandLane(const common::AppEvent& e) {
                 },
                 [this](const common::ButtonLongPressedEvent& b) {
                     if (b.button == common::Button::Next) {
-                        // TODO: move to a command?
                         const bool val = mSensorService.toggleClapFeature();
                         (void)mUiEventQueue.post(
                             common::ClapFeatureStateChangedEvent{.isEnabled = val});
@@ -125,8 +112,7 @@ void AppController::processCommandLane(const common::AppEvent& e) {
 
     mCurrentCmd->handle(e);
     if (mCurrentCmd->isFinished()) {
-        mCurrentCmd.reset();
-        mInputLocked = false;
+        postCommandHandling();
     }
 }
 
@@ -139,6 +125,28 @@ void AppController::processUiLane(const common::AppEvent& e) {
                    [this](const common::VolumeChangedEvent& x) { mUiEventQueue.post(x); },
                    [](const auto&) {}},
                e);
+}
+
+void AppController::postCommandHandling() {
+    if (!mCurrentCmd) {
+        return;
+    }
+
+    auto cmd = std::move(mCurrentCmd);
+    mInputLocked = false;
+
+    switch (cmd->getCmdType()) {
+        case common::CommandType::ConnectWifi: {
+            if (cmd->getResult().value_or(false)) {
+                triggerAutoplayIfEnabled();
+            }
+            break;
+        }
+        case common::CommandType::PlayStopSkip:
+        case common::CommandType::SyncStations:
+        default:
+            break;
+    }
 }
 
 bool AppController::isUserInputEvent(const common::AppEvent& e) const {
@@ -158,6 +166,15 @@ bool AppController::isSimpleAction(const common::AppEvent& e) const {
                           [](const auto&) { return false; },
                       },
                       e);
+}
+
+void AppController::triggerAutoplayIfEnabled() {
+    (void)mPersistentStorage.getU32(AutoplayStorageKey, mAutoplayState);
+
+    if (AutoplayEnabled == mAutoplayState) {
+        mCurrentCmd = std::make_unique<commands::PlayStopSkipCommand>(
+            mPlayerService, mStationRepository, mUiEventQueue, common::Button::PlayStop);
+    }
 }
 
 }  // namespace core

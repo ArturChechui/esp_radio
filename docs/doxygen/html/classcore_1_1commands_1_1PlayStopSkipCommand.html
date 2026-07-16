@@ -125,6 +125,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a3a9c2fabbef693a364fba60086d9ae36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Processes events relevant to the playback action lifecycle.  <br /></td></tr>
 <tr class="memitem:a7079ea5a8c1de01b1c856e40798ad930" id="r_a7079ea5a8c1de01b1c856e40798ad930"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7079ea5a8c1de01b1c856e40798ad930">isFinished</a> () override</td></tr>
 <tr class="memdesc:a7079ea5a8c1de01b1c856e40798ad930"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the playback action sequence is complete.  <br /></td></tr>
+<tr class="memitem:a5f1c14cc70a0632e631b4ac9e4fbbc45" id="r_a5f1c14cc70a0632e631b4ac9e4fbbc45"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacecommon.html#a42916b8af7fcefcac772bd93b9c884e7">common::CommandType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5f1c14cc70a0632e631b4ac9e4fbbc45">getCmdType</a> () override</td></tr>
+<tr class="memdesc:a5f1c14cc70a0632e631b4ac9e4fbbc45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the type of the command for identification and routing purposes.  <br /></td></tr>
+<tr class="memitem:a8bc7d72b0e70e04273694cd6ebdc0625" id="r_a8bc7d72b0e70e04273694cd6ebdc0625"><td class="memItemLeft" align="right" valign="top">std::optional&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8bc7d72b0e70e04273694cd6ebdc0625">getResult</a> () override</td></tr>
+<tr class="memdesc:a8bc7d72b0e70e04273694cd6ebdc0625"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the result of the command's execution.  <br /></td></tr>
 <tr class="inherit_header pub_methods_classcore_1_1commands_1_1ICommand"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classcore_1_1commands_1_1ICommand')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classcore_1_1commands_1_1ICommand.html">core::commands::ICommand</a></td></tr>
 <tr class="memitem:abcb8e5a6523f1ffbb50da4c837f6db8a inherit pub_methods_classcore_1_1commands_1_1ICommand" id="r_abcb8e5a6523f1ffbb50da4c837f6db8a"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcore_1_1commands_1_1ICommand.html#abcb8e5a6523f1ffbb50da4c837f6db8a">~ICommand</a> ()=default</td></tr>
 <tr class="memdesc:abcb8e5a6523f1ffbb50da4c837f6db8a inherit pub_methods_classcore_1_1commands_1_1ICommand"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual destructor for proper cleanup of derived command classes.  <br /></td></tr>
@@ -234,6 +238,66 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a5f1c14cc70a0632e631b4ac9e4fbbc45" name="a5f1c14cc70a0632e631b4ac9e4fbbc45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f1c14cc70a0632e631b4ac9e4fbbc45">&#9670;&#160;</a></span>getCmdType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacecommon.html#a42916b8af7fcefcac772bd93b9c884e7">common::CommandType</a> core::commands::PlayStopSkipCommand::getCmdType </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the type of the command for identification and routing purposes. </p>
+<dl class="section return"><dt>Returns</dt><dd>The type of the command. </dd></dl>
+
+<p>Implements <a class="el" href="classcore_1_1commands_1_1ICommand.html#a39c31fc6e6162a07c4a1a1060301af59">core::commands::ICommand</a>.</p>
+
+</div>
+</div>
+<a id="a8bc7d72b0e70e04273694cd6ebdc0625" name="a8bc7d72b0e70e04273694cd6ebdc0625"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bc7d72b0e70e04273694cd6ebdc0625">&#9670;&#160;</a></span>getResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; bool &gt; core::commands::PlayStopSkipCommand::getResult </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the result of the command's execution. </p>
+<dl class="section return"><dt>Returns</dt><dd>An optional boolean indicating success (true), failure (false), or nullopt if the result is not yet available since the command is still executing. </dd></dl>
+
+<p>Implements <a class="el" href="classcore_1_1commands_1_1ICommand.html#ade26419082c7cb6d9ce02ce68f272972">core::commands::ICommand</a>.</p>
+
+</div>
+</div>
 <a id="a3a9c2fabbef693a364fba60086d9ae36" name="a3a9c2fabbef693a364fba60086d9ae36"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3a9c2fabbef693a364fba60086d9ae36">&#9670;&#160;</a></span>handle()</h2>
 

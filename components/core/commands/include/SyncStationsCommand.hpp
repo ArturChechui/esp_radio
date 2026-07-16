@@ -91,6 +91,19 @@ class SyncStationsCommand : public ICommand {
      */
     bool isFinished() override;
 
+    /**
+     * @brief Retrieves the type of the command for identification and routing purposes.
+     * @return The type of the command.
+     */
+    common::CommandType getCmdType() override;
+
+    /**
+     * @brief Retrieves the result of the command's execution.
+     * @return An optional boolean indicating success (true), failure (false), or nullopt if the
+     * result is not yet available since the command is still executing.
+     */
+    std::optional<bool> getResult() override;
+
    private:
     /**
      * @brief Requests the PlayerService to stop playback if it is currently active.
@@ -144,8 +157,9 @@ class SyncStationsCommand : public ICommand {
 
     /**
      * @brief Finalizes the command state and notifies the UI.
+     * @param success true if the sync completed successfully, false otherwise.
      */
-    void finish();
+    void finish(const bool success);
 
     services::IPlayerService& mPlayerService;         /**< Reference to audio playback control. */
     services::IWifiService& mWifiService;             /**< Reference to Wi-Fi status logic. */
@@ -156,7 +170,7 @@ class SyncStationsCommand : public ICommand {
     common::IEventQueue& mUiEventQueue; /**< Queue for UI-bound notification events. */
 
     bool mStarted;                   /**< Flag: indicates if the sync logic has begun. */
-    bool mFinished;                  /**< Flag: indicates if the command is complete. */
+    std::optional<bool> mResult;     /**< Flag: indicates the result of the command execution. */
     std::string mRemoteManifestJson; /**< Cache for the downloaded manifest data. */
 };
 

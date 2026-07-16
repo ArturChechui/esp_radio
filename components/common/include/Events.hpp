@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cstdint>
-#include <string>
+#include <type_traits>
 #include <variant>
 
 #include "Types.hpp"
@@ -130,5 +130,17 @@ using AppEvent = std::variant<
     LightLevelUpdateEvent, BatteryLevelUpdateEvent, SystemInitedEvent, ClapFeatureStateChangedEvent,
     CurrentStationChangedEvent, WifiStateChangedEvent, VolumeChangedEvent, SwitchToMainScreenEvent,
     SwitchToWifiProvScreenEvent, SwitchToSyncInProgressScreenEvent, WifiCredsReceivedEvent>;
+
+/**
+ * @brief Compile-time validation of the AppEvent variant.
+ *
+ * This ensures that no non-trivially copyable types (like std::string or std::vector)
+ * are added to AppEvent. If someone attempts to add one, the compilation will fail
+ * immediately with a clear error message.
+ */
+static_assert(std::is_trivially_copyable_v<AppEvent>,
+              "ERROR: AppEvent is not trivially copyable! This will cause memory corruption "
+              "in FreeRTOS queues. Ensure all variant types are POD/trivially copyable (e.g., "
+              "use fixed-size char arrays instead of std::string).");
 
 }  // namespace common

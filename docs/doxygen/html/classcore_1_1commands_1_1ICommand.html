@@ -109,6 +109,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a49552a13b56d051e28bbabeba2ef25ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Processes an application event within the context of the command.  <br /></td></tr>
 <tr class="memitem:a88770b6516e5600e0e4b1a725d7e70e0" id="r_a88770b6516e5600e0e4b1a725d7e70e0"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a88770b6516e5600e0e4b1a725d7e70e0">isFinished</a> ()=0</td></tr>
 <tr class="memdesc:a88770b6516e5600e0e4b1a725d7e70e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the command has finished its execution lifecycle.  <br /></td></tr>
+<tr class="memitem:a39c31fc6e6162a07c4a1a1060301af59" id="r_a39c31fc6e6162a07c4a1a1060301af59"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacecommon.html#a42916b8af7fcefcac772bd93b9c884e7">common::CommandType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a39c31fc6e6162a07c4a1a1060301af59">getCmdType</a> ()=0</td></tr>
+<tr class="memdesc:a39c31fc6e6162a07c4a1a1060301af59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the type of the command for identification and routing purposes.  <br /></td></tr>
+<tr class="memitem:ade26419082c7cb6d9ce02ce68f272972" id="r_ade26419082c7cb6d9ce02ce68f272972"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ade26419082c7cb6d9ce02ce68f272972">getResult</a> ()=0</td></tr>
+<tr class="memdesc:ade26419082c7cb6d9ce02ce68f272972"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the result of the command's execution.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Abstract interface for an executable command. </p>
@@ -142,6 +146,66 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a39c31fc6e6162a07c4a1a1060301af59" name="a39c31fc6e6162a07c4a1a1060301af59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39c31fc6e6162a07c4a1a1060301af59">&#9670;&#160;</a></span>getCmdType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespacecommon.html#a42916b8af7fcefcac772bd93b9c884e7">common::CommandType</a> core::commands::ICommand::getCmdType </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the type of the command for identification and routing purposes. </p>
+<dl class="section return"><dt>Returns</dt><dd>The type of the command. </dd></dl>
+
+<p>Implemented in <a class="el" href="classcore_1_1commands_1_1ConnectWifiCommand.html#ae5152cbc0d1ff59a3960ad6dd463a7f2">core::commands::ConnectWifiCommand</a>, <a class="el" href="classcore_1_1commands_1_1PlayStopSkipCommand.html#a5f1c14cc70a0632e631b4ac9e4fbbc45">core::commands::PlayStopSkipCommand</a>, and <a class="el" href="classcore_1_1commands_1_1SyncStationsCommand.html#a555d669f774e3a4770beece0a2d7c168">core::commands::SyncStationsCommand</a>.</p>
+
+</div>
+</div>
+<a id="ade26419082c7cb6d9ce02ce68f272972" name="ade26419082c7cb6d9ce02ce68f272972"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade26419082c7cb6d9ce02ce68f272972">&#9670;&#160;</a></span>getResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::optional&lt; bool &gt; core::commands::ICommand::getResult </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the result of the command's execution. </p>
+<dl class="section return"><dt>Returns</dt><dd>An optional boolean indicating success (true), failure (false), or nullopt if the result is not yet available since the command is still executing. </dd></dl>
+
+<p>Implemented in <a class="el" href="classcore_1_1commands_1_1ConnectWifiCommand.html#a9bb77eba3b0df171020b846ecaed3f88">core::commands::ConnectWifiCommand</a>, <a class="el" href="classcore_1_1commands_1_1PlayStopSkipCommand.html#a8bc7d72b0e70e04273694cd6ebdc0625">core::commands::PlayStopSkipCommand</a>, and <a class="el" href="classcore_1_1commands_1_1SyncStationsCommand.html#a508d32746fc202d3f150cd8b80314c53">core::commands::SyncStationsCommand</a>.</p>
+
+</div>
+</div>
 <a id="a49552a13b56d051e28bbabeba2ef25ba" name="a49552a13b56d051e28bbabeba2ef25ba"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a49552a13b56d051e28bbabeba2ef25ba">&#9670;&#160;</a></span>handle()</h2>
 

@@ -5,6 +5,5 @@ var searchData=
   ['uiservice_2ecpp_2',['UiService.cpp',['../UiService_8cpp.html',1,'']]],
   ['uiservice_2ehpp_3',['UiService.hpp',['../UiService_8hpp.html',1,'']]],
   ['unlock_4',['unlock',['../classcommon_1_1Mutex.html#a87045089ad7856960dc9f62910a15fc2',1,'common::Mutex']]],
-  ['updatestations_5',['UpdateStations',['../namespacecommon.html#a42916b8af7fcefcac772bd93b9c884e7a26d7e77dd4165bbb26087543717b9fe1',1,'common']]],
-  ['url_6',['url',['../structcommon_1_1StationData.html#ac1a56f540d595db5d00676eefc6474ed',1,'common::StationData']]]
+  ['url_5',['url',['../structcommon_1_1StationData.html#ac1a56f540d595db5d00676eefc6474ed',1,'common::StationData']]]
 ];

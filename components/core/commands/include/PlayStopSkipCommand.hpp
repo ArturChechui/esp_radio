@@ -83,6 +83,19 @@ class PlayStopSkipCommand : public ICommand {
      */
     bool isFinished() override;
 
+    /**
+     * @brief Retrieves the type of the command for identification and routing purposes.
+     * @return The type of the command.
+     */
+    common::CommandType getCmdType() override;
+
+    /**
+     * @brief Retrieves the result of the command's execution.
+     * @return An optional boolean indicating success (true), failure (false), or nullopt if the
+     * result is not yet available since the command is still executing.
+     */
+    std::optional<bool> getResult() override;
+
    private:
     /**
      * @brief Performs the initial logic for the play/stop/skip call.
@@ -105,7 +118,7 @@ class PlayStopSkipCommand : public ICommand {
     common::Button mButton;             /**< The button identifier that initiated the command. */
     Action mRequestedAction;            /**< The specific action being executed. */
     bool mStarted;                      /**< Flag: indicates if the action has been initiated. */
-    bool mFinished; /**< Flag: indicates if the command is ready to be destroyed. */
+    std::optional<bool> mResult;        /**< Flag: indicates the result of the command execution. */
 };
 
 }  // namespace core::commands
