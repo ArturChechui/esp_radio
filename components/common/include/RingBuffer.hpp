@@ -2,35 +2,38 @@
  * @file RingBuffer.hpp
  * @brief Concrete implementation of a thread-safe circular buffer.
  *
- * This file contains the RingBuffer class, which uses a mutex and signals
- * to coordinate data flow between a single producer and a single consumer.
+ * This file contains the RingBuffer class, which implements the IRingBuffer interface. It is
+ * designed for single-producer, single-consumer scenarios, such as audio streaming pipelines.
  */
 
 #pragma once
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/semphr.h>
-
+#include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <vector>
 
 #include "IRingBuffer.hpp"
-#include "Mutex.hpp"
+#include "PsramAllocator.hpp"
 #include "Signal.hpp"
 
 namespace common {
 
+namespace {
+// Standard cache line size for ESP32 / Xtensa LX architecture
+constexpr std::size_t HwCacheLineSize = 32U;
+}  // namespace
+
 /**
  * @class RingBuffer
- * @brief A thread-safe circular buffer implementation optimized for audio pipelines.
+ * @brief Single-producer, single-consumer thread-safe circular buffer implementation.
  *
  * This implementation is designed for the "audio pipeline" use case:
  * - 1 producer task (e.g., HTTP reader)
  * - 1 consumer task (e.g., decoder/player)
  *
- * It provides thread safety via an internal mutex and offers *zero-copy spans* * to allow producers
- * and consumers to access the internal memory directly, avoiding extra temporary buffers.
+ * It provides thread safety via an atomic approach and offers zero-copy spans to allow
+ * producers and consumers to access the internal memory directly, avoiding extra temporary buffers.
  */
 class RingBuffer : public IRingBuffer {
    public:
@@ -42,29 +45,6 @@ class RingBuffer : public IRingBuffer {
 
     /** @brief Default virtual destructor. */
     ~RingBuffer() override = default;
-
-    /** @name Compatibility Copy APIs
-     * Standard methods for moving data by copying it into or out of the buffer.
-     * @{ */
-
-    /**
-     * @brief Copies data into the ring buffer.
-     * @param data Pointer to the source data.
-     * @param len Number of bytes to write.
-     * @param timeoutMs Maximum time to wait for sufficient space.
-     * @return The actual number of bytes written.
-     */
-    size_t write(const uint8_t* data, const size_t len, const uint32_t timeoutMs) override;
-
-    /**
-     * @brief Copies data out of the ring buffer.
-     * @param data Pointer to the destination buffer.
-     * @param len Number of bytes to read.
-     * @param timeoutMs Maximum time to wait for available data.
-     * @return The actual number of bytes read.
-     */
-    size_t read(uint8_t* data, const size_t len, const uint32_t timeoutMs) override;
-    /** @} */
 
     /** @name Zero-copy APIs
      * Methods providing direct access to internal memory segments.
@@ -117,11 +97,10 @@ class RingBuffer : public IRingBuffer {
     bool waitForSpace(const uint32_t timeoutMs) override;
     /** @} */
 
-    /** @brief Returns the number of bytes currently available for reading. */
+    /** @brief Returns the number of bytes currently available for reading.
+     * Optimized for PRODUCER to speed up or slow down based on consumer progress.
+     */
     size_t available() const override;
-
-    /** @brief Returns the number of bytes currently free for writing. */
-    size_t space() const override;
 
     /** @brief Retrieves the current availability and free space metrics atomically. */
     FillLevels getFillLevels() const override;
@@ -136,23 +115,14 @@ class RingBuffer : public IRingBuffer {
     void reset() override;
 
    private:
-    /** @brief Calculates available data without acquiring the mutex. */
-    size_t availableUnlocked() const;
-    /** @brief Calculates free space without acquiring the mutex. */
-    size_t spaceUnlocked() const;
-    /** @brief Internal logic to advance the read pointer. */
-    void advanceReadUnlocked(const size_t bytes);
-    /** @brief Internal logic to advance the write pointer. */
-    void advanceWriteUnlocked(const size_t bytes);
+    size_t mCapacity; /**< Total size of the underlying buffer. */
+    std::vector<uint8_t, common::PsramAllocator<uint8_t>>
+        mBuffer; /**< Internal storage for the circular data in PSRAM. */
 
-    size_t mCapacity;             /**< Total size of the underlying buffer. */
-    std::vector<uint8_t> mBuffer; /**< Internal storage for the circular data. */
+    alignas(HwCacheLineSize) std::atomic<size_t> mWritePos; /**< Current write offset in bytes. */
+    alignas(HwCacheLineSize) std::atomic<size_t> mReadPos;  /**< Current read offset in bytes. */
+    std::atomic<bool> mAborted; /**< Flag indicating if the buffer has been aborted. */
 
-    size_t mWritePos; /**< Current write offset in bytes. */
-    size_t mReadPos;  /**< Current read offset in bytes. */
-    bool mAborted;    /**< Flag indicating if the buffer has been aborted. */
-
-    mutable common::Mutex mMutex;        /**< Mutex protecting internal positions and state. */
     mutable common::Signal mDataSignal;  /**< Signal triggered when data is written. */
     mutable common::Signal mSpaceSignal; /**< Signal triggered when space is freed. */
 };

@@ -1,0 +1,9 @@
+<map id="components/common/include/PsramAllocator.hpp" name="components/common/include/PsramAllocator.hpp">
+<area shape="rect" id="Node000001" title="Custom allocator for PSRAM memory management." alt="" coords="89,5,302,50"/>
+<area shape="rect" id="Node000002" href="$RingBuffer_8hpp.html" title="Concrete implementation of a thread&#45;safe circular buffer." alt="" coords="89,98,302,143"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="197,63,198,99,193,97,194,68"/>
+<area shape="rect" id="Node000003" href="$RingBuffer_8cpp.html" title=" " alt="" coords="5,191,191,235"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="164,152,123,192,120,188,159,154"/>
+<area shape="rect" id="Node000004" href="$AppContext_8cpp.html" title=" " alt="" coords="214,191,371,235"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="230,151,272,190,267,190,229,156"/>
+</map>

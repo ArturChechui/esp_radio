@@ -88,7 +88,7 @@ idf_flash_monitor() {
 
 unit_build() {
 	mkdir -p "${UNIT_BUILD_DIR}"
-	cmake -S tests/unit -B "${UNIT_BUILD_DIR}"
+	cmake -S tests/unit -B "${UNIT_BUILD_DIR}" -DUSE_NULL_STATS=ON
 	cmake --build "${UNIT_BUILD_DIR}" -j"$(nproc)"
 }
 

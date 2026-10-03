@@ -25,7 +25,6 @@
 #include "WifiClient.hpp"
 
 // Common
-#include "AudioBufferStats.hpp"
 #include "Clock.hpp"
 #include "EventTask.hpp"
 #include "JsonParser.hpp"
@@ -120,7 +119,6 @@ class AppContext {
 
     // --- Common (Utilities Layer) ---
     std::unique_ptr<common::TaskRunner> mTaskRunner;   /**< Background task manager. */
-    std::unique_ptr<common::AudioBufferStats> mStats;  /**< Playback statistics. */
     std::unique_ptr<common::Queue<uint32_t>> mQueue;   /**< Global event queue. */
     std::unique_ptr<common::Clock> mClock;             /**< System time and SNTP. */
     std::unique_ptr<common::EventTask> mUiEventTask;   /**< UI processing thread. */

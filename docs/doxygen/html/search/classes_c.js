@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['overloaded_0',['Overloaded',['../structcommon_1_1Overloaded.html',1,'common']]]
+  ['nullaudiobufferstats_0',['NullAudioBufferStats',['../classcommon_1_1NullAudioBufferStats.html',1,'common']]]
 ];

@@ -1,0 +1,9 @@
+<map id="components/common/include/NullAudioBufferStats.hpp" name="components/common/include/NullAudioBufferStats.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,219,50"/>
+<area shape="rect" id="Node000002" href="$IAudioBufferStats_8hpp.html" title="Interface for tracking and reporting audio pipeline statistics." alt="" coords="31,98,193,126"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="113,48,115,83,109,82,111,53"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="32,174,101,201"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="106,125,85,162,81,159,102,128"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="126,174,191,201"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="122,124,145,161,140,160,119,129"/>
+</map>

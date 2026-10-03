@@ -1,5 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$classservices_1_1IStationRepository.html" title="Abstract interface for a station data repository." alt="" coords="5,5,209,33"/>
-<area shape="rect" id="Node000001" href="$classservices_1_1StationRepository.html" title="Concrete implementation of a station database with persistence." alt="" coords="257,5,456,33"/>
-<area shape="poly" id="edge30_Node000000_Node000001" title=" " alt="" coords="224,17,259,19,254,19,224,22"/>
+<area shape="rect" id="Node000000" href="$classservices_1_1IPlayerService.html" title="Abstract interface for a playback management service." alt="" coords="5,5,182,33"/>
+<area shape="rect" id="Node000001" href="$classservices_1_1PlayerService.html" title="Concrete implementation of the audio player engine." alt="" coords="230,5,402,33"/>
+<area shape="poly" id="edge29_Node000000_Node000001" title=" " alt="" coords="198,17,232,19,226,19,198,22"/>
 </map>

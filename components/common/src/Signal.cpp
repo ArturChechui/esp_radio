@@ -1,43 +1,53 @@
-#include <freertos/FreeRTOS.h>
-
-#include "Helper.hpp"
 #include "Signal.hpp"
 
-namespace common {
-Signal::Signal() : mStorage(), mHandle(xSemaphoreCreateBinaryStatic(&mStorage)) {}
+#include <freertos/FreeRTOS.h>
+#include <freertos/semphr.h>
+#include <freertos/task.h>
 
-Signal::~Signal() {
-    mHandle = nullptr;
-}
+#include "Helper.hpp"
+
+namespace common {
+struct Signal::Impl {
+    StaticSemaphore_t storage; /**< Memory storage for the static semaphore. */
+    SemaphoreHandle_t handle;  /**< Handle used by FreeRTOS to manage the semaphore. */
+
+    Impl() {
+        handle = xSemaphoreCreateBinaryStatic(&storage);
+    }
+};
+
+Signal::Signal() : m(std::make_unique<Impl>()) {}
+
+Signal::~Signal() = default;
 
 bool Signal::wait(const uint32_t& timeoutMs) const {
-    if (mHandle == nullptr) {
+    if (m->handle == nullptr) {
         return false;
     }
 
-    const auto res = xSemaphoreTake(mHandle, toTicks(timeoutMs));
+    const auto res = xSemaphoreTake(m->handle, toTicks(timeoutMs));
 
     return (res == pdTRUE);
 }
 
 void Signal::signal() {
-    if (mHandle == nullptr) {
+    if (m->handle == nullptr) {
         return;
     }
 
-    xSemaphoreGive(mHandle);
+    xSemaphoreGive(m->handle);
 }
 
 bool Signal::isValid() const {
-    return (mHandle != nullptr);
+    return (m->handle != nullptr);
 }
 
 void Signal::reset() {
-    if (mHandle == nullptr) {
+    if (m->handle == nullptr) {
         return;
     }
 
-    xSemaphoreTake(mHandle, 0);
+    xSemaphoreTake(m->handle, 0);
 }
 
 }  // namespace common

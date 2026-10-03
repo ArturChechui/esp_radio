@@ -3,7 +3,6 @@
 #include <gtest/gtest.h>
 
 // Common
-#include "FakeAudioBufferStats.hpp"
 #include "FakeRingBuffer.hpp"
 #include "MockEventQueue.hpp"
 #include "MockStopToken.hpp"
@@ -29,7 +28,6 @@ class PlayerServiceTest : public ::testing::Test {
     std::unique_ptr<adapters::MockHttpClient> mockHttpClient;
     std::unique_ptr<adapters::MockI2sBus> mockI2sBus;
     std::unique_ptr<adapters::MockMp3Decoder> mockMp3Decoder;
-    std::unique_ptr<common::FakeAudioBufferStats> fakeStats;
     std::unique_ptr<common::MockEventQueue> mockEventQueue;
     std::unique_ptr<common::MockTaskRunner> mockTaskRunner;
 

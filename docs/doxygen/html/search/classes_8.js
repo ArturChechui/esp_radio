@@ -17,7 +17,7 @@ var searchData=
   ['iinputservice_14',['IInputService',['../classservices_1_1IInputService.html',1,'services']]],
   ['ijsonparser_15',['IJsonParser',['../classcommon_1_1IJsonParser.html',1,'common']]],
   ['imp3decoder_16',['IMp3Decoder',['../classadapters_1_1IMp3Decoder.html',1,'adapters']]],
-  ['impl_17',['Impl',['../structcommon_1_1Mutex_1_1Impl.html',1,'common::Mutex']]],
+  ['impl_17',['Impl',['../structcommon_1_1Mutex_1_1Impl.html',1,'common::Mutex::Impl'],['../structcommon_1_1Signal_1_1Impl.html',1,'common::Signal::Impl']]],
   ['inputservice_18',['InputService',['../classservices_1_1InputService.html',1,'services']]],
   ['ipersistentstorage_19',['IPersistentStorage',['../classadapters_1_1IPersistentStorage.html',1,'adapters']]],
   ['iplayerservice_20',['IPlayerService',['../classservices_1_1IPlayerService.html',1,'services']]],

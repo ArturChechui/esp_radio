@@ -148,8 +148,6 @@ together {
     }
 
     interface IRingBuffer {
-        +write(data: const uint8_t*, len: const size_t, timeoutMs: const uint32_t): size_t
-        +read(data: uint8_t*, len: const size_t, timeoutMs: const uint32_t): size_t
         +claimReadSpans(maxBytes: const size_t): ReadSpans
         +commitRead(bytes: size_t): void
         +claimWriteSpans(maxBytes: const size_t): WriteSpans
@@ -157,7 +155,6 @@ together {
         +waitForData(timeoutMs: const uint32_t): bool
         +waitForSpace(timeoutMs: const uint32_t): bool
         +available(): size_t
-        +space(): size_t
         +getFillLevels(): FillLevels
         +capacity(): size_t
         +abort(): void

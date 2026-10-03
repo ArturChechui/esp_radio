@@ -8,9 +8,7 @@
 
 #pragma once
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/semphr.h>
-#include <freertos/task.h>
+#include <memory>
 
 #include "ISignal.hpp"
 
@@ -67,8 +65,8 @@ class Signal : public ISignal {
     /** @} */
 
    private:
-    StaticSemaphore_t mStorage; /**< Memory storage for the static semaphore. */
-    SemaphoreHandle_t mHandle;  /**< Handle used by FreeRTOS to manage the semaphore. */
+    struct Impl;             /**< Forward declaration of the implementation structure. */
+    std::unique_ptr<Impl> m; /**< Opaque pointer to the platform-specific implementation. */
 };
 
 }  // namespace common

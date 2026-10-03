@@ -1,0 +1,9 @@
+<map id="components/common/include/PsramAllocator.hpp" name="components/common/include/PsramAllocator.hpp">
+<area shape="rect" id="Node000001" title="Custom allocator for PSRAM memory management." alt="" coords="24,5,237,50"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,98,74,126"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="109,49,67,89,64,85,104,51"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="98,98,162,126"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="132,48,133,83,128,81,128,52"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="187,98,249,126"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="154,48,196,87,190,87,152,53"/>
+</map>
