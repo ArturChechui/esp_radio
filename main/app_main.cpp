@@ -11,7 +11,7 @@
 
 #include "AppContext.hpp"
 
-static const char *TAG = "app_main";
+static const char* TAG = "app_main";
 
 extern "C" void app_main(void) {
     ESP_LOGI(TAG, "=== ESP Radio App Starting ===");
@@ -29,7 +29,7 @@ extern "C" void app_main(void) {
 
     ESP_LOGI(TAG, "Application initialized");
 
-    char *buf = static_cast<char *>(malloc(2048));
+    char* buf = static_cast<char*>(malloc(2048));
     if (!buf) {
         ESP_LOGE(TAG, "Failed to allocate stats buffer");
         return;

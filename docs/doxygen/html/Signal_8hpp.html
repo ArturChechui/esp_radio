@@ -84,26 +84,20 @@ $(function() {
 
 <p>Concrete implementation of the ISignal interface using FreeRTOS semaphores.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;freertos/FreeRTOS.h&gt;</code><br />
-<code>#include &lt;freertos/semphr.h&gt;</code><br />
-<code>#include &lt;freertos/task.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;memory&gt;</code><br />
 <code>#include &quot;<a class="el" href="ISignal_8hpp_source.html">ISignal.hpp</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for Signal.hpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="Signal_8hpp__incl.png" border="0" usemap="#acomponents_2common_2include_2Signal_8hpp" loading="lazy" alt=""/></div>
 <map name="acomponents_2common_2include_2Signal_8hpp" id="acomponents_2common_2include_2Signal_8hpp">
-<area shape="rect" title="Concrete implementation of the ISignal interface using FreeRTOS semaphores." alt="" coords="217,5,432,45"/>
-<area shape="rect" title=" " alt="" coords="5,93,156,119"/>
-<area shape="poly" title=" " alt="" coords="267,48,130,92,129,86,265,43"/>
-<area shape="rect" title=" " alt="" coords="180,93,317,119"/>
-<area shape="poly" title=" " alt="" coords="308,47,272,85,268,81,304,44"/>
-<area shape="rect" title=" " alt="" coords="342,93,459,119"/>
-<area shape="poly" title=" " alt="" coords="345,44,382,81,378,85,341,47"/>
-<area shape="rect" href="ISignal_8hpp.html" title="Interface for a thread synchronization signal." alt="" coords="484,93,579,119"/>
-<area shape="poly" title=" " alt="" coords="375,43,489,86,487,91,373,48"/>
-<area shape="rect" title=" " alt="" coords="498,167,565,192"/>
-<area shape="poly" title=" " alt="" coords="534,119,534,153,529,153,529,119"/>
+<area shape="rect" title="Concrete implementation of the ISignal interface using FreeRTOS semaphores." alt="" coords="5,5,219,50"/>
+<area shape="rect" title=" " alt="" coords="19,98,96,126"/>
+<area shape="poly" title=" " alt="" coords="96,53,77,86,72,84,99,48"/>
+<area shape="rect" href="ISignal_8hpp.html" title="Interface for a thread synchronization signal." alt="" coords="120,98,213,126"/>
+<area shape="poly" title=" " alt="" coords="127,48,152,85,147,85,126,53"/>
+<area shape="rect" title=" " alt="" coords="134,174,199,201"/>
+<area shape="poly" title=" " alt="" coords="168,124,169,159,164,157,165,128"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -111,27 +105,32 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="Signal_8hpp__dep__incl.png" border="0" usemap="#acomponents_2common_2include_2Signal_8hppdep" loading="lazy" alt=""/></div>
 <map name="acomponents_2common_2include_2Signal_8hppdep" id="acomponents_2common_2include_2Signal_8hppdep">
-<area shape="rect" title="Concrete implementation of the ISignal interface using FreeRTOS semaphores." alt="" coords="245,5,459,45"/>
-<area shape="rect" href="RingBuffer_8hpp.html" title="Concrete implementation of a thread&#45;safe circular buffer." alt="" coords="27,93,242,133"/>
-<area shape="poly" title=" " alt="" coords="292,53,183,96,181,91,291,48"/>
-<area shape="rect" href="AppContext_8cpp.html" title=" " alt="" coords="201,269,359,309"/>
-<area shape="poly" title=" " alt="" coords="329,58,308,94,294,142,286,191,282,269,277,269,281,190,289,141,303,92,324,55"/>
-<area shape="rect" href="TaskRunner_8hpp.html" title="Concrete implementation of the ITaskRunner interface." alt="" coords="318,93,533,133"/>
-<area shape="poly" title=" " alt="" coords="379,54,411,91,407,95,375,58"/>
-<area shape="rect" href="Signal_8cpp.html" title=" " alt="" coords="557,93,744,133"/>
-<area shape="poly" title=" " alt="" coords="431,47,586,91,585,96,430,52"/>
-<area shape="rect" href="RingBuffer_8cpp.html" title=" " alt="" coords="5,181,192,221"/>
-<area shape="poly" title=" " alt="" coords="124,147,109,182,104,180,119,145"/>
-<area shape="poly" title=" " alt="" coords="168,141,206,180,242,226,270,268,266,271,238,229,202,183,164,144"/>
-<area shape="rect" href="StopToken_8cpp.html" title=" " alt="" coords="317,181,504,221"/>
-<area shape="poly" title=" " alt="" coords="422,147,417,182,411,181,417,146"/>
-<area shape="rect" href="TaskRunner_8cpp.html" title=" " alt="" coords="528,181,715,221"/>
-<area shape="poly" title=" " alt="" coords="482,136,579,179,577,184,480,141"/>
-<area shape="rect" href="AppContext_8hpp.html" title="Central registry and lifecycle manager for the application." alt="" coords="739,181,925,221"/>
-<area shape="poly" title=" " alt="" coords="529,134,744,179,742,184,527,139"/>
-<area shape="poly" title=" " alt="" coords="726,224,359,280,358,274,725,219"/>
-<area shape="rect" href="app__main_8cpp.html" title=" " alt="" coords="757,277,907,302"/>
-<area shape="poly" title=" " alt="" coords="835,235,835,276,829,276,829,235"/>
+<area shape="rect" title="Concrete implementation of the ISignal interface using FreeRTOS semaphores." alt="" coords="317,5,530,50"/>
+<area shape="rect" href="RingBuffer_8hpp.html" title="Concrete implementation of a thread&#45;safe circular buffer." alt="" coords="29,98,242,143"/>
+<area shape="poly" title=" " alt="" coords="338,57,205,100,203,95,342,53"/>
+<area shape="rect" href="AppContext_8cpp.html" title=" " alt="" coords="201,283,358,328"/>
+<area shape="poly" title=" " alt="" coords="348,59,327,77,307,100,295,122,286,146,277,197,276,245,278,284,274,282,271,245,272,197,281,145,290,120,302,96,323,73,352,56"/>
+<area shape="rect" href="TaskRunner_8hpp.html" title="Concrete implementation of the ITaskRunner interface." alt="" coords="317,98,530,143"/>
+<area shape="poly" title=" " alt="" coords="425,63,426,99,421,97,422,68"/>
+<area shape="rect" href="Signal_8cpp.html" title=" " alt="" coords="555,98,740,143"/>
+<area shape="poly" title=" " alt="" coords="491,54,596,97,591,98,491,59"/>
+<area shape="rect" href="PlayerService_8hpp.html" title="Implementation of the IPlayerService interface for audio streaming." alt="" coords="764,98,957,143"/>
+<area shape="poly" title=" " alt="" coords="543,51,766,98,761,100,543,56"/>
+<area shape="rect" href="RingBuffer_8cpp.html" title=" " alt="" coords="5,191,191,235"/>
+<area shape="poly" title=" " alt="" coords="122,155,109,192,104,189,119,159"/>
+<area shape="poly" title=" " alt="" coords="170,151,205,189,241,238,269,284,264,282,237,241,201,192,169,156"/>
+<area shape="rect" href="StopToken_8cpp.html" title=" " alt="" coords="317,191,503,235"/>
+<area shape="poly" title=" " alt="" coords="420,156,415,192,411,189,416,160"/>
+<area shape="rect" href="TaskRunner_8cpp.html" title=" " alt="" coords="527,191,712,235"/>
+<area shape="poly" title=" " alt="" coords="485,147,575,190,570,190,484,152"/>
+<area shape="rect" href="AppContext_8hpp.html" title="Central registry and lifecycle manager for the application." alt="" coords="736,191,921,235"/>
+<area shape="poly" title=" " alt="" coords="535,144,738,191,733,192,535,149"/>
+<area shape="poly" title=" " alt="" coords="723,238,358,296,358,291,720,234"/>
+<area shape="rect" href="app__main_8cpp.html" title=" " alt="" coords="754,292,903,320"/>
+<area shape="poly" title=" " alt="" coords="831,249,831,293,827,289,827,253"/>
+<area shape="poly" title=" " alt="" coords="850,155,838,192,834,189,846,159"/>
+<area shape="rect" href="PlayerService_8cpp.html" title=" " alt="" coords="945,191,1110,235"/>
+<area shape="poly" title=" " alt="" coords="914,148,990,191,985,190,913,153"/>
 </map>
 </div>
 </div>

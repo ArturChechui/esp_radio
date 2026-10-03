@@ -25,7 +25,7 @@ var searchData=
   ['wifistatecallback_22',['WifiStateCallback',['../namespacecommon.html#ab221d6eb5eaf3e64f8bc1501d02664d8',1,'common']]],
   ['wifistatechangedevent_23',['WifiStateChangedEvent',['../structcommon_1_1WifiStateChangedEvent.html',1,'common']]],
   ['works_20architecture_24',['How it Works (Architecture)',['../index.html#autotoc_md16',1,'']]],
-  ['write_25',['write',['../classadapters_1_1I2sBus.html#a18a3452d3a4af4f6d0f1f6e0af4bee35',1,'adapters::I2sBus::write()'],['../classadapters_1_1II2sBus.html#aefbb0d93772c785aa8af504931aa77b0',1,'adapters::II2sBus::write()'],['../classcommon_1_1IRingBuffer.html#a3593f80f193bd02dd9475952f448dd6c',1,'common::IRingBuffer::write()'],['../classcommon_1_1RingBuffer.html#a8be6b9a5e43ad1386ca51a202d61b187',1,'common::RingBuffer::write()']]],
+  ['write_25',['write',['../classadapters_1_1I2sBus.html#a18a3452d3a4af4f6d0f1f6e0af4bee35',1,'adapters::I2sBus::write()'],['../classadapters_1_1II2sBus.html#aefbb0d93772c785aa8af504931aa77b0',1,'adapters::II2sBus::write()']]],
   ['writebytes_26',['writeBytes',['../classadapters_1_1I2cBus.html#a4c388c450f62a232ca709d97debbeb35',1,'adapters::I2cBus::writeBytes()'],['../classadapters_1_1II2cBus.html#a5b0c243f71be3814a13e8064e62f3d3d',1,'adapters::II2cBus::writeBytes()']]],
   ['writefile_27',['writeFile',['../classadapters_1_1FileSystem.html#a1188ef4157c22c5ebb85587114e8a9f7',1,'adapters::FileSystem::writeFile()'],['../classadapters_1_1IFileSystem.html#a2bfa2d4ea70dabad4a4213315add11e3',1,'adapters::IFileSystem::writeFile()']]],
   ['writespans_28',['WriteSpans',['../structcommon_1_1IRingBuffer_1_1WriteSpans.html',1,'common::IRingBuffer']]]

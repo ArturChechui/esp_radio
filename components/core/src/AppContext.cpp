@@ -69,7 +69,6 @@ bool AppContext::initCommon() {
     ESP_LOGI(Tag, "Initializing Common");
 
     mTaskRunner = std::make_unique<common::TaskRunner>();
-    mStats = std::make_unique<common::AudioBufferStats>(10000U);
     mClock = std::make_unique<common::Clock>();
     mQueue = std::make_unique<common::Queue<uint32_t>>("InputQueue");
     mUiEventTask = std::make_unique<common::EventTask>("UiEventTask", *mTaskRunner);
@@ -121,10 +120,8 @@ bool AppContext::initServices() {
         *mGpioInput, *mCoreEventTask, *mQueue, *mTaskRunner, *mClock, *mPersistentStorage);
     mPlayerService = std::make_unique<services::PlayerService>(
         *mI2sBus, *mStreamHttpClient, *mMp3Decoder, *mTaskRunner,
-        std::make_unique<common::RingBuffer>(services::PlayerService::RingBufferSize), *mStats,
-        *mCoreEventTask,
-        std::make_unique<common::Signal>());  // TODO: move signal inside, no need
-                                              // to have it outside, make similar to Mutex
+        std::make_unique<common::RingBuffer>(services::PlayerService::RingBufferSize),
+        *mCoreEventTask);
     mStationRepository = std::make_unique<services::StationRepository>(*mPersistentStorage,
                                                                        *mFileSystem, *mJsonParser);
     mUiService = std::make_unique<services::UiService>(*mDisplay, *mStationRepository);

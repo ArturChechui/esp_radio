@@ -1,7 +1,6 @@
 #include "PlayerServiceTest.hpp"
 
 #include "FakeRingBuffer.hpp"
-#include "FakeSignal.hpp"
 #include "MockStopToken.hpp"
 
 using ::testing::_;
@@ -13,16 +12,15 @@ void PlayerServiceTest::SetUp() {
     mockI2sBus = std::make_unique<adapters::MockI2sBus>();
     mockMp3Decoder = std::make_unique<adapters::MockMp3Decoder>();
 
-    fakeStats = std::make_unique<common::FakeAudioBufferStats>(10000);
     mockEventQueue = std::make_unique<common::MockEventQueue>();
     mockTaskRunner = std::make_unique<common::MockTaskRunner>();
 
     auto rb = std::make_unique<common::FakeRingBuffer>(services::PlayerService::RingBufferSize);
     fakeRing = rb.get();
 
-    playerService = std::make_unique<services::PlayerService>(
-        *mockI2sBus, *mockHttpClient, *mockMp3Decoder, *mockTaskRunner, std::move(rb), *fakeStats,
-        *mockEventQueue, std::make_unique<common::FakeSignal>());
+    playerService =
+        std::make_unique<services::PlayerService>(*mockI2sBus, *mockHttpClient, *mockMp3Decoder,
+                                                  *mockTaskRunner, std::move(rb), *mockEventQueue);
 }
 
 void PlayerServiceTest::TearDown() {
@@ -31,7 +29,6 @@ void PlayerServiceTest::TearDown() {
     mockHttpClient.reset();
     mockI2sBus.reset();
     mockMp3Decoder.reset();
-    fakeStats.reset();
     mockEventQueue.reset();
     mockTaskRunner.reset();
 
@@ -171,7 +168,7 @@ TEST_F(PlayerServiceTest, tc07_playStation_notPrebuffered_sleep) {
     EXPECT_CALL(token, stopRequested()).WillOnce(Return(false));
     const common::StepResult r2 = playerFn(playerUser, token);
     EXPECT_EQ(r2.action, common::StepAction::Sleep);
-    EXPECT_EQ(r2.sleepMs, 20U);
+    EXPECT_EQ(r2.sleepMs, 10U);
 
     // Destructor, 2 tasks
     EXPECT_CALL(*mockTaskRunner, stop(_, _))
@@ -197,10 +194,10 @@ TEST_F(PlayerServiceTest, tc08_playStation_decodeFrame0_drop1Byte) {
     EXPECT_EQ(r1.sleepMs, 300U);
 
     // fill RB to 90KB for buffer condition
-    std::vector<uint8_t> data(90U * 1024U, 0xAA);
+    std::vector<uint8_t> data(180U * 1024U, 0xAA);
     ASSERT_EQ(fakeRing->push(data.data(), data.size()), data.size());
     const size_t before = fakeRing->available();
-    ASSERT_EQ(before, 92160U);
+    ASSERT_EQ(before, 184320U);
 
     common::Mp3FrameInfo info{};
     info.frameBytes = 0;
@@ -251,8 +248,8 @@ TEST_F(PlayerServiceTest, tc09_playStation_fullPath_stereo_success) {
     EXPECT_EQ(r1.action, common::StepAction::Continue);
 
     // Fill RB to make the buffer condition pass
-    std::vector<uint8_t> data1(112U * 1024U, 0xAA);
-    ASSERT_EQ(fakeRing->push(data1.data(), data1.size()), data1.size() - 1);
+    std::vector<uint8_t> data1(224U * 1024U, 0xAA);
+    ASSERT_EQ(fakeRing->push(data1.data(), data1.size()), data1.size());
 
     common::Mp3FrameInfo info{
         .frameBytes = adapters::MaxBytesPerFrame, .hz = 44100, .channels = 2, .samplesPerCh = 1152};
@@ -302,8 +299,8 @@ TEST_F(PlayerServiceTest, tc10_playStation_fullPath_mono_success) {
     EXPECT_EQ(r1.action, common::StepAction::Continue);
 
     // Fill RB to make the buffer condition pass
-    std::vector<uint8_t> data1(112U * 1024U, 0xAA);
-    ASSERT_EQ(fakeRing->push(data1.data(), data1.size()), data1.size() - 1);
+    std::vector<uint8_t> data1(224U * 1024U, 0xAA);
+    ASSERT_EQ(fakeRing->push(data1.data(), data1.size()), data1.size());
 
     common::Mp3FrameInfo info{
         .frameBytes = adapters::MaxBytesPerFrame, .hz = 44100, .channels = 1, .samplesPerCh = 1152};
@@ -375,13 +372,15 @@ TEST_F(PlayerServiceTest, tc12_playStation_decodeFail_retry_decodeOk) {
     EXPECT_EQ(r1.action, common::StepAction::Continue);
 
     // Prepare RB
-    // 1) Fill to full first
-    // 2) Read to 127 to have 2 spans
+    // 1) Fill to full first (full 512KB RB - 3 http reads of 4096 bytes each = 512KB - 12KB =
+    // 500KB)
+    // 2) Read to almost all -1 byte to have 2 spans
     // 3) Fill some data
-    std::vector<uint8_t> data1(116U * 1024U, 0xAA);
-    ASSERT_EQ(fakeRing->push(data1.data(), data1.size()), data1.size() - 1);
-    fakeRing->commitRead(127U * 1024U);
-    std::vector<uint8_t> data2(90U * 1024U, 0xAA);
+    std::vector<uint8_t> data1(500U * 1024U, 0xAA);
+    ASSERT_EQ(fakeRing->push(data1.data(), data1.size()),
+              data1.size() - 1);  // -1 byte is a guard to avoid confusion full/empty
+    fakeRing->commitRead(511U * 1024U);
+    std::vector<uint8_t> data2(180U * 1024U, 0xAA);
     ASSERT_EQ(fakeRing->push(data2.data(), data2.size()), data2.size());
 
     // Fail

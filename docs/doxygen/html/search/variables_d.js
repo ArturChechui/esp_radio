@@ -7,5 +7,5 @@ var searchData=
   ['space_4',['space',['../structcommon_1_1IRingBuffer_1_1FillLevels.html#a3db2c6777dca5befd7ed0c8febf640ab',1,'common::IRingBuffer::FillLevels']]],
   ['ssid_5',['ssid',['../structcommon_1_1WifiCredentials.html#a4d93838acd01a3ed15d8596526e67662',1,'common::WifiCredentials']]],
   ['status_6',['status',['../structcommon_1_1PlaybackStatusChangedEvent.html#ac733f11017bde613ec947cec36368008',1,'common::PlaybackStatusChangedEvent']]],
-  ['storage_7',['storage',['../structcommon_1_1Mutex_1_1Impl.html#a8066ebdbabcfe3f460ef729615eb8569',1,'common::Mutex::Impl']]]
+  ['storage_7',['storage',['../structcommon_1_1Mutex_1_1Impl.html#a8066ebdbabcfe3f460ef729615eb8569',1,'common::Mutex::Impl::storage'],['../structcommon_1_1Signal_1_1Impl.html#ab4948e67578027586fee30e1639acc0b',1,'common::Signal::Impl::storage']]]
 ];

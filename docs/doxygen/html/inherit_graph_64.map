@@ -1,5 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$classservices_1_1IWifiService.html" title="Abstract interface for a high&#45;level Wi&#45;Fi management service." alt="" coords="5,5,166,33"/>
-<area shape="rect" id="Node000001" href="$classservices_1_1WifiService.html" title="Concrete implementation of Wi&#45;Fi management logic." alt="" coords="214,5,370,33"/>
-<area shape="poly" id="edge31_Node000000_Node000001" title=" " alt="" coords="181,17,216,19,210,19,181,22"/>
+<area shape="rect" id="Node000000" href="$classservices_1_1ISensorService.html" title="Abstract interface for a sensor coordination service." alt="" coords="5,5,185,33"/>
+<area shape="rect" id="Node000001" href="$classservices_1_1SensorService.html" title="Concrete implementation of environmental sensing and audio monitoring logic." alt="" coords="233,5,408,33"/>
+<area shape="poly" id="edge30_Node000000_Node000001" title=" " alt="" coords="200,17,235,19,229,19,200,22"/>
 </map>

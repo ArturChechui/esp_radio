@@ -110,8 +110,8 @@ Collaboration diagram for services::PlayerService:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aa29581d9c6e518968432df9bdc3790d8" id="r_aa29581d9c6e518968432df9bdc3790d8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa29581d9c6e518968432df9bdc3790d8">PlayerService</a> (<a class="el" href="classadapters_1_1II2sBus.html">adapters::II2sBus</a> &amp;i2sBus, <a class="el" href="classadapters_1_1IHttpClient.html">adapters::IHttpClient</a> &amp;httpClient, <a class="el" href="classadapters_1_1IMp3Decoder.html">adapters::IMp3Decoder</a> &amp;mp3Decoder, <a class="el" href="classcommon_1_1ITaskRunner.html">common::ITaskRunner</a> &amp;runner, std::unique_ptr&lt; <a class="el" href="classcommon_1_1IRingBuffer.html">common::IRingBuffer</a> &gt; ringBuffer, <a class="el" href="classcommon_1_1IAudioBufferStats.html">common::IAudioBufferStats</a> &amp;stats, <a class="el" href="classcommon_1_1IEventQueue.html">common::IEventQueue</a> &amp;coreEventQueue, std::unique_ptr&lt; <a class="el" href="classcommon_1_1ISignal.html">common::ISignal</a> &gt; semaphore)</td></tr>
-<tr class="memdesc:aa29581d9c6e518968432df9bdc3790d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a <a class="el" href="classservices_1_1PlayerService.html" title="Concrete implementation of the audio player engine.">PlayerService</a> with all required dependencies.  <br /></td></tr>
+<tr class="memitem:ad549adac4b66debb6414ad3fa0c0578e" id="r_ad549adac4b66debb6414ad3fa0c0578e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad549adac4b66debb6414ad3fa0c0578e">PlayerService</a> (<a class="el" href="classadapters_1_1II2sBus.html">adapters::II2sBus</a> &amp;i2sBus, <a class="el" href="classadapters_1_1IHttpClient.html">adapters::IHttpClient</a> &amp;httpClient, <a class="el" href="classadapters_1_1IMp3Decoder.html">adapters::IMp3Decoder</a> &amp;mp3Decoder, <a class="el" href="classcommon_1_1ITaskRunner.html">common::ITaskRunner</a> &amp;runner, std::unique_ptr&lt; <a class="el" href="classcommon_1_1IRingBuffer.html">common::IRingBuffer</a> &gt; ringBuffer, <a class="el" href="classcommon_1_1IEventQueue.html">common::IEventQueue</a> &amp;coreEventQueue)</td></tr>
+<tr class="memdesc:ad549adac4b66debb6414ad3fa0c0578e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a <a class="el" href="classservices_1_1PlayerService.html" title="Concrete implementation of the audio player engine.">PlayerService</a> with all required dependencies.  <br /></td></tr>
 <tr class="memitem:a31110342c24fd8e7cc36d65810c02e1e" id="r_a31110342c24fd8e7cc36d65810c02e1e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a31110342c24fd8e7cc36d65810c02e1e">~PlayerService</a> () override</td></tr>
 <tr class="memdesc:a31110342c24fd8e7cc36d65810c02e1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the <a class="el" href="classservices_1_1PlayerService.html" title="Concrete implementation of the audio player engine.">PlayerService</a>, ensuring all background tasks are stopped.  <br /></td></tr>
 <tr class="memitem:ab66c510fb3794530c9445b051abd1c0d" id="r_ab66c510fb3794530c9445b051abd1c0d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab66c510fb3794530c9445b051abd1c0d">playStation</a> (const std::string &amp;url) override</td></tr>
@@ -132,15 +132,15 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:ad46390a46452e4fff2e2e0e902af330e" id="r_ad46390a46452e4fff2e2e0e902af330e"><td class="memItemLeft" align="right" valign="top">static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad46390a46452e4fff2e2e0e902af330e">RingBufferSize</a> = 128U * 1024U</td></tr>
+<tr class="memitem:ad46390a46452e4fff2e2e0e902af330e" id="r_ad46390a46452e4fff2e2e0e902af330e"><td class="memItemLeft" align="right" valign="top">static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad46390a46452e4fff2e2e0e902af330e">RingBufferSize</a> = 512U * 1024U</td></tr>
 <tr class="memdesc:ad46390a46452e4fff2e2e0e902af330e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constant defining the size of the internal audio ring buffer.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Concrete implementation of the audio player engine. </p>
 <p><a class="el" href="classservices_1_1PlayerService.html" title="Concrete implementation of the audio player engine.">PlayerService</a> implements a producer-consumer architecture for audio playback. An HTTP task (the producer) fetches MP3 data and writes it to a ring buffer, while a playback task (the consumer) reads from the buffer, decodes the MP3 frames, and writes the resulting PCM samples to the I2S bus. </p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="aa29581d9c6e518968432df9bdc3790d8" name="aa29581d9c6e518968432df9bdc3790d8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa29581d9c6e518968432df9bdc3790d8">&#9670;&#160;</a></span>PlayerService()</h2>
+<a id="ad549adac4b66debb6414ad3fa0c0578e" name="ad549adac4b66debb6414ad3fa0c0578e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad549adac4b66debb6414ad3fa0c0578e">&#9670;&#160;</a></span>PlayerService()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -176,17 +176,7 @@ Static Public Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classcommon_1_1IAudioBufferStats.html">common::IAudioBufferStats</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>stats</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classcommon_1_1IEventQueue.html">common::IEventQueue</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>coreEventQueue</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classcommon_1_1ISignal.html">common::ISignal</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>semaphore</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="classcommon_1_1IEventQueue.html">common::IEventQueue</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>coreEventQueue</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -204,7 +194,6 @@ Static Public Attributes</h2></td></tr>
     <tr><td class="paramname">mp3Decoder</td><td>Reference to the decoder for transforming MP3 to PCM. </td></tr>
     <tr><td class="paramname">runner</td><td>The task runner used to spawn background processing threads. </td></tr>
     <tr><td class="paramname">ringBuffer</td><td>Thread-safe buffer for raw bitstream data. </td></tr>
-    <tr><td class="paramname">stats</td><td>Utility for tracking and reporting buffer/timing statistics. </td></tr>
     <tr><td class="paramname">coreEventQueue</td><td>Queue for sending status updates to the application core. </td></tr>
     <tr><td class="paramname">semaphore</td><td>Signal used for synchronization between producer and consumer. </td></tr>
   </table>
@@ -446,7 +435,7 @@ Static Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">size_t services::PlayerService::RingBufferSize = 128U * 1024U</td>
+          <td class="memname">size_t services::PlayerService::RingBufferSize = 512U * 1024U</td>
         </tr>
       </table>
   </td>

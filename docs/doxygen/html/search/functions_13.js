@@ -7,7 +7,7 @@ var searchData=
   ['wificlient_4',['WifiClient',['../classadapters_1_1WifiClient.html#a021f27ac9bdc3eaa49e1552b3f01c0db',1,'adapters::WifiClient']]],
   ['wifiprovisioningscreen_5',['wifiProvisioningScreen',['../namespacecommon_1_1fonts.html#ab6df61661dd56f30195a2fce5a7f590e',1,'common::fonts']]],
   ['wifiservice_6',['WifiService',['../classservices_1_1WifiService.html#a8c4131069b7b62654988630abd74f292',1,'services::WifiService']]],
-  ['write_7',['write',['../classadapters_1_1I2sBus.html#a18a3452d3a4af4f6d0f1f6e0af4bee35',1,'adapters::I2sBus::write()'],['../classadapters_1_1II2sBus.html#aefbb0d93772c785aa8af504931aa77b0',1,'adapters::II2sBus::write()'],['../classcommon_1_1IRingBuffer.html#a3593f80f193bd02dd9475952f448dd6c',1,'common::IRingBuffer::write()'],['../classcommon_1_1RingBuffer.html#a8be6b9a5e43ad1386ca51a202d61b187',1,'common::RingBuffer::write()']]],
+  ['write_7',['write',['../classadapters_1_1I2sBus.html#a18a3452d3a4af4f6d0f1f6e0af4bee35',1,'adapters::I2sBus::write()'],['../classadapters_1_1II2sBus.html#aefbb0d93772c785aa8af504931aa77b0',1,'adapters::II2sBus::write()']]],
   ['writebytes_8',['writeBytes',['../classadapters_1_1I2cBus.html#a4c388c450f62a232ca709d97debbeb35',1,'adapters::I2cBus::writeBytes()'],['../classadapters_1_1II2cBus.html#a5b0c243f71be3814a13e8064e62f3d3d',1,'adapters::II2cBus::writeBytes()']]],
   ['writefile_9',['writeFile',['../classadapters_1_1FileSystem.html#a1188ef4157c22c5ebb85587114e8a9f7',1,'adapters::FileSystem::writeFile()'],['../classadapters_1_1IFileSystem.html#a2bfa2d4ea70dabad4a4213315add11e3',1,'adapters::IFileSystem::writeFile()']]]
 ];

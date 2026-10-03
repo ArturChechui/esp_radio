@@ -1,9 +1,15 @@
 <map id="components/common/include/AudioBufferStats.hpp" name="components/common/include/AudioBufferStats.hpp">
-<area shape="rect" id="Node000001" title="Performance monitoring utility for the audio buffering system." alt="" coords="66,5,281,45"/>
-<area shape="rect" id="Node000002" href="$AppContext_8hpp.html" title="Central registry and lifecycle manager for the application." alt="" coords="81,93,266,133"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="176,59,176,93,171,93,171,59"/>
-<area shape="rect" id="Node000003" href="$AppContext_8cpp.html" title=" " alt="" coords="5,181,163,221"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="145,145,106,183,102,179,142,141"/>
-<area shape="rect" id="Node000004" href="$app__main_8cpp.html" title=" " alt="" coords="187,189,338,214"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="205,141,252,186,248,190,201,145"/>
+<area shape="rect" id="Node000001" title="Performance monitoring utility for the audio buffering system." alt="" coords="164,5,377,50"/>
+<area shape="rect" id="Node000002" href="$ActivePlayerStats_8hpp.html" title=" " alt="" coords="164,98,377,143"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="271,63,273,99,268,97,269,68"/>
+<area shape="rect" id="Node000003" href="$PlayerService_8hpp.html" title="Implementation of the IPlayerService interface for audio streaming." alt="" coords="174,191,367,235"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="271,156,273,191,268,190,269,161"/>
+<area shape="rect" id="Node000004" href="$AppContext_8hpp.html" title="Central registry and lifecycle manager for the application." alt="" coords="79,283,264,328"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="238,244,197,285,193,281,233,248"/>
+<area shape="rect" id="Node000007" href="$PlayerService_8cpp.html" title=" " alt="" coords="288,283,452,328"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="306,243,349,283,344,283,305,249"/>
+<area shape="rect" id="Node000005" href="$AppContext_8cpp.html" title=" " alt="" coords="5,376,162,421"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="143,338,106,378,102,374,138,340"/>
+<area shape="rect" id="Node000006" href="$app__main_8cpp.html" title=" " alt="" coords="186,384,336,412"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="204,337,250,384,245,384,202,342"/>
 </map>

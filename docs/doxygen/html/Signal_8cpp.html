@@ -76,40 +76,48 @@ $(function() {
 <div id="doc-content">
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle"><div class="title">Signal.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;freertos/FreeRTOS.h&gt;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="Signal_8hpp_source.html">Signal.hpp</a>&quot;</code><br />
+<code>#include &lt;freertos/FreeRTOS.h&gt;</code><br />
+<code>#include &lt;freertos/semphr.h&gt;</code><br />
+<code>#include &lt;freertos/task.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="Helper_8hpp_source.html">Helper.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="Signal_8hpp_source.html">Signal.hpp</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for Signal.cpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="Signal_8cpp__incl.png" border="0" usemap="#acomponents_2common_2src_2Signal_8cpp" loading="lazy" alt=""/></div>
 <map name="acomponents_2common_2src_2Signal_8cpp" id="acomponents_2common_2src_2Signal_8cpp">
-<area shape="rect" title=" " alt="" coords="114,5,301,45"/>
-<area shape="rect" title=" " alt="" coords="100,167,251,192"/>
-<area shape="poly" title=" " alt="" coords="206,46,183,154,178,152,201,45"/>
-<area shape="rect" href="Helper_8hpp.html" title="Common utility functions for time and unit conversions." alt="" coords="77,93,169,119"/>
-<area shape="poly" title=" " alt="" coords="189,48,148,86,144,82,185,44"/>
-<area shape="rect" href="Signal_8hpp.html" title="Concrete implementation of the ISignal interface using FreeRTOS semaphores." alt="" coords="277,93,367,119"/>
-<area shape="poly" title=" " alt="" coords="237,43,295,83,292,88,234,48"/>
-<area shape="poly" title=" " alt="" coords="134,117,161,154,157,157,130,121"/>
-<area shape="rect" title=" " alt="" coords="5,167,76,192"/>
-<area shape="poly" title=" " alt="" coords="112,121,66,160,63,155,108,117"/>
-<area shape="poly" title=" " alt="" coords="300,121,213,163,210,158,297,116"/>
-<area shape="rect" title=" " alt="" coords="393,167,531,192"/>
-<area shape="poly" title=" " alt="" coords="346,116,428,158,426,163,343,121"/>
-<area shape="rect" title=" " alt="" coords="555,167,673,192"/>
-<area shape="poly" title=" " alt="" coords="368,116,554,161,553,166,367,121"/>
-<area shape="rect" href="ISignal_8hpp.html" title="Interface for a thread synchronization signal." alt="" coords="275,167,369,192"/>
-<area shape="poly" title=" " alt="" coords="325,119,325,153,319,153,319,119"/>
-<area shape="rect" title=" " alt="" coords="289,240,355,265"/>
-<area shape="poly" title=" " alt="" coords="325,192,325,226,319,226,319,192"/>
+<area shape="rect" title=" " alt="" coords="194,5,379,50"/>
+<area shape="rect" href="Signal_8hpp.html" title="Concrete implementation of the ISignal interface using FreeRTOS semaphores." alt="" coords="54,98,143,126"/>
+<area shape="poly" title=" " alt="" coords="235,53,144,94,141,89,238,49"/>
+<area shape="rect" title=" " alt="" coords="290,174,440,201"/>
+<area shape="poly" title=" " alt="" coords="246,52,228,68,211,86,203,106,204,115,208,124,222,139,238,152,277,172,272,172,235,156,218,143,204,127,199,116,198,105,207,83,225,64,250,49"/>
+<area shape="rect" title=" " alt="" coords="218,98,354,126"/>
+<area shape="poly" title=" " alt="" coords="287,48,289,83,284,81,285,53"/>
+<area shape="rect" title=" " alt="" coords="379,98,495,126"/>
+<area shape="poly" title=" " alt="" coords="326,48,402,90,397,91,326,53"/>
+<area shape="rect" href="Helper_8hpp.html" title="Common utility functions for time and unit conversions." alt="" coords="519,98,610,126"/>
+<area shape="poly" title=" " alt="" coords="360,48,508,92,503,94,360,53"/>
+<area shape="rect" title=" " alt="" coords="5,174,82,201"/>
+<area shape="poly" title=" " alt="" coords="87,129,65,163,60,160,90,124"/>
+<area shape="rect" href="ISignal_8hpp.html" title="Interface for a thread synchronization signal." alt="" coords="106,174,200,201"/>
+<area shape="poly" title=" " alt="" coords="109,124,137,161,131,161,107,129"/>
+<area shape="rect" title=" " alt="" coords="120,249,186,277"/>
+<area shape="poly" title=" " alt="" coords="155,200,155,235,150,232,151,204"/>
+<area shape="poly" title=" " alt="" coords="532,125,415,171,414,165,527,127"/>
+<area shape="rect" title=" " alt="" coords="530,174,600,201"/>
+<area shape="poly" title=" " alt="" coords="567,124,567,160,563,156,563,128"/>
 </map>
 </div>
 </div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:common_3A_3ASignal_3A_3AImpl" id="r_common_3A_3ASignal_3A_3AImpl"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcommon_1_1Signal_1_1Impl.html">common::Signal::Impl</a></td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-namespaces" class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:common" id="r_common"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacecommon.html">common</a></td></tr>

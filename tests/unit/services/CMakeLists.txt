@@ -13,7 +13,9 @@ add_executable(
   ${COMPONENTS_DIR}/services/src/SensorService.cpp
   ${COMPONENTS_DIR}/services/src/WifiService.cpp
   ${COMPONENTS_DIR}/common/src/LockGuard.cpp
-  ${COMPONENTS_DIR}/common/mock/FakeMutex.cpp)
+  ${COMPONENTS_DIR}/common/mock/FakeMutex.cpp
+  ${COMPONENTS_DIR}/common/mock/FakeSignal.cpp
+  ${COMPONENTS_DIR}/common/src/RingBuffer.cpp)
 
 target_include_directories(
   test_services

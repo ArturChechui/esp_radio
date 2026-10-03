@@ -5,9 +5,6 @@
 #include <algorithm>
 #include <cstring>
 
-#include "Helper.hpp"
-#include "LockGuard.hpp"
-
 namespace {
 constexpr const char* Tag = "RingBuffer";
 constexpr size_t Guard = 1UL;  // to distinguish full vs empty
@@ -20,141 +17,43 @@ RingBuffer::RingBuffer(const size_t size)
       mWritePos(0U),
       mReadPos(0U),
       mAborted(false),
-      mMutex(),
       mDataSignal(),
       mSpaceSignal() {
-    if (!mMutex.isValid() || !mDataSignal.isValid() || !mSpaceSignal.isValid()) {
+    if (!mDataSignal.isValid() || !mSpaceSignal.isValid()) {
         ESP_LOGE(Tag, "Failed to create semaphores");
-    }
-}
-
-size_t RingBuffer::write(const uint8_t* data, const size_t len, const uint32_t timeoutMs) {
-    if (!data || len == 0UL) {
-        return 0UL;
-    }
-
-    const TickType_t start = xTaskGetTickCount();
-    const TickType_t timeout = toTicks(timeoutMs);
-
-    size_t writtenTotal = 0UL;
-    while (writtenTotal < len) {
-        const size_t bytesToWrite = (len - writtenTotal);
-        const WriteSpans spans = claimWriteSpans(bytesToWrite);
-        const size_t totalSpace = spans.total();
-
-        // No space available, wait
-        if (totalSpace == 0UL) {
-            TickType_t remaining = portMAX_DELAY;
-            if (timeout != portMAX_DELAY) {
-                const TickType_t now = xTaskGetTickCount();
-                const TickType_t elapsed = (now - start);
-                if (elapsed >= timeout) {
-                    break;
-                }
-                remaining = (timeout - elapsed);
-            }
-
-            // TODO: replace with normal impl, calculate in ms and then provide in ms
-            if (mSpaceSignal.wait(pdTICKS_TO_MS(remaining)) == false) {
-                break;
-            }
-            continue;
-        }
-
-        size_t written = 0UL;
-        if (0UL < spans.first.len) {
-            std::memcpy(spans.first.ptr, (data + writtenTotal), spans.first.len);
-            written += spans.first.len;
-        }
-        if (0UL < spans.second.len) {
-            std::memcpy(spans.second.ptr, (data + writtenTotal + written), spans.second.len);
-            written += spans.second.len;
-        }
-
-        commitWrite(written);
-        writtenTotal += written;
-    }
-
-    return writtenTotal;
-}
-
-size_t RingBuffer::read(uint8_t* data, const size_t len, const uint32_t timeoutMs) {
-    if (!data || len == 0UL) {
-        return 0UL;
-    }
-
-    const TickType_t start = xTaskGetTickCount();
-    const TickType_t timeout = toTicks(timeoutMs);
-
-    while (true) {
-        const ReadSpans spans = claimReadSpans(len);
-        const size_t totalAvailable = spans.total();
-
-        // No data available, wait
-        if (totalAvailable == 0UL) {
-            TickType_t remaining = portMAX_DELAY;
-            if (timeout != portMAX_DELAY) {
-                const TickType_t now = xTaskGetTickCount();
-                const TickType_t elapsed = (now - start);
-                if (elapsed >= timeout) {
-                    return 0UL;
-                }
-                remaining = (timeout - elapsed);
-            }
-
-            if (mDataSignal.wait(pdTICKS_TO_MS(remaining)) == false) {
-                return 0UL;
-            }
-            continue;
-        }
-
-        size_t read = 0UL;
-        if (0UL < spans.first.len) {
-            std::memcpy(data, spans.first.ptr, spans.first.len);
-            read += spans.first.len;
-        }
-        if (0UL < spans.second.len) {
-            std::memcpy((data + read), spans.second.ptr, spans.second.len);
-            read += spans.second.len;
-        }
-        commitRead(read);
-
-        return read;
     }
 }
 
 RingBuffer::ReadSpans RingBuffer::claimReadSpans(const size_t maxBytes) const {
     ReadSpans out{};
 
-    if (maxBytes == 0UL) {
+    if (maxBytes == 0UL || mAborted.load(std::memory_order_acquire)) {
         return out;
     }
 
-    LockGuard lock(mMutex);
-    if (mAborted) {
-        return out;
-    }
+    const size_t w = mWritePos.load(std::memory_order_acquire);
+    const size_t r = mReadPos.load(std::memory_order_relaxed);
+    const size_t avail = (w >= r) ? (w - r) : ((mCapacity - r) + w);
 
-    const size_t avail = availableUnlocked();
     const size_t bytesToRead = std::min(avail, maxBytes);
     if (bytesToRead == 0UL) {
         return out;
     }
 
-    if (mWritePos >= mReadPos) {
+    if (w >= r) {
         // Single contiguous region [read..write)
-        out.first.ptr = (mBuffer.data() + mReadPos);
+        out.first.ptr = (mBuffer.data() + r);
         out.first.len = bytesToRead;
     } else {
         // Wrapped Case: [read..end) + [0..write)
-        const size_t firstLen = std::min(bytesToRead, (mCapacity - mReadPos));
-        out.first.ptr = (mBuffer.data() + mReadPos);
+        const size_t firstLen = std::min(bytesToRead, (mCapacity - r));
+        out.first.ptr = (mBuffer.data() + r);
         out.first.len = firstLen;
 
         const size_t remaining = (bytesToRead - firstLen);
         if (remaining > 0UL) {
             out.second.ptr = mBuffer.data();
-            out.second.len = std::min(remaining, mWritePos);
+            out.second.len = std::min(remaining, w);
         }
     }
 
@@ -162,30 +61,27 @@ RingBuffer::ReadSpans RingBuffer::claimReadSpans(const size_t maxBytes) const {
 }
 
 void RingBuffer::commitRead(size_t bytes) {
-    if (bytes == 0UL) {
+    if (bytes == 0UL || mAborted.load(std::memory_order_acquire)) {
         return;
     }
 
-    bool wasFull = false;
+    const size_t w = mWritePos.load(std::memory_order_acquire);
+    const size_t r = mReadPos.load(std::memory_order_relaxed);
+    const size_t avail = (w >= r) ? (w - r) : ((mCapacity - r) + w);
 
-    {
-        LockGuard lock(mMutex);
-        if (mAborted) {
-            return;
-        }
-
-        // If space was 0, producer may be blocked waiting for space.
-        wasFull = (spaceUnlocked() == 0UL);
-
-        const size_t avail = availableUnlocked();
-        if (bytes > avail) {
-            bytes = avail;  // clamp defensive
-        }
-
-        advanceReadUnlocked(bytes);
+    if (bytes > avail) {
+        bytes = avail;
     }
 
-    if (wasFull) {
+    size_t newReadPos = (r + bytes);
+    if (newReadPos >= mCapacity) {
+        newReadPos %= mCapacity;
+    }
+
+    mReadPos.store(newReadPos, std::memory_order_release);
+
+    const size_t previousSpace = (mCapacity - avail) - Guard;
+    if (previousSpace == 0UL) {
         mSpaceSignal.signal();
     }
 }
@@ -193,38 +89,37 @@ void RingBuffer::commitRead(size_t bytes) {
 RingBuffer::WriteSpans RingBuffer::claimWriteSpans(const size_t maxBytes) {
     WriteSpans out{};
 
-    if (maxBytes == 0UL) {
+    if (maxBytes == 0UL || mAborted.load(std::memory_order_acquire)) {
         return out;
     }
 
-    LockGuard lock(mMutex);
-    if (mAborted) {
-        return out;
-    }
+    const size_t w = mWritePos.load(std::memory_order_relaxed);
+    const size_t r = mReadPos.load(std::memory_order_acquire);
+    const size_t avail = (w >= r) ? (w - r) : ((mCapacity - r) + w);
+    const size_t space = ((mCapacity - avail) - Guard);
 
-    const size_t bytesToWrite = std::min(spaceUnlocked(), maxBytes);
+    const size_t bytesToWrite = std::min(space, maxBytes);
     if (bytesToWrite == 0UL) {
         return out;
     }
 
-    const bool contiguousCase = ((mWritePos < mReadPos) || (mReadPos == 0UL));
+    const bool contiguousCase = ((w < r) || (r == 0UL));
     if (contiguousCase) {
         // Single contiguous free region: [write..read-Guard) or [write..end-Guard) if read==0
-        const size_t maxFirst = (mReadPos > mWritePos) ? (mReadPos - mWritePos - Guard)
-                                                       : (mCapacity - mWritePos - Guard);
-        out.first.ptr = (mBuffer.data() + mWritePos);
+        const size_t maxFirst = (r > w) ? (r - w - Guard) : (mCapacity - w - Guard);
+        out.first.ptr = (mBuffer.data() + w);
         out.first.len = std::min(bytesToWrite, maxFirst);
     } else {
         // Wrapped free region: [write..end) + [0..read-Guard)
-        const size_t maxFirst = (mCapacity - mWritePos);
+        const size_t maxFirst = (mCapacity - w);
         const size_t firstLen = std::min(bytesToWrite, maxFirst);
-        out.first.ptr = (mBuffer.data() + mWritePos);
+        out.first.ptr = (mBuffer.data() + w);
         out.first.len = firstLen;
 
         const size_t remaining = (bytesToWrite - firstLen);
         if (remaining > 0UL) {
             out.second.ptr = mBuffer.data();
-            out.second.len = std::min(remaining, (mReadPos - Guard));
+            out.second.len = std::min(remaining, (r - Guard));
         }
     }
 
@@ -232,77 +127,79 @@ RingBuffer::WriteSpans RingBuffer::claimWriteSpans(const size_t maxBytes) {
 }
 
 void RingBuffer::commitWrite(size_t bytes) {
-    if (bytes == 0UL) {
+    if (bytes == 0UL || mAborted.load(std::memory_order_acquire)) {
         return;
     }
 
-    bool wasEmpty = false;
+    const size_t w = mWritePos.load(std::memory_order_relaxed);
+    const size_t r = mReadPos.load(std::memory_order_acquire);
+    const size_t avail = (w >= r) ? (w - r) : ((mCapacity - r) + w);
+    const size_t space = ((mCapacity - avail) - Guard);
 
-    {
-        LockGuard lock(mMutex);
-        if (mAborted) {
-            return;
-        }
-
-        wasEmpty = (availableUnlocked() == 0UL);
-
-        const size_t freeTotal = spaceUnlocked();
-        if (bytes > freeTotal) {
-            bytes = freeTotal;  // clamp defensive
-        }
-
-        advanceWriteUnlocked(bytes);
+    if (bytes > space) {
+        bytes = space;  // clamp defensive
     }
 
-    if (wasEmpty) {
+    size_t newWritePos = (w + bytes);
+    if (newWritePos >= mCapacity) {
+        newWritePos %= mCapacity;
+    }
+
+    mWritePos.store(newWritePos, std::memory_order_release);
+
+    if (avail == 0UL) {
         mDataSignal.signal();
     }
 }
 
 bool RingBuffer::waitForData(const uint32_t timeoutMs) {
-    {
-        LockGuard lock(mMutex);
-        if (mAborted) {
-            return false;
-        }
-        if (availableUnlocked() > 0UL) {
-            return true;
-        }
+    if (mAborted.load(std::memory_order_acquire)) {
+        return false;
+    }
+
+    const size_t w = mWritePos.load(std::memory_order_acquire);
+    const size_t r = mReadPos.load(std::memory_order_relaxed);
+    const size_t avail = (w >= r) ? (w - r) : ((mCapacity - r) + w);
+
+    if (avail > 0UL) {
+        return true;
     }
 
     return mDataSignal.wait(timeoutMs);
 }
 
 bool RingBuffer::waitForSpace(const uint32_t timeoutMs) {
-    {
-        LockGuard lock(mMutex);
-        if (mAborted) {
-            return false;
-        }
-        if (spaceUnlocked() > 0UL) {
-            return true;
-        }
+    if (mAborted.load(std::memory_order_acquire)) {
+        return false;
+    }
+
+    const size_t w = mWritePos.load(std::memory_order_relaxed);
+    const size_t r = mReadPos.load(std::memory_order_acquire);
+    const size_t avail = (w >= r) ? (w - r) : ((mCapacity - r) + w);
+    const size_t space = ((mCapacity - avail) - Guard);
+
+    if (space > 0UL) {
+        return true;
     }
 
     return mSpaceSignal.wait(timeoutMs);
 }
 
 size_t RingBuffer::available() const {
-    LockGuard lock(mMutex);
+    const size_t w = mWritePos.load(std::memory_order_relaxed);
+    const size_t r = mReadPos.load(std::memory_order_acquire);
+    const size_t avail = (w >= r) ? (w - r) : ((mCapacity - r) + w);
 
-    return availableUnlocked();
-}
-
-size_t RingBuffer::space() const {
-    LockGuard lock(mMutex);
-
-    return spaceUnlocked();
+    return avail;
 }
 
 IRingBuffer::FillLevels RingBuffer::getFillLevels() const {
-    LockGuard lock(mMutex);
+    const size_t w = mWritePos.load(std::memory_order_acquire);
+    const size_t r = mReadPos.load(std::memory_order_acquire);
+    const size_t avail = (w >= r) ? (w - r) : ((mCapacity - r) + w);
+    const size_t space = ((mCapacity - avail) - Guard);
 
-    return {availableUnlocked(), spaceUnlocked()};
+    return {avail, space};
 }
 
 size_t RingBuffer::capacity() const {
@@ -312,10 +209,7 @@ size_t RingBuffer::capacity() const {
 void RingBuffer::abort() {
     ESP_LOGW(Tag, "abort()");
 
-    {
-        LockGuard lock(mMutex);
-        mAborted = true;
-    }
+    mAborted.store(true, std::memory_order_release);
 
     // Unblock any pending waits
     mDataSignal.signal();
@@ -325,46 +219,13 @@ void RingBuffer::abort() {
 void RingBuffer::reset() {
     ESP_LOGI(Tag, "reset()");
 
-    {
-        LockGuard lock(mMutex);
-        mReadPos = 0UL;
-        mWritePos = 0UL;
-        mAborted = false;
-    }
+    mReadPos.store(0UL, std::memory_order_release);
+    mWritePos.store(0UL, std::memory_order_release);
+    mAborted.store(false, std::memory_order_release);
 
     // Unblock any pending waits
     mDataSignal.signal();
     mSpaceSignal.signal();
-}
-
-size_t RingBuffer::availableUnlocked() const {
-    if (mWritePos >= mReadPos) {
-        return mWritePos - mReadPos;
-    }
-
-    return (mCapacity - mReadPos) + mWritePos;
-}
-
-size_t RingBuffer::spaceUnlocked() const {
-    return ((mCapacity - availableUnlocked()) - Guard);
-}
-
-void RingBuffer::advanceWriteUnlocked(const size_t bytes) {
-    mWritePos += bytes;
-
-    // if write pos reaches capacity, wrap around
-    if (mWritePos >= mCapacity) {
-        mWritePos %= mCapacity;
-    }
-}
-
-void RingBuffer::advanceReadUnlocked(const size_t bytes) {
-    mReadPos += bytes;
-
-    // if read pos reaches capacity, wrap around
-    if (mReadPos >= mCapacity) {
-        mReadPos %= mCapacity;
-    }
 }
 
 }  // namespace common

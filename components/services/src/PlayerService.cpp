@@ -9,13 +9,13 @@
 
 #include "Dumpers.hpp"
 #include "Events.hpp"
-#include "IAudioBufferStats.hpp"
 #include "IEventQueue.hpp"
 #include "IHttpClient.hpp"
 #include "II2sBus.hpp"
 #include "IMp3Decoder.hpp"
 #include "IStopToken.hpp"
 #include "ITaskRunner.hpp"
+#include "Signal.hpp"
 #include "Types.hpp"
 
 namespace services {
@@ -31,7 +31,8 @@ constexpr uint32_t PlayerTaskStackWords = 22480U;
 constexpr uint32_t HttpTaskStackWords = 8192U;
 
 constexpr size_t ReadMaxBytes = 4 * 1024U;  // Max read from ring buffer per decode
-constexpr size_t PrebufferBytes = 8U * 1024U;
+constexpr size_t PrebufferBytes = 32U * 1024U;
+constexpr size_t ResumeBufferBytes = 5U * PrebufferBytes;
 constexpr uint32_t FreeSpaceTimeoutMs = 500U;  // for waiting for space
 constexpr uint32_t AvailDataTimeoutMs = 200U;  // for waiting for data
 constexpr uint32_t NoWaitMs = 0U;              // for non-blocking calls
@@ -54,16 +55,16 @@ constexpr uint32_t StreamReadRetrySleepMs = 300U;
 constexpr uint32_t StreamOpenRetrySleepMs = 500U;
 constexpr uint32_t ReconnectAfterReadStallMs = 5000U;
 constexpr uint32_t BufferingPollSleepMs = 20U;
-constexpr size_t ResumeBufferBytes = 10U * PrebufferBytes;
 
 constexpr int32_t Q15One = 0x7FFF;  // 32767
+
+constexpr uint32_t DefaultStatsIntervalMs = 10000U;
 }  // namespace
 
 PlayerService::PlayerService(adapters::II2sBus& i2sBus, adapters::IHttpClient& httpClient,
                              adapters::IMp3Decoder& mp3Decoder, common::ITaskRunner& runner,
                              std::unique_ptr<common::IRingBuffer> ringBuffer,
-                             common::IAudioBufferStats& stats, common::IEventQueue& coreEventQueue,
-                             std::unique_ptr<common::ISignal> semaphore)
+                             common::IEventQueue& coreEventQueue)
     : mStatus(common::PlaybackStatus::Idle),
       mCurrentUrl(""),
       mCoreEventQueue(coreEventQueue),
@@ -71,8 +72,7 @@ PlayerService::PlayerService(adapters::II2sBus& i2sBus, adapters::IHttpClient& h
       mHttpClient(httpClient),
       mMp3Decoder(mp3Decoder),
       mTaskRunner(runner),
-      mStats(stats),
-      mStreamOpenSignal(std::move(semaphore)),
+      mStreamOpenSignal(std::make_unique<common::Signal>()),
       mReadStallMs(0U),
       mPlayingNotified(false),
       mIsPlaying(false),
@@ -82,7 +82,8 @@ PlayerService::PlayerService(adapters::II2sBus& i2sBus, adapters::IHttpClient& h
       mInputScratch(InputScratchBytes),
       mPcm(adapters::MaxSamplesPerFrame),
       mMonoToStereo(adapters::MaxSamplesPerFrame * StereoChannels),
-      mVolumeQ15(InitVolQ15) {
+      mVolumeQ15(InitVolQ15),
+      mStats(DefaultStatsIntervalMs) {
     ESP_LOGI(Tag, "PlayerService created");
 }
 
@@ -362,7 +363,7 @@ common::StepResult PlayerService::consumerStep(common::IStopToken& token) {
     }
 
     const size_t requiredBufferBytes =
-        (mStatus == common::PlaybackStatus::Playing) ? PrebufferBytes : ResumeBufferBytes;
+        (mStatus == common::PlaybackStatus::Buffering) ? ResumeBufferBytes : PrebufferBytes;
     if (availableBytes < requiredBufferBytes) {
         onPlaybackStatusChanged(common::PlaybackStatus::Buffering);
         if (mRingBuffer->waitForData(AvailDataTimeoutMs)) {
@@ -376,13 +377,12 @@ common::StepResult PlayerService::consumerStep(common::IStopToken& token) {
 }
 
 common::StepResult PlayerService::consumeOnce(common::IStopToken& token) {
-    const auto lv = mRingBuffer->getFillLevels();
-    mStats.observeRing(lv.avail, lv.space);
+    recordRingStats();
 
     const auto spans = mRingBuffer->claimReadSpans(ReadMaxBytes);
     if (spans.total() < 4UL) {
         (void)mRingBuffer->waitForData(AvailDataTimeoutMs);
-        return {.action = common::StepAction::Sleep, .sleepMs = 10U};
+        return {.action = common::StepAction::Continue};
     }
 
     common::Mp3FrameInfo info =
@@ -434,32 +434,33 @@ common::StepResult PlayerService::consumeOnce(common::IStopToken& token) {
 
     onPlaybackStatusChanged(common::PlaybackStatus::Playing);
 
-    const size_t bytesToWrite =
-        static_cast<size_t>(info.samplesPerCh) * StereoChannels * sizeof(outSamples[0]);
-    const uint8_t* outBytes = reinterpret_cast<const uint8_t*>(outSamples);
-    // TODO: improve uint8 and uint16 convertion
+    const size_t totalSamples = (static_cast<size_t>(info.samplesPerCh) * StereoChannels);
+    constexpr size_t I2sChunkSamples = (I2sChunkBytes / sizeof(int16_t));
 
-    size_t writtenTotalBytes = 0UL;
+    size_t writtenSamples = 0UL;
     uint8_t zeroWrites = 0U;
-    while (writtenTotalBytes < bytesToWrite && !token.stopRequested()) {
-        const size_t chunk = std::min(I2sChunkBytes, (bytesToWrite - writtenTotalBytes));
-        const size_t written = mI2sBus.write(
-            reinterpret_cast<const int16_t*>(outBytes + writtenTotalBytes), chunk, I2sTimeoutMs);
+    while (writtenSamples < totalSamples && !token.stopRequested()) {
+        const size_t samplesRemaining = (totalSamples - writtenSamples);
+        const size_t chunkSamples = std::min(I2sChunkSamples, samplesRemaining);
+        const size_t chunkBytes = (chunkSamples * sizeof(int16_t));
+        const int16_t* currentChunkPtr = outSamples + writtenSamples;
 
-        mStats.onI2sWrite(written, (written == 0U), ((written > 0U) && (written < chunk)));
+        const size_t writtenBytes = mI2sBus.write(currentChunkPtr, chunkBytes, I2sTimeoutMs);
 
-        if (written == 0U) {
+        const size_t writtenChunkSamples = (writtenBytes / sizeof(int16_t));
+
+        mStats.onI2sWrite(writtenBytes, (writtenBytes == 0U),
+                          ((writtenBytes > 0U) && (writtenBytes < chunkBytes)));
+
+        if (writtenBytes == 0U) {
             if (++zeroWrites >= 3U) {
                 return {.action = common::StepAction::Sleep, .sleepMs = 10U};
-            }
-
-            if (token.sleepMs(10U)) {
-                return {.action = common::StepAction::Done};
             }
             continue;
         }
 
-        writtenTotalBytes += written;
+        zeroWrites = 0U;
+        writtenSamples += writtenChunkSamples;
     }
 
     logStats();

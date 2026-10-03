@@ -1,0 +1,22 @@
+<map id="components/common/include/ActivePlayerStats.hpp" name="components/common/include/ActivePlayerStats.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="478,5,691,50"/>
+<area shape="rect" id="Node000002" href="$NullAudioBufferStats_8hpp.html" title=" " alt="" coords="591,98,775,126"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="611,48,658,88,653,88,610,53"/>
+<area shape="rect" id="Node000006" href="$AudioBufferStats_8hpp.html" title="Performance monitoring utility for the audio buffering system." alt="" coords="408,98,566,126"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="561,49,516,90,513,86,557,52"/>
+<area shape="rect" id="Node000003" href="$IAudioBufferStats_8hpp.html" title="Interface for tracking and reporting audio pipeline statistics." alt="" coords="602,174,764,201"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="685,124,685,160,681,156,681,128"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="628,249,698,277"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="682,200,672,236,669,232,677,204"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="520,249,585,277"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="662,201,590,244,588,239,657,203"/>
+<area shape="poly" id="edge11_Node000006_Node000003" title=" " alt="" coords="523,124,637,168,632,168,522,129"/>
+<area shape="poly" id="edge9_Node000006_Node000004" title=" " alt="" coords="503,124,592,199,638,240,633,239,588,203,501,129"/>
+<area shape="poly" id="edge10_Node000006_Node000005" title=" " alt="" coords="494,124,543,236,538,234,491,128"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="5,174,156,201"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="413,129,169,173,168,168,415,124"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="180,174,336,201"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="444,127,314,171,312,166,449,125"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="360,174,476,201"/>
+<area shape="poly" id="edge8_Node000006_Node000009" title=" " alt="" coords="477,125,442,164,439,160,472,128"/>
+</map>

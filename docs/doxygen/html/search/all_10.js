@@ -15,7 +15,7 @@ var searchData=
   ['playbackstatus_12',['PlaybackStatus',['../namespacecommon.html#a73a669ce514713c0a46002befce532ba',1,'common']]],
   ['playbackstatuscallback_13',['PlaybackStatusCallback',['../namespacecommon.html#a43a6a17dc28c574f214d5622c77b468d',1,'common']]],
   ['playbackstatuschangedevent_14',['PlaybackStatusChangedEvent',['../structcommon_1_1PlaybackStatusChangedEvent.html',1,'common']]],
-  ['playerservice_15',['PlayerService',['../classservices_1_1PlayerService.html',1,'services::PlayerService'],['../classservices_1_1PlayerService.html#aa29581d9c6e518968432df9bdc3790d8',1,'services::PlayerService::PlayerService()']]],
+  ['playerservice_15',['PlayerService',['../classservices_1_1PlayerService.html',1,'services::PlayerService'],['../classservices_1_1PlayerService.html#ad549adac4b66debb6414ad3fa0c0578e',1,'services::PlayerService::PlayerService()']]],
   ['playerservice_2ecpp_16',['PlayerService.cpp',['../PlayerService_8cpp.html',1,'']]],
   ['playerservice_2ehpp_17',['PlayerService.hpp',['../PlayerService_8hpp.html',1,'']]],
   ['playing_18',['Playing',['../namespacecommon.html#a73a669ce514713c0a46002befce532baac9dbb2b7c84159b632d71e512eba8428',1,'common']]],
@@ -34,7 +34,9 @@ var searchData=
   ['provisioningportal_2ecpp_31',['ProvisioningPortal.cpp',['../ProvisioningPortal_8cpp.html',1,'']]],
   ['provisioningportal_2ehpp_32',['ProvisioningPortal.hpp',['../ProvisioningPortal_8hpp.html',1,'']]],
   ['provisioningportalconfig_33',['ProvisioningPortalConfig',['../structcommon_1_1ProvisioningPortalConfig.html',1,'common']]],
-  ['ptr_34',['ptr',['../structcommon_1_1IRingBuffer_1_1ConstSpan.html#a5d866b5d5ed5e03dc68d6aa475d00793',1,'common::IRingBuffer::ConstSpan::ptr'],['../structcommon_1_1IRingBuffer_1_1Span.html#a0f0ad9c3ef1f46c793fe188b0086bc2b',1,'common::IRingBuffer::Span::ptr']]],
-  ['push_35',['push',['../classcommon_1_1IQueue.html#a3fe0ca122361ab9a901169b215a5a8ef',1,'common::IQueue::push()'],['../classcommon_1_1Queue.html#a9360158a2e993574467c268b8f89a7d6',1,'common::Queue::push(const T &amp;item, const uint32_t timeoutTicks) override']]],
-  ['pushfromisr_36',['pushFromIsr',['../classcommon_1_1Queue.html#a002460b34143d80ff169feb64b59ba09',1,'common::Queue']]]
+  ['psramallocator_34',['PsramAllocator',['../structcommon_1_1PsramAllocator.html',1,'common::PsramAllocator&lt; T &gt;'],['../structcommon_1_1PsramAllocator.html#ac3337cc0635da7587ec262e3f3c7cfa6',1,'common::PsramAllocator::PsramAllocator()=default'],['../structcommon_1_1PsramAllocator.html#afdc93b8fccd892fa49ad33f84f24cb75',1,'common::PsramAllocator::PsramAllocator(const PsramAllocator&lt; U &gt; &amp;) noexcept']]],
+  ['psramallocator_2ehpp_35',['PsramAllocator.hpp',['../PsramAllocator_8hpp.html',1,'']]],
+  ['ptr_36',['ptr',['../structcommon_1_1IRingBuffer_1_1ConstSpan.html#a5d866b5d5ed5e03dc68d6aa475d00793',1,'common::IRingBuffer::ConstSpan::ptr'],['../structcommon_1_1IRingBuffer_1_1Span.html#a0f0ad9c3ef1f46c793fe188b0086bc2b',1,'common::IRingBuffer::Span::ptr']]],
+  ['push_37',['push',['../classcommon_1_1IQueue.html#a3fe0ca122361ab9a901169b215a5a8ef',1,'common::IQueue::push()'],['../classcommon_1_1Queue.html#a9360158a2e993574467c268b8f89a7d6',1,'common::Queue::push(const T &amp;item, const uint32_t timeoutTicks) override']]],
+  ['pushfromisr_38',['pushFromIsr',['../classcommon_1_1Queue.html#a002460b34143d80ff169feb64b59ba09',1,'common::Queue']]]
 ];

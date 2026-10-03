@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 
+#include "ActivePlayerStats.hpp"
 #include "IPlayerService.hpp"
 #include "IRingBuffer.hpp"
 #include "ISignal.hpp"
@@ -65,15 +66,13 @@ class PlayerService : public IPlayerService {
      * @param mp3Decoder Reference to the decoder for transforming MP3 to PCM.
      * @param runner The task runner used to spawn background processing threads.
      * @param ringBuffer Thread-safe buffer for raw bitstream data.
-     * @param stats Utility for tracking and reporting buffer/timing statistics.
      * @param coreEventQueue Queue for sending status updates to the application core.
      * @param semaphore Signal used for synchronization between producer and consumer.
      */
     explicit PlayerService(adapters::II2sBus& i2sBus, adapters::IHttpClient& httpClient,
                            adapters::IMp3Decoder& mp3Decoder, common::ITaskRunner& runner,
                            std::unique_ptr<common::IRingBuffer> ringBuffer,
-                           common::IAudioBufferStats& stats, common::IEventQueue& coreEventQueue,
-                           std::unique_ptr<common::ISignal> semaphore);
+                           common::IEventQueue& coreEventQueue);
 
     /**
      * @brief Destroys the PlayerService, ensuring all background tasks are stopped.
@@ -120,7 +119,7 @@ class PlayerService : public IPlayerService {
     void setVolume(const uint8_t vol) override;
 
     /** @brief Constant defining the size of the internal audio ring buffer. */
-    static constexpr size_t RingBufferSize = 128U * 1024U;
+    static constexpr size_t RingBufferSize = 512U * 1024U;
 
    private:
     /**
@@ -190,6 +189,15 @@ class PlayerService : public IPlayerService {
     /** @brief Converts a 0-100/0-255 percentage to a Q15 multiplier. */
     static int32_t volumePercentToQ15(const uint8_t volume);
 
+    /** @brief Records current ring buffer occupancy for performance monitoring.
+     */
+    inline void recordRingStats() {
+        if constexpr (!std::is_same_v<common::ActivePlayerStats, common::NullAudioBufferStats>) {
+            const auto lv = mRingBuffer->getFillLevels();
+            mStats.observeRing(lv.avail, lv.space);
+        }
+    }
+
     common::PlaybackStatus mStatus; /**< Current system playback state. */
     std::string mCurrentUrl;        /**< URL of the current stream. */
 
@@ -198,7 +206,6 @@ class PlayerService : public IPlayerService {
     adapters::IHttpClient& mHttpClient;   /**< Reference to stream fetcher. */
     adapters::IMp3Decoder& mMp3Decoder;   /**< Reference to audio decoder. */
     common::ITaskRunner& mTaskRunner;     /**< Reference to background task manager. */
-    common::IAudioBufferStats& mStats;    /**< Performance monitoring utility. */
     std::unique_ptr<common::ISignal> mStreamOpenSignal; /**< Synchronization for HTTP connection. */
 
     uint32_t mReadStallMs;                /**< Counter for buffer underrun detection. */
@@ -214,6 +221,8 @@ class PlayerService : public IPlayerService {
     std::vector<int16_t> mMonoToStereo; /**< mono->stereo conversion buffer. */
 
     std::atomic<int32_t> mVolumeQ15; /**< Volume in the Q15 format. */
+
+    common::ActivePlayerStats mStats; /**< Performance monitoring utility. */
 };
 
 }  // namespace services

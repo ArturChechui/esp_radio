@@ -15,12 +15,8 @@ namespace common {
 
 /**
  * @class IRingBuffer
- * @brief Abstract interface for a circular (ring) buffer.
- *
- * This interface provides dual access patterns:
- * 1. Standard Read/Write: Data is copied between user buffers and internal storage.
- * 2. Zero-Copy Spans: Provides direct pointers to internal memory segments,
- * avoiding unnecessary copies.
+ * @brief Abstract interface for a ring buffer.
+ * Provides direct pointers to internal memory segments, avoiding unnecessary copies.
  */
 class IRingBuffer {
    public:
@@ -72,29 +68,6 @@ class IRingBuffer {
 
     /** @brief Virtual destructor for safe interface cleanup. */
     virtual ~IRingBuffer() = default;
-
-    /** @name Compatibility Copy APIs
-     * Standard methods for moving data by copying it into or out of the buffer.
-     * @{ */
-
-    /**
-     * @brief Copies data into the ring buffer.
-     * @param data Pointer to the source data.
-     * @param len Number of bytes to write.
-     * @param timeoutMs Maximum time to wait for sufficient space.
-     * @return The actual number of bytes written.
-     */
-    virtual size_t write(const uint8_t* data, const size_t len, const uint32_t timeoutMs) = 0;
-
-    /**
-     * @brief Copies data out of the ring buffer.
-     * @param data Pointer to the destination buffer.
-     * @param len Number of bytes to read.
-     * @param timeoutMs Maximum time to wait for sufficient data.
-     * @return The actual number of bytes read.
-     */
-    virtual size_t read(uint8_t* data, const size_t len, const uint32_t timeoutMs) = 0;
-    /** @} */
 
     /** @name Zero-Copy APIs
      * Methods to access the internal buffer memory directly to avoid memcpy overhead.
@@ -151,11 +124,6 @@ class IRingBuffer {
      * @brief Returns the number of bytes currently available for reading.
      */
     virtual size_t available() const = 0;
-
-    /**
-     * @brief Returns the number of bytes currently free for writing.
-     */
-    virtual size_t space() const = 0;
 
     /**
      * @brief Retrieves both available data and free space in a single atomic-like call.
