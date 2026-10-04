@@ -20,10 +20,10 @@ namespace common {
 
 /**
  * @brief Converts a millisecond duration to FreeRTOS ticks.
- * * This function calculates the equivalent number of system ticks for a given
+ * This function calculates the equivalent number of system ticks for a given
  * time in milliseconds. It performs a "ceiling" division to ensure that the
  * resulting delay is at least as long as requested.
- * * @param ms The duration in milliseconds to convert.
+ * @param ms The duration in milliseconds to convert.
  * @return The equivalent number of TickType_t ticks.
  * - Returns portMAX_DELAY if the input is UINT32_MAX.
  * - Returns 0 if the input is 0.

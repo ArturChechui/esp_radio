@@ -3,8 +3,7 @@
  * @brief Concrete implementation of the ITaskRunner interface.
  *
  * This file defines the TaskRunner class, which manages a fixed-size pool
- * of task slots. It handles static memory allocation for task stacks and
- * TCBs (Task Control Blocks) to ensure high reliability.
+ * of task slots with managed FreeRTOS task lifecycles.
  */
 
 #pragma once
@@ -12,6 +11,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
+#include <array>
 #include <atomic>
 #include <cstdint>
 #include <cstring>
@@ -30,12 +30,12 @@ class StopToken; /**< Forward declaration of the StopToken class. */
 
 /**
  * @class TaskRunner
- * @brief A task manager providing lifecycle control and static allocation.
+ * @brief A task manager providing lifecycle control and slot-based task management.
  *
- * The TaskRunner allows the application to start and stop background tasks
- * while maintaining a registry of active tasks. It uses a "slot" system
- * to reuse memory and provides synchronization mechanisms to ensure
- * tasks have fully exited before their resources are reused.
+ * The TaskRunner manages background tasks using a fixed-size pool of slots.
+ * It provides safe cancellation handling via StopTokens, handle validation using
+ * generation tags (runIDs) to prevent stale handle usage, and synchronization
+ * mechanisms to ensure tasks exit cleanly before slot resources are reused.
  */
 class TaskRunner : public ITaskRunner {
    public:
@@ -59,10 +59,11 @@ class TaskRunner : public ITaskRunner {
 
     /**
      * @brief Creates and starts a new task in an available slot.
-     * * This implementation performs static allocation for the task stack and
-     * TCB. It wraps the user function in an internal logic that handles
-     * completion signaling.
-     * * @param params Parameters including the task name and priority.
+     *
+     * This implementation delegates stack and TCB memory allocation to FreeRTOS.
+     * It wraps the user function in an internal worker loop that handles cancellation
+     * tokens and completion signaling.
+     * @param params Parameters including the task name and priority.
      * @param stackWords The required stack size in words.
      * @param fn The user-defined function to run.
      * @param user Context pointer passed to the user function.
@@ -98,11 +99,6 @@ class TaskRunner : public ITaskRunner {
         StepFn fn{nullptr};  /**< The user function to execute. */
         void* user{nullptr}; /**< User context pointer. */
 
-        // Internal storage (allocated by runner)
-        StaticTask_t* tcb{nullptr};  /**< Static TCB storage. */
-        StackType_t* stack{nullptr}; /**< Static stack storage. */
-        uint32_t stackWords{0U};     /**< Current stack size in words. */
-
         char name[configMAX_TASK_NAME_LEN]{}; /**< Task name for OS monitoring. */
         uint16_t index{0U};                   /**< The index of this slot in the array. */
     };
@@ -125,12 +121,12 @@ class TaskRunner : public ITaskRunner {
     /** @brief Removes all data from slot for correct task shutdown */
     void cleanupSlotFromTask(Slot& s);
 
-    /** @brief Static entry point passed to xTaskCreateStatic. */
+    /** @brief Static entry point passed to xTaskCreatePinnedToCore. */
     static void taskEntry(void* arg);
     /** @} */
 
-    friend class StopToken; /**< StopToken needs access to internal state. */
-    Slot mSlots[MaxTasks];  /**< The fixed pool of task slots. */
+    friend class StopToken;            /**< StopToken needs access to internal state. */
+    std::array<Slot, MaxTasks> mSlots; /**< The fixed pool of task slots. */
 };
 
 }  // namespace common

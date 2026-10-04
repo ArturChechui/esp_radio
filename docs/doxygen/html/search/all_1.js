@@ -1,7 +1,7 @@
 var searchData=
 [
   ['abort_0',['abort',['../classcommon_1_1IRingBuffer.html#a46a1afd9b2d4223cc88ae8d523ea1015',1,'common::IRingBuffer::abort()'],['../classcommon_1_1RingBuffer.html#a7c03b72f5b1a058a111c6bb8a6739c19',1,'common::RingBuffer::abort()']]],
-  ['acoustic_20enclosure_20design_1',['Acoustic &amp;amp; Enclosure Design',['../index.html#autotoc_md9',1,'']]],
+  ['acoustic_20enclosure_20design_1',['Acoustic &amp;amp; Enclosure Design',['../index.html#autotoc_md10',1,'']]],
   ['action_2',['Action',['../classcore_1_1commands_1_1PlayStopSkipCommand.html#a2c040218979a472e43c3cb486f2d00c3',1,'core::commands::PlayStopSkipCommand']]],
   ['action_3',['action',['../structcommon_1_1StepResult.html#a62faf1b46b99ac23c8182d59808b9d09',1,'common::StepResult']]],
   ['activeplayerstats_4',['ActivePlayerStats',['../namespacecommon.html#a4dc3ce911c034d78c171b62698493add',1,'common']]],
@@ -22,7 +22,7 @@ var searchData=
   ['appcontroller_2ehpp_19',['AppController.hpp',['../AppController_8hpp.html',1,'']]],
   ['appevent_20',['AppEvent',['../namespacecommon.html#a0e9fa1d9385a93e716041d14fa7b3666',1,'common']]],
   ['apssid_21',['apSsid',['../structcommon_1_1ProvisioningPortalConfig.html#a976ee718b4678e8a0a600a3e07ad0746',1,'common::ProvisioningPortalConfig']]],
-  ['architecture_22',['How it Works (Architecture)',['../index.html#autotoc_md16',1,'']]],
+  ['architecture_22',['How it Works (Architecture)',['../index.html#autotoc_md17',1,'']]],
   ['audiobufferstats_23',['AudioBufferStats',['../classcommon_1_1AudioBufferStats.html',1,'common::AudioBufferStats'],['../classcommon_1_1AudioBufferStats.html#a086881c71096caa60725f198bbc15cda',1,'common::AudioBufferStats::AudioBufferStats()']]],
   ['audiobufferstats_2ehpp_24',['AudioBufferStats.hpp',['../AudioBufferStats_8hpp.html',1,'']]],
   ['avail_25',['avail',['../structcommon_1_1IRingBuffer_1_1FillLevels.html#ae2e0705eceb23cbbba5561588e981931',1,'common::IRingBuffer::FillLevels']]],

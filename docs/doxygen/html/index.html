@@ -75,21 +75,21 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p><a class="anchor" id="md_README"></a></p>
-<p>A fully custom-built internet radio powered by an ESP32, featuring high-quality audio streaming, a custom 3D-printed enclosure, and a robust FreeRTOS-based software architecture.</p>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md1"></a>
-The Journey &amp; The "Why"</h1>
-<p>This project was born out of a desire to build something truly mine, from the very first wire to the last line of code.</p>
-<p>For a long time, my life was consumed by 24/7 work cycles and overtimes. I had the urge to create, but my head was too full of "work" to think about "engineering." After a significant life change, a failed relocation due to a technicality with residency documents, I found myself at a crossroads. Instead of letting the disappointment take over, I chose to rest, reconsider my future, and finally dive into the world I had been watching from the sidelines: <b>Hardware.</b></p>
-<p>This radio represents my journey of learning:</p>
-<ul>
-<li><b>Soldering:</b> Transitioning from software to physical connections.</li>
-<li><b>3D Modeling &amp; Printing:</b> Designing an enclosure in Fusion360 and bringing it to life.</li>
-<li><b>Acoustics:</b> Applying mathematical standards to physical sound chambers.</li>
-<li><b>Embedded Programming:</b> Moving from high-level logic to FreeRTOS, I2S protocols, and memory management.</li>
-</ul>
-<p>Today, this radio sits on my desk and plays my favorite Ukrainian stations. It's a piece of home, a source of nostalgia, and a constant reminder that even when plans fail, you can still build something beautiful.</p>
+<p>A fully custom-built, dual-core internet radio powered by an ESP32-S3, featuring zero-stutter I2S audio streaming, software DSP volume scaling, a custom 3D-printed acoustics enclosure, and a rock-solid FreeRTOS architecture.</p>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md3"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md2"></a>
+The Journey &amp; The "Why"</h1>
+<p>This project was born out of a desire to build something complete from scratch: from the first soldered trace to the final line of modern C++ firmware.</p>
+<p>After years of building complex embedded software systems and working through demanding release cycles, I took a step back during a career transition. I needed time to reset, evaluate relocation options and visa frameworks, and decide where to build my next chapter.</p>
+<p>Alongside sorting out life's bigger questions, I wanted to re-arm my skillset and bridge the gap between pure software and physical hardware. Instead of letting this break go to waste, I used it to dive headfirst into hands-on hardware design, CAD modeling, and digital audio processing:</p>
+<ul>
+<li><b>Hardware &amp; Soldering:</b> Assembling microcontroller circuits, rotary encoders, and power stages from schematic to physical assembly.</li>
+<li><b>CAD &amp; Acoustic Engineering:</b> Designing custom enclosures in Fusion 360, tuning speaker chamber volumes using acoustic math, and FDM 3D printing.</li>
+<li><b>Embedded System Architecture:</b> Writing thread-safe C++ firmware utilizing FreeRTOS tasks, lock-free ring buffers, I2S DMA pipelines, and efficient pointer-based DSP routines.</li>
+</ul>
+<p>Today, this radio sits on my desk continuously playing my favorite Ukrainian stations. It is a warm piece of home, and a constant reminder that when life changes course, you can always build your own way forward.</p>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md4"></a>
 Evolution of the Build</h1>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -104,10 +104,10 @@ Evolution of the Build</h1>
 <td class="markdownTableBodyLeft"><b>3. Final Product</b>  </td><td class="markdownTableBodyLeft"><img src="https://raw.githubusercontent.com/ArturChechui/esp_radio/main/resources/photos/7_finished_box.png" alt="" height="120" class="inline"/> <img src="https://raw.githubusercontent.com/ArturChechui/esp_radio/main/resources/photos/11_finished_box.jpg" alt="" height="120" class="inline"/> <img src="https://raw.githubusercontent.com/ArturChechui/esp_radio/main/resources/photos/12_finished_box.jpg" alt="" height="120" class="inline"/>  </td></tr>
 </table>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md4"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md5"></a>
 Feature Demonstrations</h1>
 <p>Below are recorded validation tests demonstrating the core features, real-time control loops, and network resilience of the radio pipeline.</p>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md5"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md6"></a>
 E2E Walkthroughs</h2>
 <ul>
 <li><b>Full Feature Walkthrough (v1):</b> Showcases station cycling, rotary control, and clap-to-play activation.</li>
@@ -119,7 +119,7 @@ E2E Walkthroughs</h2>
 </ul>
 <p><a href="https://youtu.be/W9kkjmenZKo">▶ Click here or the image below to watch video</a></p>
 <p><a href="https://www.youtube.com/embed/W9kkjmenZKo"><img src="https://img.youtube.com/vi/W9kkjmenZKo/hqdefault.jpg" alt="Watch the video" class="inline"/></a></p>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md6"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md7"></a>
 Network Resilience &amp; Edge-Case Buffering</h2>
 <ul>
 <li><b>Low-RSSI Test (v1):</b> Stress test under extreme signal degradation (1-bar Wi-Fi where smartphones struggle to connect). Demonstrates the system detecting the drop, entering an explicit <span class="tt">Buffering</span> state, and successfully recovering the stream.</li>
@@ -131,7 +131,7 @@ Network Resilience &amp; Edge-Case Buffering</h2>
 </ul>
 <p><a href="https://youtu.be/vzDmDu5UXB0">▶ Click here or the image below to watch video</a></p>
 <p><a href="https://www.youtube.com/embed/vzDmDu5UXB0"><img src="https://img.youtube.com/vi/vzDmDu5UXB0/hqdefault.jpg" alt="Watch the video" class="inline"/></a></p>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md7"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md8"></a>
 Hardware Peripheral Validation</h2>
 <ul>
 <li><b>Station Skipping &amp; Accumulation:</b> Tests the physical button debounce filters and fast station navigation logic.</li>
@@ -143,27 +143,27 @@ Hardware Peripheral Validation</h2>
 </ul>
 <p><a href="https://youtu.be/cs2J7kylFnE">▶ Click here or the image below to watch video</a></p>
 <p><a href="https://www.youtube.com/embed/cs2J7kylFnE"><img src="https://img.youtube.com/vi/cs2J7kylFnE/hqdefault.jpg" alt="Watch the video" class="inline"/></a></p>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md8"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md9"></a>
 Technical Overview</h1>
 <p>The system is designed to be modular, thread-safe, and resilient to network fluctuations.</p>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md9"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md10"></a>
 Acoustic &amp; Enclosure Design</h2>
-<p>The enclosure isn't just a shell; it was engineered as a tuned acoustic chamber to maximize the performance of the drivers.</p>
+<p>The enclosure isn't just a shell, it was engineered as a tuned acoustic chamber to maximize the performance of the drivers.</p>
 <ul>
 <li><b>Custom "Golden Ratio" Geometry:</b> The design is based on the <b>Golden Ratio for Loudspeaker Enclosures</b> ($1 : 1.618 : 0.618$) to minimize internal standing waves and resonance.</li>
 <li><b>Dimensional Adaptation:</b> To accommodate the physical depth of the high-performance speakers, the standard ratio was carefully adapted. The final outer dimensions are <b>145mm (W) x 90mm (H) x 55mm (D)</b>. With <b>4mm thick walls</b> for structural rigidity, the internal volume is optimized for the specific resonant frequency of the drivers.</li>
 <li><b>Virtual Volume Enhancement:</b> The speaker chambers are filled with <b>Polyester Fiberfill</b>. This material slows down the air particles inside the box, tricking the speaker into "thinking" it is in a much larger enclosure. This provides a significantly richer sound and deeper bass response than a standard hollow 3D-printed box would allow.</li>
 </ul>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md10"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md11"></a>
 Software Stack</h2>
 <ul>
 <li><b>Language:</b> C++17</li>
 <li><b>OS:</b> FreeRTOS (ESP-IDF)</li>
-<li><b>Audio:</b> I2S protocol for external DAC communication.</li>
+<li><b>Audio:</b> I2S protocol for external DAC communication and Q15 fixed-point DSP volume math.</li>
 <li><b>Data:</b> JSON-based station management and system manifests.</li>
-<li><b>Core Logic:</b> A custom <span class="tt">TaskRunner</span> system that manages background services (WiFi, Audio, Sensors) using a slot-based static allocation to ensure stability.</li>
+<li><b>Core Logic:</b> A custom <span class="tt">TaskRunner</span> system that manages background execution using atomic generation-tagged task handles to guarantee zero memory leaks and safe cooperative thread termination.</li>
 </ul>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md11"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md12"></a>
 Key Features</h2>
 <ul>
 <li><b>GitHub Station Sync:</b> By <b>long-pressing the Play button</b>, the radio automatically downloads the latest <span class="tt">stations.json</span> file directly from the main branch of the project's GitHub repository. To ensure data integrity, the system displays a status message and <b>blocks all physical inputs</b> for the 1-2 seconds it takes to perform the sync.</li>
@@ -172,12 +172,12 @@ Key Features</h2>
 <li><b>Tactile Volume Control:</b> Uses a rotary encoder with an accumulation algorithm (quarter-detent) to provide smooth, professional-feeling volume adjustment.</li>
 <li><b>Dedicated Playback Buttons:</b> Physical buttons for <b>Play/Pause</b>, <b>Next</b>, and <b>Previous</b> stations for a "classic radio" feel that doesn't require looking at a screen.</li>
 <li><b>OLED Interface:</b> A high-contrast display showing station names, real-time signal strength (RSSI), and system status icons.</li>
-<li><b>Resilient Audio Pipeline:</b> A custom <span class="tt">RingBuffer</span> and <span class="tt">TaskRunner</span> architecture designed to handle network jitter and prevent audio "hiccups" during streaming.</li>
+<li><b>Resilient Audio Pipeline:</b> A lock-free <span class="tt">RingBuffer</span> and producer/consumer <span class="tt">TaskRunner</span> architecture designed to handle network jitter and prevent audio "hiccups" during streaming.</li>
 </ul>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md13"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md14"></a>
 Lessons Learned</h1>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md14"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md15"></a>
 Theory vs. Practice</h2>
 <p>The biggest takeaway from this project was the realization of the gap between theory and reality. In software, variables are usually controlled. In hardware, <b>everything is a variable.</b></p>
 <ul>
@@ -186,36 +186,36 @@ Theory vs. Practice</h2>
 <li><b>Adaptability:</b> I learned that a good engineer doesn't just write a perfect plan; they write a plan that is flexible enough to survive the "real world."</li>
 </ul>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md16"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md17"></a>
 How it Works (Architecture)</h1>
 <ol type="1">
 <li><b>Network Layer:</b> Fetches MP3 streams via HTTP.</li>
-<li><b>Buffer Layer:</b> A thread-safe circular buffer (RingBuffer) stores raw data.</li>
-<li><b>Decode Layer:</b> An MP3 decoder task pulls from the buffer and produces PCM samples.</li>
-<li><b>Output Layer:</b> I2S pushes the samples to the external DAC/Speaker.</li>
+<li><b>Buffer Layer:</b> A thread-safe circular buffer (RingBuffer) stores raw bitstream data using fine-grained atomic memory order constraints.</li>
+<li><b>Decode Layer:</b> An MP3 decoder task pulls from the buffer and produces PCM samples using fast <span class="tt">minimp3</span> routines and pointer post-increment Q15 DSP scaling.</li>
+<li><b>Output Layer:</b> I2S pushes the stereo samples to the external DACs/speakers.</li>
 <li><b>Control Layer:</b> Monitors buttons and encoders to dispatch system-wide events.</li>
 </ol>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md18"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md19"></a>
 Hardware Components</h1>
 <ul>
 <li>MCU: ESP32-S3 SuperMini</li>
-<li>Display: 1.3" SH1106 128x64 OLED via I2C
-- Temp/Hum: AHT20 (I2C)
-- Light sensor: BH1750 (I2C)
-- Sound sensor: GY-MAX4466 (ADC)
-- Audio modules: 2x MAX98357 (I2S DAC/amp)
-- Speakers: 2x AIYIMA 2" 4 Ohms 3W</li>
+<li>Display: 1.3 inches SH1106 128x64 OLED via I2C</li>
+<li>Temp/Hum: AHT20 (I2C)</li>
+<li>Light sensor: BH1750 (I2C)</li>
+<li>Sound sensor: GY-MAX4466 (ADC)</li>
+<li>Audio modules: 2x MAX98357 (I2S DAC/amp)</li>
+<li>Speakers: 2x AIYIMA 2 inches 4 Ohms 3W</li>
 <li>Battery: 3x 18650 Li-ion, 3000 mAh each</li>
 <li>Inputs:<ul>
 <li>Buttons: Next, Previous, Play/Stop</li>
 <li>Rotary encoder EC11 for Volume</li>
 </ul>
 </li>
-<li>Case: Custom 3D-printed enclosure designed in Fusion360</li>
+<li>Case: Custom 3D-printed enclosure designed in Fusion 360</li>
 </ul>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md20"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md21"></a>
 Interactive Documentation &amp; Release Specs</h1>
 <p>The full source code architecture, API references, and system design specifications are compiled and deployed online:</p>
 <ul>

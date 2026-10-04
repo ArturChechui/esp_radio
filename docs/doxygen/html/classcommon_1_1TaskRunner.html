@@ -84,7 +84,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>A task manager providing lifecycle control and static allocation.  
+<p>A task manager providing lifecycle control and slot-based task management.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="TaskRunner_8hpp_source.html">TaskRunner.hpp</a>&gt;</code></p>
@@ -93,9 +93,9 @@ Inheritance diagram for common::TaskRunner:</div>
 <div class="dyncontent">
 <div class="center"><img src="classcommon_1_1TaskRunner__inherit__graph.png" border="0" usemap="#acommon_1_1TaskRunner_inherit__map" loading="lazy" alt="Inheritance graph"/></div>
 <map name="acommon_1_1TaskRunner_inherit__map" id="acommon_1_1TaskRunner_inherit__map">
-<area shape="rect" title="A task manager providing lifecycle control and static allocation." alt="" coords="7,79,170,104"/>
-<area shape="rect" href="classcommon_1_1ITaskRunner.html" title="Abstract interface for a task execution service." alt="" coords="5,5,172,31"/>
-<area shape="poly" title=" " alt="" coords="91,44,91,79,86,79,86,44"/>
+<area shape="rect" title="A task manager providing lifecycle control and slot&#45;based task management." alt="" coords="7,81,169,109"/>
+<area shape="rect" href="classcommon_1_1ITaskRunner.html" title="Abstract interface for a task execution service." alt="" coords="5,5,171,33"/>
+<area shape="poly" title=" " alt="" coords="90,47,90,82,86,80,86,51"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
@@ -103,16 +103,16 @@ Collaboration diagram for common::TaskRunner:</div>
 <div class="dyncontent">
 <div class="center"><img src="classcommon_1_1TaskRunner__coll__graph.png" border="0" usemap="#acommon_1_1TaskRunner_coll__map" loading="lazy" alt="Collaboration graph"/></div>
 <map name="acommon_1_1TaskRunner_coll__map" id="acommon_1_1TaskRunner_coll__map">
-<area shape="rect" title="A task manager providing lifecycle control and static allocation." alt="" coords="7,79,170,104"/>
-<area shape="rect" href="classcommon_1_1ITaskRunner.html" title="Abstract interface for a task execution service." alt="" coords="5,5,172,31"/>
-<area shape="poly" title=" " alt="" coords="91,44,91,79,86,79,86,44"/>
+<area shape="rect" title="A task manager providing lifecycle control and slot&#45;based task management." alt="" coords="7,81,169,109"/>
+<area shape="rect" href="classcommon_1_1ITaskRunner.html" title="Abstract interface for a task execution service." alt="" coords="5,5,171,33"/>
+<area shape="poly" title=" " alt="" coords="90,47,90,82,86,80,86,51"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a0db4e4a03537e829581442c7b9fbafea" id="r_a0db4e4a03537e829581442c7b9fbafea"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0db4e4a03537e829581442c7b9fbafea">TaskRunner</a> ()</td></tr>
-<tr class="memdesc:a0db4e4a03537e829581442c7b9fbafea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the <a class="el" href="classcommon_1_1TaskRunner.html" title="A task manager providing lifecycle control and static allocation.">TaskRunner</a> and initializes the internal slot registry.  <br /></td></tr>
+<tr class="memdesc:a0db4e4a03537e829581442c7b9fbafea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the <a class="el" href="classcommon_1_1TaskRunner.html" title="A task manager providing lifecycle control and slot-based task management.">TaskRunner</a> and initializes the internal slot registry.  <br /></td></tr>
 <tr class="memitem:a2f7e96ecace4dc5a5db3f22c5ffc2a3c" id="r_a2f7e96ecace4dc5a5db3f22c5ffc2a3c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2f7e96ecace4dc5a5db3f22c5ffc2a3c">~TaskRunner</a> () override=default</td></tr>
 <tr class="memdesc:a2f7e96ecace4dc5a5db3f22c5ffc2a3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual destructor.  <br /></td></tr>
 <tr class="memitem:ac6a8dba0afd4895dab8ba8ca1fdad977" id="r_ac6a8dba0afd4895dab8ba8ca1fdad977"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structcommon_1_1TaskHandle.html">TaskHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac6a8dba0afd4895dab8ba8ca1fdad977">start</a> (const <a class="el" href="structcommon_1_1TaskParams.html">TaskParams</a> &amp;params, uint32_t stackWords, <a class="el" href="namespacecommon.html#aeed141a188f4f4bdc14d645587ec7fec">StepFn</a> fn, void *user) override</td></tr>
@@ -120,7 +120,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ab99edc3299f9a4dc88716793a0d87689" id="r_ab99edc3299f9a4dc88716793a0d87689"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacecommon.html#ae01c7d789809ee25c2b6931c871f8502">StopResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab99edc3299f9a4dc88716793a0d87689">stop</a> (const <a class="el" href="structcommon_1_1TaskHandle.html">TaskHandle</a> &amp;h, uint32_t waitMs) override</td></tr>
 <tr class="memdesc:ab99edc3299f9a4dc88716793a0d87689"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signals a task to stop and waits for it to clean up.  <br /></td></tr>
 <tr id="pub-methods-0" class="groupHeader"><td colspan="2"><div class="groupHeader">Non-copyable</div></td></tr>
-<tr><td colspan="2" class="ititle"><div class="groupText"><p>The <a class="el" href="classcommon_1_1TaskRunner.html" title="A task manager providing lifecycle control and static allocation.">TaskRunner</a> manages hardware-bound task resources and cannot be copied. </p>
+<tr><td colspan="2" class="ititle"><div class="groupText"><p>The <a class="el" href="classcommon_1_1TaskRunner.html" title="A task manager providing lifecycle control and slot-based task management.">TaskRunner</a> manages hardware-bound task resources and cannot be copied. </p>
 </div></td></tr>
 <tr class="memitem:ae49a6963c2a5d7a14145548d6eb65b78" id="r_ae49a6963c2a5d7a14145548d6eb65b78"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae49a6963c2a5d7a14145548d6eb65b78">TaskRunner</a> (const TaskRunner &amp;)=delete</td></tr>
 <tr class="memitem:a54b1921078bcf1984e18ea08e99cea7c" id="r_a54b1921078bcf1984e18ea08e99cea7c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a0db4e4a03537e829581442c7b9fbafea">TaskRunner</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a54b1921078bcf1984e18ea08e99cea7c">operator=</a> (const <a class="el" href="#a0db4e4a03537e829581442c7b9fbafea">TaskRunner</a> &amp;)=delete</td></tr>
@@ -138,9 +138,9 @@ Friends</h2></td></tr>
 <tr class="memitem:a18b323218eb8c9dcf581c998e77f473d" id="r_a18b323218eb8c9dcf581c998e77f473d"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a18b323218eb8c9dcf581c998e77f473d">StopToken</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A task manager providing lifecycle control and static allocation. </p>
+<div class="textblock"><p>A task manager providing lifecycle control and slot-based task management. </p>
 <p>Forward declaration of the <a class="el" href="classcommon_1_1StopToken.html" title="A task-specific token for managing execution lifecycle.">StopToken</a> class.</p>
-<p>The <a class="el" href="classcommon_1_1TaskRunner.html" title="A task manager providing lifecycle control and static allocation.">TaskRunner</a> allows the application to start and stop background tasks while maintaining a registry of active tasks. It uses a "slot" system to reuse memory and provides synchronization mechanisms to ensure tasks have fully exited before their resources are reused. </p>
+<p>The <a class="el" href="classcommon_1_1TaskRunner.html" title="A task manager providing lifecycle control and slot-based task management.">TaskRunner</a> manages background tasks using a fixed-size pool of slots. It provides safe cancellation handling via StopTokens, handle validation using generation tags (runIDs) to prevent stale handle usage, and synchronization mechanisms to ensure tasks exit cleanly before slot resources are reused. </p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a0db4e4a03537e829581442c7b9fbafea" name="a0db4e4a03537e829581442c7b9fbafea"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0db4e4a03537e829581442c7b9fbafea">&#9670;&#160;</a></span>TaskRunner() <span class="overload">[1/2]</span></h2>
@@ -157,7 +157,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Constructs the <a class="el" href="classcommon_1_1TaskRunner.html" title="A task manager providing lifecycle control and static allocation.">TaskRunner</a> and initializes the internal slot registry. </p>
+<p>Constructs the <a class="el" href="classcommon_1_1TaskRunner.html" title="A task manager providing lifecycle control and slot-based task management.">TaskRunner</a> and initializes the internal slot registry. </p>
 
 </div>
 </div>
@@ -277,9 +277,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Creates and starts a new task in an available slot. </p>
-<ul>
-<li>This implementation performs static allocation for the task stack and TCB. It wraps the user function in an internal logic that handles completion signaling.</li>
-<li><dl class="params"><dt>Parameters</dt><dd>
+<p>This implementation delegates stack and TCB memory allocation to FreeRTOS. It wraps the user function in an internal worker loop that handles cancellation tokens and completion signaling. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">params</td><td>Parameters including the task name and priority. </td></tr>
     <tr><td class="paramname">stackWords</td><td>The required stack size in words. </td></tr>
@@ -289,8 +287,6 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="structcommon_1_1TaskHandle.html" title="Opaque identifier for a managed background task.">TaskHandle</a> containing the slot index and run ID, or an invalid handle on failure. </dd></dl>
-</li>
-</ul>
 
 <p>Implements <a class="el" href="classcommon_1_1ITaskRunner.html#aa12b3b22bd237b83ca1ef92d021858ba">common::ITaskRunner</a>.</p>
 

@@ -67,7 +67,6 @@ class PlayerService : public IPlayerService {
      * @param runner The task runner used to spawn background processing threads.
      * @param ringBuffer Thread-safe buffer for raw bitstream data.
      * @param coreEventQueue Queue for sending status updates to the application core.
-     * @param semaphore Signal used for synchronization between producer and consumer.
      */
     explicit PlayerService(adapters::II2sBus& i2sBus, adapters::IHttpClient& httpClient,
                            adapters::IMp3Decoder& mp3Decoder, common::ITaskRunner& runner,
