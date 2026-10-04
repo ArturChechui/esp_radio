@@ -1,7 +1,7 @@
 var searchData=
 [
   ['capacity_0',['capacity',['../classcommon_1_1IRingBuffer.html#a1be99d7f846ddbc03aafdbc7faedab90',1,'common::IRingBuffer::capacity()'],['../classcommon_1_1RingBuffer.html#a94e9074a801e9fd80efadec101abf843',1,'common::RingBuffer::capacity()']]],
-  ['case_20buffering_1',['Network Resilience &amp;amp; Edge-Case Buffering',['../index.html#autotoc_md6',1,'']]],
+  ['case_20buffering_1',['Network Resilience &amp;amp; Edge-Case Buffering',['../index.html#autotoc_md7',1,'']]],
   ['channel_2',['channel',['../structcommon_1_1ProvisioningPortalConfig.html#ab452a49308d93d29ff0e8d1eae33e1c0',1,'common::ProvisioningPortalConfig']]],
   ['channels_3',['channels',['../structcommon_1_1Mp3FrameInfo.html#ab90ae063b862a92711c1a57634888a22',1,'common::Mp3FrameInfo']]],
   ['claimreadspans_4',['claimReadSpans',['../classcommon_1_1IRingBuffer.html#a0dd1de9d04c49046ae93a7a87635f454',1,'common::IRingBuffer::claimReadSpans()'],['../classcommon_1_1RingBuffer.html#af54d29e5508fa6c2ba9d8b4e9297e87a',1,'common::RingBuffer::claimReadSpans()']]],
@@ -17,7 +17,7 @@ var searchData=
   ['commitwrite_14',['commitWrite',['../classcommon_1_1IRingBuffer.html#a8b7868de8b69ab65b2151086ec645df6',1,'common::IRingBuffer::commitWrite()'],['../classcommon_1_1RingBuffer.html#ac67c39bb3cdaf7642fda5b83171fc6fb',1,'common::RingBuffer::commitWrite()']]],
   ['common_15',['common',['../namespacecommon.html',1,'']]],
   ['common_3a_3afonts_16',['fonts',['../namespacecommon_1_1fonts.html',1,'common']]],
-  ['components_17',['Hardware Components',['../index.html#autotoc_md18',1,'']]],
+  ['components_17',['Hardware Components',['../index.html#autotoc_md19',1,'']]],
   ['connect_18',['connect',['../classadapters_1_1IWifiClient.html#a8d9d558c3c4f1faf9ec4ca2b727eec6f',1,'adapters::IWifiClient::connect()'],['../classadapters_1_1WifiClient.html#abd810c35ed2d2cf4743eeb2ccb7a5301',1,'adapters::WifiClient::connect()'],['../classservices_1_1IWifiService.html#a12d118d0d8fb900b6740f260ddb77648',1,'services::IWifiService::connect()'],['../classservices_1_1WifiService.html#ade7fb9de31dcfccf9ae3f47211ce0b6a',1,'services::WifiService::connect()']]],
   ['connectwifi_19',['ConnectWifi',['../namespacecommon.html#a42916b8af7fcefcac772bd93b9c884e7a115f8c6170f44dea5888e2a78d773b91',1,'common']]],
   ['connectwificommand_20',['ConnectWifiCommand',['../classcore_1_1commands_1_1ConnectWifiCommand.html',1,'core::commands::ConnectWifiCommand'],['../classcore_1_1commands_1_1ConnectWifiCommand.html#a7fe86985b76626d632029d06497a55f9',1,'core::commands::ConnectWifiCommand::ConnectWifiCommand()']]],

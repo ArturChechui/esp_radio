@@ -81,9 +81,8 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="TaskRunner_8hpp_source.html">TaskRunner.hpp</a>&quot;</code><br />
-<code>#include &lt;esp_heap_caps.h&gt;</code><br />
 <code>#include &lt;esp_log.h&gt;</code><br />
-<code>#include &lt;cstdlib&gt;</code><br />
+<code>#include &lt;cstring&gt;</code><br />
 <code>#include &quot;<a class="el" href="Helper_8hpp_source.html">Helper.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="StopToken_8hpp_source.html">StopToken.hpp</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
@@ -91,58 +90,56 @@ Include dependency graph for TaskRunner.cpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="TaskRunner_8cpp__incl.png" border="0" usemap="#acomponents_2common_2src_2TaskRunner_8cpp" loading="lazy" alt=""/></div>
 <map name="acomponents_2common_2src_2TaskRunner_8cpp" id="acomponents_2common_2src_2TaskRunner_8cpp">
-<area shape="rect" title=" " alt="" coords="497,5,682,50"/>
-<area shape="rect" href="TaskRunner_8hpp.html" title="Concrete implementation of the ITaskRunner interface." alt="" coords="377,98,500,126"/>
-<area shape="poly" title=" " alt="" coords="547,52,477,93,475,88,552,49"/>
-<area shape="rect" title=" " alt="" coords="575,98,707,126"/>
-<area shape="poly" title=" " alt="" coords="604,48,627,85,622,84,602,53"/>
-<area shape="rect" title=" " alt="" coords="732,98,815,126"/>
-<area shape="poly" title=" " alt="" coords="638,48,733,91,727,91,638,53"/>
-<area shape="rect" title=" " alt="" coords="838,98,903,126"/>
-<area shape="poly" title=" " alt="" coords="664,48,826,96,821,97,664,53"/>
+<area shape="rect" title=" " alt="" coords="631,5,817,50"/>
+<area shape="rect" href="TaskRunner_8hpp.html" title="Concrete implementation of the ITaskRunner interface." alt="" coords="434,98,558,126"/>
+<area shape="poly" title=" " alt="" coords="661,52,547,95,545,90,666,50"/>
+<area shape="rect" title=" " alt="" coords="845,174,910,201"/>
+<area shape="poly" title=" " alt="" coords="746,48,856,162,851,162,744,53"/>
+<area shape="rect" title=" " alt="" coords="682,98,766,126"/>
+<area shape="poly" title=" " alt="" coords="725,48,726,84,722,81,722,53"/>
 <area shape="rect" href="Helper_8hpp.html" title="Common utility functions for time and unit conversions." alt="" coords="50,98,142,126"/>
-<area shape="poly" title=" " alt="" coords="496,47,158,103,157,98,497,42"/>
-<area shape="rect" href="StopToken_8hpp.html" title="Concrete implementation of the IStopToken interface." alt="" coords="881,174,996,201"/>
-<area shape="poly" title=" " alt="" coords="575,49,566,70,559,89,557,108,565,124,587,140,619,151,704,162,794,166,863,171,869,174,863,174,862,176,794,171,704,168,618,156,584,144,561,127,552,108,553,88,561,67,571,52"/>
+<area shape="poly" title=" " alt="" coords="630,44,158,105,156,100,631,38"/>
+<area shape="rect" href="StopToken_8hpp.html" title="Concrete implementation of the IStopToken interface." alt="" coords="934,174,1050,201"/>
+<area shape="poly" title=" " alt="" coords="761,48,959,165,954,166,760,53"/>
 <area shape="rect" title=" " alt="" coords="21,174,171,201"/>
-<area shape="poly" title=" " alt="" coords="376,129,173,172,172,167,378,124"/>
-<area shape="rect" title=" " alt="" coords="690,174,806,201"/>
-<area shape="poly" title=" " alt="" coords="494,124,680,169,675,170,494,129"/>
-<area shape="rect" title=" " alt="" coords="195,174,261,201"/>
-<area shape="poly" title=" " alt="" coords="399,128,277,172,275,167,403,125"/>
-<area shape="rect" title=" " alt="" coords="762,325,827,353"/>
-<area shape="poly" title=" " alt="" coords="501,118,696,145,780,160,820,172,831,188,836,206,836,244,826,281,811,313,808,309,821,279,831,243,831,207,826,190,817,176,779,165,695,150,501,124"/>
-<area shape="rect" title=" " alt="" coords="285,174,350,201"/>
-<area shape="poly" title=" " alt="" coords="419,125,353,168,350,163,415,128"/>
-<area shape="rect" href="ITaskRunner_8hpp.html" title="Interface for managing background tasks and thread lifecycles." alt="" coords="426,174,553,201"/>
-<area shape="poly" title=" " alt="" coords="449,124,474,161,469,160,447,129"/>
-<area shape="rect" href="Types_8hpp.html" title="Global type definitions, enumerations, and data structures." alt="" coords="429,249,515,277"/>
-<area shape="poly" title=" " alt="" coords="432,124,416,161,413,181,416,200,428,220,444,240,439,238,423,223,411,202,407,181,411,160,428,128"/>
-<area shape="rect" href="Signal_8hpp.html" title="Concrete implementation of the ISignal interface using FreeRTOS semaphores." alt="" coords="577,174,666,201"/>
-<area shape="poly" title=" " alt="" coords="472,124,578,167,572,168,471,129"/>
-<area shape="poly" title=" " alt="" coords="500,199,533,237,554,257,579,275,621,295,666,311,750,332,744,331,664,316,619,300,576,279,551,262,529,241,498,204"/>
-<area shape="poly" title=" " alt="" coords="488,200,481,236,477,232,484,204"/>
-<area shape="poly" title=" " alt="" coords="516,272,749,326,744,327,515,277"/>
-<area shape="rect" title=" " alt="" coords="106,325,176,353"/>
-<area shape="poly" title=" " alt="" coords="429,277,192,329,191,324,428,272"/>
-<area shape="rect" title=" " alt="" coords="350,325,405,353"/>
-<area shape="poly" title=" " alt="" coords="458,277,407,318,405,313,453,278"/>
-<area shape="rect" title=" " alt="" coords="429,325,515,353"/>
-<area shape="poly" title=" " alt="" coords="474,276,474,311,470,308,470,279"/>
-<area shape="rect" title=" " alt="" coords="539,325,597,353"/>
-<area shape="poly" title=" " alt="" coords="490,275,541,316,536,315,488,280"/>
-<area shape="rect" title=" " alt="" coords="590,249,666,277"/>
-<area shape="poly" title=" " alt="" coords="624,200,628,235,623,232,621,204"/>
-<area shape="rect" href="ISignal_8hpp.html" title="Interface for a thread synchronization signal." alt="" coords="699,249,792,277"/>
-<area shape="poly" title=" " alt="" coords="644,199,713,241,708,241,643,204"/>
-<area shape="poly" title=" " alt="" coords="755,275,780,313,775,311,753,280"/>
+<area shape="poly" title=" " alt="" coords="433,127,183,173,182,168,435,122"/>
+<area shape="rect" title=" " alt="" coords="195,174,311,201"/>
+<area shape="poly" title=" " alt="" coords="450,127,312,171,310,166,455,125"/>
+<area shape="rect" title=" " alt="" coords="324,325,380,353"/>
+<area shape="poly" title=" " alt="" coords="474,125,445,149,418,175,397,209,381,245,360,311,356,308,376,243,392,206,414,172,441,144,470,128"/>
+<area shape="rect" title=" " alt="" coords="437,174,504,201"/>
+<area shape="poly" title=" " alt="" coords="493,124,482,160,478,157,489,128"/>
+<area shape="rect" title=" " alt="" coords="731,325,797,353"/>
+<area shape="poly" title=" " alt="" coords="557,115,621,122,688,133,746,149,768,159,783,172,793,188,799,206,800,244,791,281,779,313,776,309,786,279,794,243,794,207,788,190,779,175,765,164,744,154,687,138,620,127,558,120"/>
+<area shape="poly" title=" " alt="" coords="558,121,826,171,832,175,827,175,825,176,558,126"/>
+<area shape="rect" href="ITaskRunner_8hpp.html" title="Interface for managing background tasks and thread lifecycles." alt="" coords="528,174,656,201"/>
+<area shape="poly" title=" " alt="" coords="514,124,565,164,560,164,513,129"/>
+<area shape="rect" href="Types_8hpp.html" title="Global type definitions, enumerations, and data structures." alt="" coords="407,249,494,277"/>
+<area shape="poly" title=" " alt="" coords="474,125,448,148,428,175,424,190,425,205,436,237,431,235,420,206,419,189,423,173,444,144,469,128"/>
+<area shape="rect" href="Signal_8hpp.html" title="Concrete implementation of the ISignal interface using FreeRTOS semaphores." alt="" coords="679,174,769,201"/>
+<area shape="poly" title=" " alt="" coords="537,124,671,168,666,169,536,129"/>
+<area shape="poly" title=" " alt="" coords="583,200,562,239,559,258,565,276,579,291,596,304,635,322,677,332,718,338,713,338,676,337,634,327,593,308,575,295,560,278,553,258,557,237,578,203"/>
+<area shape="poly" title=" " alt="" coords="569,201,490,244,488,239,564,203"/>
+<area shape="poly" title=" " alt="" coords="435,277,382,318,380,313,430,278"/>
+<area shape="poly" title=" " alt="" coords="494,272,719,326,713,327,494,277"/>
+<area shape="rect" title=" " alt="" coords="87,325,158,353"/>
+<area shape="poly" title=" " alt="" coords="408,277,174,329,173,324,406,272"/>
+<area shape="rect" title=" " alt="" coords="406,325,492,353"/>
+<area shape="poly" title=" " alt="" coords="452,276,452,311,448,308,448,279"/>
+<area shape="rect" title=" " alt="" coords="516,325,574,353"/>
+<area shape="poly" title=" " alt="" coords="468,275,519,316,514,315,467,280"/>
+<area shape="rect" title=" " alt="" coords="575,249,651,277"/>
+<area shape="poly" title=" " alt="" coords="707,201,646,243,644,238,702,203"/>
+<area shape="rect" href="ISignal_8hpp.html" title="Interface for a thread synchronization signal." alt="" coords="676,249,769,277"/>
+<area shape="poly" title=" " alt="" coords="725,200,725,235,721,232,722,204"/>
+<area shape="poly" title=" " alt="" coords="731,275,751,312,747,310,729,280"/>
 <area shape="poly" title=" " alt="" coords="97,124,99,158,93,158,95,129"/>
-<area shape="poly" title=" " alt="" coords="63,129,35,148,22,160,12,175,8,187,12,200,31,235,56,266,111,315,107,317,53,270,27,238,7,202,3,187,7,173,18,157,32,143,65,124"/>
-<area shape="poly" title=" " alt="" coords="931,201,865,279,823,317,821,313,861,275,926,203"/>
-<area shape="poly" title=" " alt="" coords="878,198,531,255,530,250,883,197"/>
-<area shape="rect" href="IStopToken_8hpp.html" title="Interface for task cancellation and interruptible sleeps." alt="" coords="932,249,1052,277"/>
-<area shape="poly" title=" " alt="" coords="949,199,976,238,971,236,947,204"/>
-<area shape="poly" title=" " alt="" coords="959,277,843,323,841,317,954,278"/>
+<area shape="poly" title=" " alt="" coords="63,129,35,148,22,160,12,175,8,187,12,200,28,234,50,265,97,314,92,316,46,268,24,237,7,202,3,187,7,173,18,157,32,143,65,124"/>
+<area shape="poly" title=" " alt="" coords="975,201,797,319,795,314,969,202"/>
+<area shape="poly" title=" " alt="" coords="931,200,923,204,694,236,510,258,509,253,694,230,922,199,936,199"/>
+<area shape="rect" href="IStopToken_8hpp.html" title="Interface for task cancellation and interruptible sleeps." alt="" coords="923,249,1042,277"/>
+<area shape="poly" title=" " alt="" coords="992,200,988,236,984,232,988,204"/>
+<area shape="poly" title=" " alt="" coords="946,277,812,324,811,319,941,278"/>
 </map>
 </div>
 </div><table class="memberdecls">

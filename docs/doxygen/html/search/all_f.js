@@ -1,7 +1,7 @@
 var searchData=
 [
   ['observering_0',['observeRing',['../classcommon_1_1AudioBufferStats.html#a0b968a00c5ec85db58468307f1295021',1,'common::AudioBufferStats::observeRing()'],['../classcommon_1_1IAudioBufferStats.html#a489172de032be1be5b37a825fdc187d4',1,'common::IAudioBufferStats::observeRing()'],['../classcommon_1_1NullAudioBufferStats.html#a7ca2f2d346e7027ec0e4ad63c6a58612',1,'common::NullAudioBufferStats::observeRing()']]],
-  ['of_20the_20build_1',['Evolution of the Build',['../index.html#autotoc_md3',1,'']]],
+  ['of_20the_20build_1',['Evolution of the Build',['../index.html#autotoc_md4',1,'']]],
   ['ok_2',['Ok',['../namespacecommon.html#ae01c7d789809ee25c2b6931c871f8502aa60852f204ed8028c1c58808b746d115',1,'common']]],
   ['ondecodeframebyteszero_3',['onDecodeFrameBytesZero',['../classcommon_1_1AudioBufferStats.html#adf3cd8fa9a93d5e97228f72a36bbdf59',1,'common::AudioBufferStats::onDecodeFrameBytesZero()'],['../classcommon_1_1IAudioBufferStats.html#ad70cc4b23af05e98a828deabeebe8c13',1,'common::IAudioBufferStats::onDecodeFrameBytesZero()'],['../classcommon_1_1NullAudioBufferStats.html#a420f82a32b0b43f5d6c48b31312cf765',1,'common::NullAudioBufferStats::onDecodeFrameBytesZero()']]],
   ['one_4',['ESP32 Internet Radio: From Zero to One',['../index.html',1,'']]],
@@ -18,5 +18,5 @@ var searchData=
   ['operator_3d_3d_15',['operator==',['../structcommon_1_1PsramAllocator.html#a2ff1e4ac2fe76543e75c1ef6408cfc8a',1,'common::PsramAllocator']]],
   ['overloaded_16',['Overloaded',['../structcommon_1_1Overloaded.html',1,'common::Overloaded&lt; Ts &gt;'],['../namespacecommon.html#a751746d8bf839f873eedb532213e9464',1,'common::Overloaded(Ts...) -&gt; Overloaded&lt; Ts... &gt;']]],
   ['overloaded_2ehpp_17',['Overloaded.hpp',['../Overloaded_8hpp.html',1,'']]],
-  ['overview_18',['Technical Overview',['../index.html#autotoc_md8',1,'']]]
+  ['overview_18',['Technical Overview',['../index.html#autotoc_md9',1,'']]]
 ];

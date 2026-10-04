@@ -8,6 +8,14 @@
 namespace {
 constexpr const char* Tag = "RingBuffer";
 constexpr size_t Guard = 1UL;  // to distinguish full vs empty
+
+inline size_t calcAvailableBytes(size_t w, size_t r, size_t capacity) {
+    return (w >= r) ? (w - r) : ((capacity - r) + w);
+}
+
+inline size_t calcFreeSpaceBytes(size_t avail, size_t capacity) {
+    return ((capacity - avail) - Guard);
+}
 }  // namespace
 
 namespace common {
@@ -33,7 +41,7 @@ RingBuffer::ReadSpans RingBuffer::claimReadSpans(const size_t maxBytes) const {
 
     const size_t w = mWritePos.load(std::memory_order_acquire);
     const size_t r = mReadPos.load(std::memory_order_relaxed);
-    const size_t avail = (w >= r) ? (w - r) : ((mCapacity - r) + w);
+    const size_t avail = calcAvailableBytes(w, r, mCapacity);
 
     const size_t bytesToRead = std::min(avail, maxBytes);
     if (bytesToRead == 0UL) {
@@ -67,7 +75,7 @@ void RingBuffer::commitRead(size_t bytes) {
 
     const size_t w = mWritePos.load(std::memory_order_acquire);
     const size_t r = mReadPos.load(std::memory_order_relaxed);
-    const size_t avail = (w >= r) ? (w - r) : ((mCapacity - r) + w);
+    const size_t avail = calcAvailableBytes(w, r, mCapacity);
 
     if (bytes > avail) {
         bytes = avail;
@@ -77,10 +85,9 @@ void RingBuffer::commitRead(size_t bytes) {
     if (newReadPos >= mCapacity) {
         newReadPos %= mCapacity;
     }
-
     mReadPos.store(newReadPos, std::memory_order_release);
 
-    const size_t previousSpace = (mCapacity - avail) - Guard;
+    const size_t previousSpace = calcFreeSpaceBytes(avail, mCapacity);
     if (previousSpace == 0UL) {
         mSpaceSignal.signal();
     }
@@ -95,8 +102,8 @@ RingBuffer::WriteSpans RingBuffer::claimWriteSpans(const size_t maxBytes) {
 
     const size_t w = mWritePos.load(std::memory_order_relaxed);
     const size_t r = mReadPos.load(std::memory_order_acquire);
-    const size_t avail = (w >= r) ? (w - r) : ((mCapacity - r) + w);
-    const size_t space = ((mCapacity - avail) - Guard);
+    const size_t avail = calcAvailableBytes(w, r, mCapacity);
+    const size_t space = calcFreeSpaceBytes(avail, mCapacity);
 
     const size_t bytesToWrite = std::min(space, maxBytes);
     if (bytesToWrite == 0UL) {
@@ -133,18 +140,17 @@ void RingBuffer::commitWrite(size_t bytes) {
 
     const size_t w = mWritePos.load(std::memory_order_relaxed);
     const size_t r = mReadPos.load(std::memory_order_acquire);
-    const size_t avail = (w >= r) ? (w - r) : ((mCapacity - r) + w);
-    const size_t space = ((mCapacity - avail) - Guard);
+    const size_t avail = calcAvailableBytes(w, r, mCapacity);
+    const size_t space = calcFreeSpaceBytes(avail, mCapacity);
 
     if (bytes > space) {
-        bytes = space;  // clamp defensive
+        bytes = space;
     }
 
     size_t newWritePos = (w + bytes);
     if (newWritePos >= mCapacity) {
         newWritePos %= mCapacity;
     }
-
     mWritePos.store(newWritePos, std::memory_order_release);
 
     if (avail == 0UL) {
@@ -159,7 +165,7 @@ bool RingBuffer::waitForData(const uint32_t timeoutMs) {
 
     const size_t w = mWritePos.load(std::memory_order_acquire);
     const size_t r = mReadPos.load(std::memory_order_relaxed);
-    const size_t avail = (w >= r) ? (w - r) : ((mCapacity - r) + w);
+    const size_t avail = calcAvailableBytes(w, r, mCapacity);
 
     if (avail > 0UL) {
         return true;
@@ -175,8 +181,8 @@ bool RingBuffer::waitForSpace(const uint32_t timeoutMs) {
 
     const size_t w = mWritePos.load(std::memory_order_relaxed);
     const size_t r = mReadPos.load(std::memory_order_acquire);
-    const size_t avail = (w >= r) ? (w - r) : ((mCapacity - r) + w);
-    const size_t space = ((mCapacity - avail) - Guard);
+    const size_t avail = calcAvailableBytes(w, r, mCapacity);
+    const size_t space = calcFreeSpaceBytes(avail, mCapacity);
 
     if (space > 0UL) {
         return true;
@@ -188,7 +194,7 @@ bool RingBuffer::waitForSpace(const uint32_t timeoutMs) {
 size_t RingBuffer::available() const {
     const size_t w = mWritePos.load(std::memory_order_relaxed);
     const size_t r = mReadPos.load(std::memory_order_acquire);
-    const size_t avail = (w >= r) ? (w - r) : ((mCapacity - r) + w);
+    const size_t avail = calcAvailableBytes(w, r, mCapacity);
 
     return avail;
 }
@@ -196,8 +202,8 @@ size_t RingBuffer::available() const {
 IRingBuffer::FillLevels RingBuffer::getFillLevels() const {
     const size_t w = mWritePos.load(std::memory_order_acquire);
     const size_t r = mReadPos.load(std::memory_order_acquire);
-    const size_t avail = (w >= r) ? (w - r) : ((mCapacity - r) + w);
-    const size_t space = ((mCapacity - avail) - Guard);
+    const size_t avail = calcAvailableBytes(w, r, mCapacity);
+    const size_t space = calcFreeSpaceBytes(avail, mCapacity);
 
     return {avail, space};
 }

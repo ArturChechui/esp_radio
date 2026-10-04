@@ -164,7 +164,7 @@ Classes</h2></td></tr>
 <tr class="memitem:StopToken" id="r_StopToken"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcommon_1_1StopToken.html">StopToken</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A task-specific token for managing execution lifecycle.  <a href="classcommon_1_1StopToken.html#details">More...</a><br /></td></tr>
 <tr class="memitem:TaskRunner" id="r_TaskRunner"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcommon_1_1TaskRunner.html">TaskRunner</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A task manager providing lifecycle control and static allocation.  <a href="classcommon_1_1TaskRunner.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A task manager providing lifecycle control and slot-based task management.  <a href="classcommon_1_1TaskRunner.html#details">More...</a><br /></td></tr>
 <tr class="memitem:MicFeatures" id="r_MicFeatures"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcommon_1_1MicFeatures.html">MicFeatures</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Processed metrics from the microphone input.  <a href="structcommon_1_1MicFeatures.html#details">More...</a><br /></td></tr>
 <tr class="memitem:Rect" id="r_Rect"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcommon_1_1Rect.html">Rect</a></td></tr>
@@ -287,7 +287,7 @@ Functions</h2></td></tr>
 <tr class="memitem:a4afc0f4113cad89a3eb748de6d627a4c" id="r_a4afc0f4113cad89a3eb748de6d627a4c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4afc0f4113cad89a3eb748de6d627a4c">dump</a> (const <a class="el" href="#a0e9fa1d9385a93e716041d14fa7b3666">common::AppEvent</a> &amp;ev)</td></tr>
 <tr class="memdesc:a4afc0f4113cad89a3eb748de6d627a4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts an <a class="el" href="#a0e9fa1d9385a93e716041d14fa7b3666" title="A type-safe union (variant) representing any application-level event.">AppEvent</a> variant to a detailed string representation.  <br /></td></tr>
 <tr class="memitem:ae15effc1b514ba562c2129fa3facac1c" id="r_ae15effc1b514ba562c2129fa3facac1c"><td class="memItemLeft" align="right" valign="top">TickType_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae15effc1b514ba562c2129fa3facac1c">toTicks</a> (const uint32_t ms)</td></tr>
-<tr class="memdesc:ae15effc1b514ba562c2129fa3facac1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a millisecond duration to FreeRTOS ticks.  <br /></td></tr>
+<tr class="memdesc:ae15effc1b514ba562c2129fa3facac1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a millisecond duration to FreeRTOS ticks. This function calculates the equivalent number of system ticks for a given time in milliseconds. It performs a "ceiling" division to ensure that the resulting delay is at least as long as requested.  <br /></td></tr>
 <tr class="memitem:a751746d8bf839f873eedb532213e9464" id="r_a751746d8bf839f873eedb532213e9464"><td class="memTemplParams" colspan="2">template&lt;class... Ts&gt; </td></tr>
 <tr class="memitem:a751746d8bf839f873eedb532213e9464 template"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a751746d8bf839f873eedb532213e9464">Overloaded</a> (Ts...) -&gt; Overloaded&lt; Ts... &gt;</td></tr>
 <tr class="memdesc:a751746d8bf839f873eedb532213e9464"><td class="mdescLeft">&#160;</td><td class="mdescRight">Template deduction guide for the <a class="el" href="structcommon_1_1Overloaded.html" title="A helper for visiting std::variant types.">Overloaded</a> struct.  <br /></td></tr>
@@ -930,21 +930,19 @@ template&lt;class... Ts&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Converts a millisecond duration to FreeRTOS ticks. </p>
-<ul>
-<li>This function calculates the equivalent number of system ticks for a given time in milliseconds. It performs a "ceiling" division to ensure that the resulting delay is at least as long as requested.</li>
-<li><dl class="params"><dt>Parameters</dt><dd>
+<p>Converts a millisecond duration to FreeRTOS ticks. This function calculates the equivalent number of system ticks for a given time in milliseconds. It performs a "ceiling" division to ensure that the resulting delay is at least as long as requested. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ms</td><td>The duration in milliseconds to convert. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The equivalent number of TickType_t ticks.</dd></dl>
-</li>
+<dl class="section return"><dt>Returns</dt><dd>The equivalent number of TickType_t ticks.<ul>
 <li>Returns portMAX_DELAY if the input is UINT32_MAX.</li>
 <li>Returns 0 if the input is 0.</li>
 <li>Returns the calculated ticks (rounded up) otherwise. </li>
 </ul>
+</dd></dl>
 
 </div>
 </div>

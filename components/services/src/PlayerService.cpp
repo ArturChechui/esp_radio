@@ -30,12 +30,14 @@ constexpr uint32_t TimeoutToExitTasks = 7000U;  // 7s
 constexpr uint32_t PlayerTaskStackWords = 22480U;
 constexpr uint32_t HttpTaskStackWords = 8192U;
 
+constexpr size_t MinMp3FrameSize =
+    4UL;  // Minimum MP3 frame size in bytes (to avoid decoding errors)
 constexpr size_t ReadMaxBytes = 4 * 1024U;  // Max read from ring buffer per decode
 constexpr size_t PrebufferBytes = 32U * 1024U;
 constexpr size_t ResumeBufferBytes = 5U * PrebufferBytes;
-constexpr uint32_t FreeSpaceTimeoutMs = 500U;  // for waiting for space
-constexpr uint32_t AvailDataTimeoutMs = 200U;  // for waiting for data
-constexpr uint32_t NoWaitMs = 0U;              // for non-blocking calls
+constexpr uint32_t FreeSpaceTimeoutMs = 500U;   // for waiting for space
+constexpr uint32_t AvailDataTimeoutMs = 200U;   // for waiting for data
+constexpr uint32_t StreamOpenTimeoutMs = 130U;  // for waiting stream open signal
 constexpr uint32_t LowWaterMarkBytes =
     PlayerService::RingBufferSize * 0.7;  // Speeds up the HTTP task before the buffer hits 50 %
 constexpr uint32_t HighWaterMarkBytes =
@@ -44,8 +46,8 @@ constexpr uint32_t HighWaterMarkBytes =
 constexpr int StereoChannels = 2;
 constexpr int MonoChannels = 1;
 
-constexpr size_t I2sChunkBytes = 2304U;  // must be multiple of sample size to avoid partial frames
-constexpr uint32_t I2sTimeoutMs = 600U;  // allow blocking/yielding to keep IDLE alive
+constexpr size_t I2sChunkSamples = 1152U;  // Max stereo sample chunk for I2S writes (1 MP3 frame)
+constexpr uint32_t I2sTimeoutMs = 600U;    // allow blocking/yielding to keep IDLE alive
 
 constexpr size_t InputScratchBytes = 4096U;  // Scratch buffer for wrap-boundary frames
 constexpr int32_t InitVolQ15 = 3277;         // Volume in Q15 fixed point (0..32768). 0.10 ~= 3277
@@ -56,7 +58,7 @@ constexpr uint32_t StreamOpenRetrySleepMs = 500U;
 constexpr uint32_t ReconnectAfterReadStallMs = 5000U;
 constexpr uint32_t BufferingPollSleepMs = 20U;
 
-constexpr int32_t Q15One = 0x7FFF;  // 32767
+constexpr int32_t Q15One = 0x7FFF;  // 32767 - represents 1.0 in Q15 fixed-point format
 
 constexpr uint32_t DefaultStatsIntervalMs = 10000U;
 }  // namespace
@@ -357,20 +359,21 @@ common::StepResult PlayerService::consumerStep(common::IStopToken& token) {
 
     const size_t availableBytes = mRingBuffer->available();
     if (!mStreamOpen.load(std::memory_order_acquire) && (availableBytes == 0UL)) {
-        // TODO: do I need to wait here?
-        (void)mStreamOpenSignal->wait(130U);
-        return {.action = common::StepAction::Sleep, .sleepMs = 50U};
+        if (!mStreamOpenSignal->wait(StreamOpenTimeoutMs)) {
+            return {.action = common::StepAction::Sleep, .sleepMs = BufferingPollSleepMs};
+        }
+        return {.action = common::StepAction::Continue};
     }
 
     const size_t requiredBufferBytes =
         (mStatus == common::PlaybackStatus::Buffering) ? ResumeBufferBytes : PrebufferBytes;
     if (availableBytes < requiredBufferBytes) {
         onPlaybackStatusChanged(common::PlaybackStatus::Buffering);
-        if (mRingBuffer->waitForData(AvailDataTimeoutMs)) {
-            return {.action = common::StepAction::Sleep, .sleepMs = 10U};
-        }
 
-        return {.action = common::StepAction::Sleep, .sleepMs = BufferingPollSleepMs};
+        if (!mRingBuffer->waitForData(AvailDataTimeoutMs)) {
+            return {.action = common::StepAction::Sleep, .sleepMs = BufferingPollSleepMs};
+        }
+        return {.action = common::StepAction::Continue};
     }
 
     return consumeOnce(token);
@@ -380,8 +383,10 @@ common::StepResult PlayerService::consumeOnce(common::IStopToken& token) {
     recordRingStats();
 
     const auto spans = mRingBuffer->claimReadSpans(ReadMaxBytes);
-    if (spans.total() < 4UL) {
-        (void)mRingBuffer->waitForData(AvailDataTimeoutMs);
+    if (spans.total() < MinMp3FrameSize) {
+        if (!mRingBuffer->waitForData(AvailDataTimeoutMs)) {
+            return {.action = common::StepAction::Sleep, .sleepMs = BufferingPollSleepMs};
+        }
         return {.action = common::StepAction::Continue};
     }
 
@@ -398,8 +403,8 @@ common::StepResult PlayerService::consumeOnce(common::IStopToken& token) {
         if (spans.total() > ResyncThresholdBytes) {
             mRingBuffer->commitRead(1UL);
             mStats.onResyncDrop();
-        } else {
-            (void)mRingBuffer->waitForData(AvailDataTimeoutMs);
+        } else if (!mRingBuffer->waitForData(AvailDataTimeoutMs)) {
+            return {.action = common::StepAction::Sleep, .sleepMs = BufferingPollSleepMs};
         }
 
         return {.action = common::StepAction::Continue};
@@ -435,15 +440,13 @@ common::StepResult PlayerService::consumeOnce(common::IStopToken& token) {
     onPlaybackStatusChanged(common::PlaybackStatus::Playing);
 
     const size_t totalSamples = (static_cast<size_t>(info.samplesPerCh) * StereoChannels);
-    constexpr size_t I2sChunkSamples = (I2sChunkBytes / sizeof(int16_t));
-
     size_t writtenSamples = 0UL;
     uint8_t zeroWrites = 0U;
     while (writtenSamples < totalSamples && !token.stopRequested()) {
         const size_t samplesRemaining = (totalSamples - writtenSamples);
         const size_t chunkSamples = std::min(I2sChunkSamples, samplesRemaining);
         const size_t chunkBytes = (chunkSamples * sizeof(int16_t));
-        const int16_t* currentChunkPtr = outSamples + writtenSamples;
+        const int16_t* currentChunkPtr = (outSamples + writtenSamples);
 
         const size_t writtenBytes = mI2sBus.write(currentChunkPtr, chunkBytes, I2sTimeoutMs);
 
@@ -514,23 +517,19 @@ void PlayerService::convertMonoToStereoQ15(const int16_t* mono, int16_t* outSter
     for (int i = 0; i < samples; ++i) {
         // Q15 multiply: (s * volQ15) >> 15
         int32_t x = static_cast<int32_t>(mono[i]) * volQ15;
-        x >>= 15;
+        const int16_t v = static_cast<int16_t>(x >> 15);
 
-        const int16_t v = static_cast<int16_t>(x);
-        outStereo[i * 2] = v;
-        outStereo[i * 2 + 1] = v;
+        *outStereo++ = v;  // Writes Left  channel at outStereo[0], advances ptr to [1]
+        *outStereo++ = v;  // Writes Right channel at outStereo[1], advances ptr to [2]
     }
 }
 
 void PlayerService::applyVolumeStereoQ15(int16_t* stereo, const int samplesPerCh,
                                          const int32_t volQ15) {
-    const int total = (samplesPerCh * StereoChannels);
-    for (int i = 0; i < total; ++i) {
-        // Q15 multiply: (s * volQ15) >> 15
-        int32_t x = static_cast<int32_t>(stereo[i]) * volQ15;
-        x >>= 15;
-
-        stereo[i] = static_cast<int16_t>(x);
+    int16_t* const end = (stereo + (samplesPerCh * StereoChannels));
+    while (stereo < end) {
+        int32_t x = static_cast<int32_t>(*stereo) * volQ15;
+        *stereo++ = static_cast<int16_t>(x >> 15);
     }
 }
 

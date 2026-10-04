@@ -120,7 +120,7 @@ TEST_F(PlayerServiceTest, tc05_playStation_openStreamFail) {
     EXPECT_CALL(token, stopRequested()).WillOnce(Return(false));
     ASSERT_NE(playerFn, nullptr);
     const common::StepResult r2 = playerFn(playerUser, token);
-    EXPECT_EQ(r2.action, common::StepAction::Sleep);
+    EXPECT_EQ(r2.action, common::StepAction::Continue);
 
     // Destructor, 2 tasks
     EXPECT_CALL(*mockTaskRunner, stop(_, _))
@@ -138,7 +138,7 @@ TEST_F(PlayerServiceTest, tc06_playStation_streamNotOpen_continue) {
     ASSERT_NE(playerFn, nullptr);
     EXPECT_CALL(token, stopRequested()).WillOnce(Return(false));
     const common::StepResult r = playerFn(playerUser, token);
-    EXPECT_EQ(r.action, common::StepAction::Sleep);
+    EXPECT_EQ(r.action, common::StepAction::Continue);
 
     // Destructor, 2 tasks
     EXPECT_CALL(*mockTaskRunner, stop(_, _))
@@ -146,7 +146,7 @@ TEST_F(PlayerServiceTest, tc06_playStation_streamNotOpen_continue) {
         .WillRepeatedly(::testing::Return(common::StopResult::Ok));
 }
 
-TEST_F(PlayerServiceTest, tc07_playStation_notPrebuffered_sleep) {
+TEST_F(PlayerServiceTest, tc07_playStation_notPrebuffered_waitForData) {
     expectStartCaptureBothStepFns();
 
     EXPECT_CALL(*mockEventQueue, post(_)).WillOnce(Return(true));
@@ -167,8 +167,7 @@ TEST_F(PlayerServiceTest, tc07_playStation_notPrebuffered_sleep) {
     ASSERT_NE(playerFn, nullptr);
     EXPECT_CALL(token, stopRequested()).WillOnce(Return(false));
     const common::StepResult r2 = playerFn(playerUser, token);
-    EXPECT_EQ(r2.action, common::StepAction::Sleep);
-    EXPECT_EQ(r2.sleepMs, 10U);
+    EXPECT_EQ(r2.action, common::StepAction::Continue);
 
     // Destructor, 2 tasks
     EXPECT_CALL(*mockTaskRunner, stop(_, _))
